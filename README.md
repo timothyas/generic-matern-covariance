@@ -4,6 +4,9 @@
 
 - [ ] Run some ECCO cases to compute empirical correlations, mapped to isotropic
   space
+    - [x] Make `SampleDriver`
+    - [x] Get ECCO-type setup to compile
+    - [ ] Check binaries for why this is producing NaNs
 - [ ] Reconfirm WC01 stability criterion, and run cases showing that this is
   inadequate ... need an explanation here...
 - [ ] Think about an OI application
