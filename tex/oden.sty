@@ -1,0 +1,272 @@
+
+\ProvidesPackage{oden}
+
+% --- Math operations and notation
+\newcommand{\pderiv}[3][]{% \pderiv[<order>]{<func>}{<var>}
+  \ensuremath{\frac{\partial^{#1} {#2}}{\partial {#3}^{#1}}}}
+\newcommand{\totderiv}[1]{%
+  \ensuremath{\frac{D{#1}}{Dt}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\argminl}{\argmin\limits} % argmin/max for
+\newcommand*{\argmaxl}{\argmax\limits} % algorithm environment
+\newcommand{\bigo}{\mathcal{O}}
+\newcommand{\degSym}{$^{\circ}$}
+\newcommand{\pe}[1]{$^{#1}$}
+\newcommand{\me}[1]{$^{-#1}$}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% --- Labels with section number
+\numberwithin{equation}{section}
+\numberwithin{table}{section}
+\numberwithin{figure}{section}
+
+% --- Forward model variables
+\newcommand{\vel}{\mathbf{v}}                 % Velocity vector
+\newcommand{\horvel}{{\mathbf{v}_h}}          % Horizontal velocity
+\newcommand{\x}{\mathbf{x}}                   % Physical space coordinate
+\newcommand{\y}{\mathbf{y}}                   % Physical space coordinate
+\newcommand{\s}{\mathbf{s}}                   % Physical space coordinate
+\newcommand{\bodyforce}{\mathbf{\mathcal{F}}} % Body force
+\newcommand{\domain}{\ensuremath{\Omega}}             % Physical domain
+\newcommand{\ctrlDomain}{\ensuremath{\tilde{\Omega}}}             % Physical domain
+\newcommand{\bdyCtrlDomain}{\ensuremath{\partial\tilde{\Omega}}}             % Physical domain
+\newcommand{\bdyDomain}{\ensuremath{\partial\Omega}}% Physical domain boundary
+\newcommand{\iceBdy}{\ensuremath{\bdyDomain_{\text{ice}}}}
+\newcommand{\groundBdy}{\ensuremath{\bdyDomain_{\text{bed}}}}
+\newcommand{\solidBdy}{\ensuremath{\bdyDomain_{\text{solid}}}}
+\newcommand{\openBdy}{\ensuremath{\bdyDomain_{\text{open}}}}
+\newcommand{\surfBdy}{\ensuremath{\bdyDomain_{\text{surf}}}}
+
+% --- Discretization
+\newcommand{\vol}{\ensuremath{V}}
+\newcommand{\area}{\ensuremath{A}}
+\newcommand{\cell}{\ensuremath{E}}
+\newcommand{\cellbdy}{\ensuremath{\partial E}}
+\newcommand{\ijk}{{\ensuremath{i,j,k}}}
+\newcommand{\imjk}{{\ensuremath{i-1,j,k}}}
+\newcommand{\ipjk}{{\ensuremath{i+1,j,k}}}
+\newcommand{\ijmk}{{\ensuremath{i,j-1,k}}}
+\newcommand{\ijpk}{{\ensuremath{i,j+1,k}}}
+\newcommand{\ijkm}{{\ensuremath{i,j,k-1}}}
+\newcommand{\ijkp}{{\ensuremath{i,j,k+1}}}
+
+\newcommand{\jk}{{\ensuremath{j,k}}}
+\newcommand{\jmk}{{\ensuremath{j-1,k}}}
+\newcommand{\jpk}{{\ensuremath{j+1,k}}}
+\newcommand{\jkm}{{\ensuremath{j,k-1}}}
+\newcommand{\jkp}{{\ensuremath{j,k+1}}}
+\newcommand{\unis}{\ensuremath{\bm{\vartheta}}}
+\newcommand{\uni}{\ensuremath{\vartheta}}
+\newcommand{\unih}{\ensuremath{\hat{\uni}}}
+\newcommand{\nuni}{\ensuremath{N_{\uni}}}
+\newcommand{\uniSpace}{\ensuremath{\mathbb{R}^{\nuni}}}
+
+% --- UQ variables
+\newcommand{\params}{\ensuremath{\mathbf{m}}} % vector of parameters or controls
+\newcommand{\param}{\ensuremath{m}}           % single parameter
+\newcommand{\paramSpace}{\ensuremath{\mathbb{R}^{N_m}}}      % parameter space
+\newcommand{\paramSpaceInf}{\ensuremath{\mathcal{M}}}      % parameter space infinite dimensional
+
+\newcommand{\ndparams}{\ensuremath{\hat{\mathbf{m}}}} % nondimensional parameters
+\newcommand{\ndparam}{\ensuremath{\hat{m}}} % nondimensional parameter field
+\newcommand{\state}{\ensuremath{\mathbf{u}}}  % state (PDE solution)
+\newcommand{\stateSpace}{\ensuremath{\mathbb{R}^{N_{u}}}}      % state space
+\newcommand{\data}{\ensuremath{\mathbf{d}}}   % obs. data
+\newcommand{\dataSpace}{%
+          \ensuremath{\mathbb{R}^{N_d}}}      % data space
+\newcommand{\design}{CHOOSEME}                % design variables
+%\newcommand{\obsCov}{%
+%          \ensuremath{\mathcal{C}_{Obs}}}     % obs. err covariance operator
+\newcommand{\obsCovMat}{%
+          \ensuremath{\Gamma_\text{obs}}}          % obs. err covariance matrix
+          %
+\newcommand{\priorCov}{%
+          \ensuremath{\mathcal{C}_\text{prior}}}   % Prior covariance operator
+\newcommand{\priorCovMat}{%
+\ensuremath{\Gamma_{\text{prior}}}}        % Prior covariance matrix
+%
+\newcommand{\postCov}{%
+          \ensuremath{\mathcal{C}_\text{post}}}    % Posterior covariance operator
+\newcommand{\postCovMat}{%
+          \ensuremath{\Gamma_\text{post}}}         % Posterior covariance matrix
+          %
+\newcommand{\qoiCov}{%
+          \ensuremath{\mathcal{C}_{qoi}}}    % Posterior covariance operator
+\newcommand{\qoiCovMat}{%
+          \ensuremath{\Gamma_{qoi}}}         % Posterior covariance matrix
+          %
+\newcommand{\Hm}{%
+          \ensuremath{H_{m}}}   % Misfit hessian
+\newcommand{\ppmh}{%
+  \ensuremath{\tilde{H}}}   % Prior preconditioned misfit H
+\newcommand{\HGN}{\ensuremath{H_{\text{GN}}}}
+
+% MAP point etc
+\newcommand{\paramsMAP}{\ensuremath{\params_{\text{MAP}}}}
+\newcommand{\ndparamsMAP}{\ensuremath{\ndparams_{\text{MAP}}}}
+
+% distributions
+\newcommand{\priorDist}{\ensuremath{\pi_{\text{prior}}}}
+\newcommand{\likeDist}{\ensuremath{\pi_{\text{like}}}}
+\newcommand{\obsDist}{\ensuremath{\pi_{\text{obs}}}}
+\newcommand{\postDist}{\ensuremath{\pi_{\text{post}}}}
+
+
+
+% --- maps, functions
+\newcommand{\cf}{\ensuremath{\mathcal{J}}}    % cost function
+
+\newcommand{\pto}{\ensuremath{f}}             % nonlin parameter to observable map
+\newcommand{\ndpto}{\ensuremath{\hat{f}}}             % nonlin parameter to observable map
+\newcommand{\vpto}{\ensuremath{\mathbf{f}}}   % nonlin, vector valued parameter to observable map
+\newcommand{\ptom}{\ensuremath{F_{\params}}}            % Linearized pto as matrix
+\newcommand{\parpto}{\ensuremath{\partial_{\param}\pto}}            % Linearized pto as matrix
+\newcommand{\pptom}{\ensuremath{\hat{F}}}     % Linearized pto as matrix, pre/post conditioned with
+%                                               square root of prior and inv. obs covariances
+\newcommand{\dpto}[1]{%
+    \ensuremath{\nabla_{#1} \pto}}            % gradient of nonlin parameter to observable map
+\newcommand{\dvpto}[1]{%
+    \ensuremath{\nabla_{#1} \vpto}}           % gradient of nonlin, vector valued parameter to observable map
+
+% --- QoI stuff
+\newcommand{\melt}{\ensuremath{Q_{\text{melt}}}}
+\newcommand{\qoi}{\ensuremath{\mathcal{Q}}}
+\newcommand{\qoisens}{\ensuremath{\mathbf{q}}}
+\newcommand{\dqoi}{\ensuremath{\nabla f_{qoi}}}    % linearized parameter to qoi map as matrix
+\newcommand{\qoiMat}{\ensuremath{F_{qoi}}}    % linearized parameter to qoi map as matrix
+
+\newcommand{\utility}{\ensuremath{\psi}}      % Utility functional
+\newcommand{\model}{\ensuremath{\mathcal{M}}} % nonlin param to state map
+\newcommand{\tlm}{\ensuremath{M}}             % TLM param to state map
+\newcommand{\adj}{\ensuremath{M^{T}}}         % ADJ param to state map
+\newcommand{\sto}{\ensuremath{\mathcal{Y}}}   % state to observables map
+
+\newcommand{\sdir}{\ensuremath{\mathbf{p}}}   % optimization search direction
+
+% --- OI stuff
+\newcommand{\interp}{\ensuremath{G}}
+\newcommand{\obsOICovMat}{\ensuremath{\Gamma_{\text{obsOI}}}}
+\newcommand{\dataOI}{\ensuremath{\data_{\text{OI}}}}
+\newcommand{\nobsOI}{\ensuremath{N_{\text{OI}}}}
+\newcommand{\dataOISpace}{\ensuremath{\mathbb{R}^{N_\text{OI}}}}
+\newcommand{\postOICov}{%
+          \ensuremath{\mathcal{C}_\text{postOI}}}    % OI Posterior covariance operator
+\newcommand{\postOICovMat}{%
+          \ensuremath{\Gamma_\text{postOI}}}         % OI Posterior covariance matrix
+\newcommand{\paramsMAPOI}{\ensuremath{\params_{\text{OI}}}}
+\newcommand{\ndparamsMAPOI}{\ensuremath{\ndparams_{\text{OI}}}}
+\newcommand{\cfoi}{\ensuremath{\mathcal{J}_{\text{OI}}}}    % cost function
+
+\newcommand{\likeDistOI}{\ensuremath{\pi_{\text{likeOI}}}}
+\newcommand{\obsDistOI}{\ensuremath{\pi_{\text{obsOI}}}}
+\newcommand{\postDistOI}{\ensuremath{\pi_{\text{postOI}}}}
+
+\newcommand{\ppmhOI}{%
+    \ensuremath{\tilde{H}_{\text{OI}}}}   % Prior preconditioned misfit H
+
+\newcommand{\HOI}{\ensuremath{H_{\text{OI}}}}
+
+% --- Separate for each variable
+\newcommand{\thetaParams}{\ensuremath{{\bm{\theta}}}}
+\newcommand{\saltParams}{\ensuremath{\mathbf{S}}}
+\newcommand{\uvelParams}{\ensuremath{\mathbf{u}}}
+
+\newcommand{\thetaParamsMAPOI}{\ensuremath{\thetaParams_{\text{OI}}}}
+\newcommand{\saltParamsMAPOI}{\ensuremath{\saltParams_{\text{OI}}}}
+\newcommand{\uvelParamsMAPOI}{\ensuremath{\uvelParams_{\text{OI}}}}
+
+\newcommand{\thetaPriorCovMat}{\ensuremath{\Gamma_{\text{prior,}\thetaParams}}}
+\newcommand{\saltPriorCovMat}{\ensuremath{\Gamma_{\text{prior,}\saltParams}}}
+\newcommand{\uvelPriorCovMat}{\ensuremath{\Gamma_{\text{prior,}\uvelParams}}}
+\newcommand{\uniPriorCovMat}{\ensuremath{\Gamma_{\text{prior,}\unis}}}
+
+
+\newcommand{\thetaPostCovMat}{\ensuremath{\Gamma_{\text{post,}\thetaParams}}}
+\newcommand{\saltPostCovMat}{\ensuremath{\Gamma_{\text{post,}\saltParams}}}
+\newcommand{\uvelPostCovMat}{\ensuremath{\Gamma_{\text{post,}\uvelParams}}}
+
+\newcommand{\thetaPostOICovMat}{\ensuremath{\Gamma_{\text{postOI,}\thetaParams}}}
+\newcommand{\saltPostOICovMat}{\ensuremath{\Gamma_{\text{postOI,}\saltParams}}}
+\newcommand{\uvelPostOICovMat}{\ensuremath{\Gamma_{\text{postOI,}\uvelParams}}}
+
+\newcommand{\thetaObs}{\ensuremath{\thetaParams_{\text{obs}}}}
+\newcommand{\saltObs}{\ensuremath{\saltParams_{\text{obs}}}}
+\newcommand{\uvelObs}{\ensuremath{\uvelParams_{\text{obs}}}}
+\newcommand{\thetaObsOI}{\ensuremath{\thetaParams_{\text{obsOI}}}}
+\newcommand{\saltObsOI}{\ensuremath{\saltParams_{\text{obsOI}}}}
+\newcommand{\uvelObsOI}{\ensuremath{\uvelParams_{\text{obsOI}}}}
+
+\newcommand{\thetaObsCovMat}{\ensuremath{\obsCovMat|_{\thetaParams}}}
+\newcommand{\saltObsCovMat}{\ensuremath{\obsCovMat|_{\saltParams}}}
+\newcommand{\uvelObsCovMat}{\ensuremath{\obsCovMat|_{\uvelParams}}}
+\newcommand{\thetaObsOICovMat}{\ensuremath{\obsOICovMat|_{\thetaParams}}}
+\newcommand{\saltObsOICovMat}{\ensuremath{\obsOICovMat|_{\saltParams}}}
+\newcommand{\uvelObsOICovMat}{\ensuremath{\obsOICovMat|_{\uvelParams}}}
+
+\newcommand{\interpTheta}{\ensuremath{G}_{\thetaParams}}
+\newcommand{\interpSalt}{\ensuremath{G}_{\saltParams}}
+\newcommand{\interpUvel}{\ensuremath{G}_{\uvelParams}}
+
+% --- Randomized SVD notation
+\newcommand{\gmat}{\ensuremath{G}}
+\newcommand{\gvec}{\ensuremath{g}}
+\newcommand{\rangemat}{\ensuremath{Y}}
+\newcommand{\rangevec}{\ensuremath{y}}
+\newcommand{\leftsv}{\ensuremath{U}}
+\newcommand{\rightsv}{\ensuremath{V}}
+\newcommand{\svmat}{\ensuremath{\Sigma}}
+\newcommand{\sv}{\ensuremath{\sigma}}
+
+% --- Dimensionality of parameters, data, etc...
+\newcommand{\nparams}{\ensuremath{N_{\param}}}
+\newcommand{\nobs}{\ensuremath{N_{\data}}}
+
+\newcommand{\nstate}{\ensuremath{N_{\state}}}
+\newcommand{\nsamples}{\ensuremath{N_s}}
+\newcommand{\nrandom}{\ensuremath{k}}
+\newcommand{\nover}{\ensuremath{p}}
+\newcommand{\nlowdim}{\ensuremath{r}}
+\newcommand{\npower}{\ensuremath{N_p}}
+
+
+% --- Matern stuff
+\newcommand{\materndim}{\ensuremath{d}}
+\newcommand{\meandiff}{\ensuremath{\epsilon}}
+\newcommand{\spdesqo}{\ensuremath{\alpha}}
+\newcommand{\xh}{\ensuremath{\hat{\mathbf{x}}}}
+\newcommand{\ndspace}{\ensuremath{\mathbb{R}^{d}}}
+\newcommand{\defdomain}{\ensuremath{\hat{\Omega}}}
+\newcommand{\deltah}{\ensuremath{\hat{\delta}}}
+\newcommand{\nablah}{\ensuremath{\hat{\nabla}}}
+\newcommand{\rhoh}{\ensuremath{\hat{\rho}}}
+\newcommand{\W}{\ensuremath{\mathcal{W}}}
+\newcommand{\Wh}{\ensuremath{\hat{\W}}}
+\newcommand{\paramh}{\ensuremath{\hat{\param}}}
+\newcommand{\defmap}{\ensuremath{\varphi}}
+\newcommand{\defjac}{\ensuremath{\Phi}}
+\newcommand{\defdet}{\ensuremath{\text{det}\left(\defjac(\x)\right)}}
+\newcommand{\defdetd}{\ensuremath{\text{det}\left(\defjac_{\jk}\right)}}
+\newcommand{\defdetdi}{\ensuremath{\text{det}\left(\defjac_{i}\right)}}
+\newcommand{\defdetnox}{\ensuremath{\text{det}\big(\defjac\big)}}
+\newcommand{\rangeh}{\ensuremath{\hat{\rho}}}
+
+% --- Residence time
+\newcommand{\con}{\ensuremath{\phi}}
+\newcommand{\adcon}{\ensuremath{\con^{*}}}
+\newcommand{\mass}{\ensuremath{r}}
+\newcommand{\rmass}{\ensuremath{\hat{\mass}}}
+\newcommand{\rtime}{\ensuremath{\mathcal{T}}}
+\newcommand{\nctrl}{\ensuremath{N_{\ctrlDomain}}}
+
+\newcommand{\cons}{\ensuremath{\bm{\con}}}
+\newcommand{\adcons}{\ensuremath{\bm{\adcon}}}
+\newcommand{\masses}{\ensuremath{\bm{\mass}}}
+\newcommand{\rmasses}{\ensuremath{\hat{\bm{\mass}}}}
+\newcommand{\rtimev}{\ensuremath{\bm{\rtime}}}
+
+\newcommand{\vfrac}{\ensuremath{\zeta}}
+\newcommand{\rtimeThresh}{\ensuremath{\hat{\rtime}}}
+
+
+\endinput

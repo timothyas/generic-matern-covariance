@@ -1,0 +1,55 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools} % for \coloneqq
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{natbib}
+\usepackage{cleveref}
+\usepackage{bm}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+
+\geometry{margin=1in}
+
+\usepackage{oden}
+
+\title{A Practical Gaussian Covariance Formulation for Applications with
+       Anisotropic, Nonstationary, and Multivariate Fields}
+\author{Timothy A. Smith,
+        Patrick Heimbach}
+
+\begin{document}
+
+\maketitle
+
+
+\input{intro.tex}
+
+\input{review.tex}
+
+\input{discretization.tex}
+
+\input{hyperparameters.tex}
+
+\input{pig.tex}
+
+\input{discussion.tex}
+
+\input{block_sor.tex}
+
+\bibliography{references.bib}
+\bibliographystyle{apalike}
+\end{document}

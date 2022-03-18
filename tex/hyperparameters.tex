@@ -1,0 +1,129 @@
+\section{Specification of covariance model hyperparameters}
+\label{sec:matern_operator}
+
+\noindent\textbf{Rescaling the Laplacian term.}
+Consider a 2D spatial field $\uni(\x)$ that exhibits spatial variability at the
+length scales $L_y$ and $L_z$ in each dimension.
+We motivate our approach by considering the magnitude of
+the Laplacian term without any rescaling (i.e. without $K$):
+\begin{equation}
+    \nabla^2 \uni(\x) \sim \dfrac{U}{L_y^2} + \dfrac{U}{L_z^2}
+    \label{eq:iso_lap}
+\end{equation}
+where we suppose that $\uni(\x)\sim U$.
+We finally suppose that $L_y >> L_z$, such that the field experiences highly
+anisotropic fluctuations.
+This is a common situation in large scale geophysical fluid
+dynamics, where fields (e.g.\ temperature, salinity, velocity) exhibit length scales of
+variability that are much greater in either horizontal dimension compared to the
+vertical.
+We make a note on the terminology used here.
+In oceanography, the difference in horizontal and vertical scales
+is a result of the small aspect ratio, or the shallow fluid nature of the ocean.
+Because of the vast difference in scales, the horizontal dimensions are usually
+considered entirely independent of the vertical, and ``anisotropy'' is typically
+used to refer to heterogeneity between the horizontal components.
+However, here we use anisotropy to refer to the difference between horizontal
+and vertical scales, resulting from the small aspect ratio \citep{vallis2006}.
+
+The specification of an isotropic covariance model amounts to specifying scalar
+parameters in equation (\ref{eq:spde_iso}).
+In our hypothetical anisotropic  situation, this would result in unrealistically large or
+small correlation lengths along either dimension.
+Numerically this occurs because of the lack of balance between the terms in
+equation (\ref{eq:iso_lap}): $U/L_y^2 << U/L_z^2$.
+Our goal is therefore to define the elements of $K$ such that
+\begin{equation*}
+    \nabla\cdot K\nabla \sim (a+b)U
+\end{equation*}
+where $a \sim b$ are of the same order of magnitude.
+
+To achieve this balance between Laplacian terms, we suggest a straightforward,
+perhaps obvious, specification of $\defjac$:
+\begin{equation*}
+    \defjac =
+        \begin{pmatrix}
+            L_y & 0     \\
+            0   & L_z   \\
+        \end{pmatrix} \, ,
+\end{equation*}
+where we simply ignore the off-diagonal elements of $\defjac$.
+The determinant in this case is $\defdetnox = L_yL_z$ and
+according to the definitions in equation (\ref{eq:matern_definitions}):
+\begin{equation*}
+    K =
+        \begin{pmatrix}
+            L_y/L_z & 0     \\
+            0   & L_z/L_y   \\
+        \end{pmatrix} \, ,
+\end{equation*}
+so that
+\begin{equation*}
+    \nabla\cdot K(\x)\nabla\uni(\x) \simeq L\unis  \sim \dfrac{2}{L_yL_z}U \, .
+\end{equation*}
+The key is that $K$ scales each term in the Laplacian so that they are
+approximately the same, and the operator is balanced in either direction.\\
+%This example can further be extended by allowing the length scales $L_1$ and
+%$L_2$ to vary in space, such that correlations are nonstationary.
+
+\noindent\textbf{The range parameter.}
+The other term in equation (\ref{eq:spde_general}) to be defined is $\deltah$.
+Here we resort to the empirical relation suggested in
+\citet{RSSB:RSSB777}:
+\begin{equation*}
+    \rangeh = \sqrt{\dfrac{8\meandiff}{\deltah}} \, .
+\end{equation*}
+The so-called range parameter, $\rangeh$, defines the
+distance between two points at which correlation drops to 0.1.
+While this may seem like swapping one unknown for the other, it is usually easier to
+define correlation length scales than simply guessing values for $\deltah$.
+With this relation we have
+\begin{equation*}
+    \begin{aligned}
+        \delta_i &= \dfrac{8\meandiff}{\rangeh^2\defdetdi} \\
+                 &= \dfrac{8}{\rangeh^2 L_y L_z} \, ,
+    \end{aligned}
+\end{equation*}
+where we have substituted $\meandiff=1$, avoiding fractional or higher order exponents
+in the SPDE (recall equation \eqref{eq:spde_iso}), and $\defdetdi = L_yL_z$.
+Note that both this term and the Laplacian term are now of a similar order of
+magnitude
+\begin{equation*}
+    D_{\delta}\unis \sim L\unis \sim \bigo\left(\dfrac{1}{L_y L_z}\right)
+\end{equation*}
+\\
+
+\noindent\textbf{Practical specification of the hyperparameters.}
+With the definitions above, now one has to assign $L_y$, $L_z$, and $\rangeh$.
+Considering the discretization of the Laplacian, a simple and intuitive choice
+for $L_y$ and $L_z$ would be grid scale elements $\Delta y$ and $\Delta r$,
+or factors thereof.
+From a scaling analysis, this seems intuitive since
+\begin{equation*}
+    \begin{aligned}
+        D_z
+        &=
+        \text{diag}\left\{\dfrac{1}{
+            \sqrt{\vol_i\defdetdi}}\right\}_{i=1}^{\nuni} \\
+        &=
+        \text{diag}\left\{\dfrac{1}{
+            \sqrt{\Delta y_{g}^{i}\Delta r_{f}^{i}
+        \defdetdi}}\right\}_{i=1}^{\nuni} \\
+        &= \text{diag}\left\{\dfrac{1}{
+            \Delta y_{g}^{i}\Delta r_{f}^{i}}\right\}_{i=1}^{\nuni}
+    \end{aligned}\, ,
+\end{equation*}
+for instance if $L_y=\Delta y_g$ and $L_z=\Delta r_f$, so that
+\begin{equation*}
+    D_z\mathbf{z} \sim \bigo\left(\dfrac{1}{L_y L_z}\right) \, ,
+\end{equation*}
+and all terms are of the same order of magnitude.
+In general circulation models, these choices for $L_y$ and $L_z$ are generally
+reasonable because anisotropy is encoded into the mesh.
+It turns out that specifying the length scales as such provides for a
+practical implementation, as the range parameter can be chosen as a simple
+scaling to amplify or attenuate the correlation lengths.
+One can then intuitively regard $\hat\rho$ as a nondimensional parameter that
+controls the
+``number of neighboring grid cells'' at which correlation decays to 0.1.
+Our numerical experiments in section \ref{sec:matern_pig} make this clear.

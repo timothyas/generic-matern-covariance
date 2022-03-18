@@ -1,0 +1,121 @@
+\section{Review of the Mat\'ern class covariance}
+\label{sec:matern_review}
+
+In this section we review the link between an elliptic stochastic partial
+differential equation (SPDE) and Gaussian random fields.
+The Mat\'ern covariance function between two points, $\xh_1,\xh_2\in\defdomain =
+\ndspace$ can be expressed as:
+\begin{equation}
+    c(\xh_1,\xh_2) = \dfrac{\sigma^2}{2^{\meandiff-1}
+    \mathcal{G}(\meandiff)}
+    \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big)^\meandiff
+    \mathcal{B}_\meandiff
+    \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big) \, .
+    \label{eq:matern_covariance_iso}
+\end{equation}
+Here $||\cdot||$ as the Euclidean norm in $\defdomain$,
+$\mathcal{G}$ is the Gamma function,
+$\mathcal{B}_\meandiff$ is the modified
+Bessel function of the second kind and order $\meandiff$,
+$\sigma^2$ is the
+marginal variance, $\deltah>0$ is a scaling parameter, and $\meandiff>0$
+controls the mean-square differentiability of the underlying statistical process
+described by the Mat\'ern covariance.
+The reason for defining symbols with a hat ($\hat{\cdot}$), will become clear
+in the next subsection.
+Throughout, we refer to a ``Mat\'ern field'' as any Gaussian field that has
+covariance that can be described by the Mat\'ern covariance function,
+equation (\ref{eq:matern_covariance_iso}).
+
+The key relationship discussed in \citet{RSSB:RSSB777} is that any Mat\'ern field,
+$\unih(\xh)$, is a solution to the elliptic SPDE:
+\begin{equation}
+    \Big(\deltah - \nablah\cdot\nablah\Big)^{\spdesqo/2}\hat{\uni}(\xh) =
+    \Wh(\xh) \, .
+    \label{eq:spde_iso}
+\end{equation}
+Here $\spdesqo = \meandiff + \materndim/2$,
+$\Wh$ is a white noise process defined on the space $\defdomain$.
+We note that the Mat\'ern covariance function describes covariances that are
+stationary and isotropic.
+That is, stationarity implies that correlation length scales are determined
+purely by the Euclidean distance between two points and this does not change as
+a function of location in the domain.
+Isotropy implies that correlation lengths are the same for the same Euclidean
+distance along any dimension.
+
+The original connection between the Mat\'ern covariance function and solutions
+to equation (\ref{eq:spde_iso}) was proven by
+\cite{whittle_stationary_1954,whittle1963stochastic}, who
+used the spectral properties of the operator $(\deltah -
+\nablah\cdot\nablah)^{\spdesqo/2}$ to show that Mat\'ern fields are the only
+stationary solutions to equation (\ref{eq:spde_iso}).
+The result shown in \citet{RSSB:RSSB777} is
+that there is an explicit link between discrete solutions to equation
+(\ref{eq:spde_iso}) for any triangulation or rectangular lattice of $\ndspace$
+and Mat\'ern class Gaussian fields.
+The punch line is that we can use all of the computational tools for solving discretized
+elliptic equations to apply a covariance operator that is formally dense.
+More importantly, \citet{RSSB:RSSB777} showed that the SPDE form allows
+one to easily describe Gaussian fields with more general covariance structures.
+For instance, by allowing the parameter $\deltah$ to vary in space, the solution
+becomes nonstationary and the Mat\'ern covariance applies locally.\\
+
+\noindent\textbf{A more general covariance model. }
+In \citet{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
+coordinate system can allow for a Mat\'ern class covariance
+model that can easily incorporate anisotropy and nonstationarity.
+Consider the isotropic and stationary case, described by equation
+(\ref{eq:spde_iso}).
+The field $\unih(\xh)$ is defined in a transformed, or ``deformed''
+\citep{sampson_nonparametric_1992}, space $\defdomain$.
+Assume that we have a mapping $\defmap$ that maps between this transformed space
+and our computational domain, $\domain$:
+\begin{equation*}
+    \defmap : \defdomain\ni\xh \rightarrow \x\in\domain \, .
+\end{equation*}
+With this mapping, we can employ a change of variables
+\citep{smith_change_1934} to rewrite the SPDE in the computational domain as:
+\begin{equation*}
+    \dfrac{1}{\defdet}
+    \left(\deltah -
+    \defdet\nabla\cdot
+    \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
+    \nabla\right)\uni(\x) =
+    \defdet^{-1/2}\W(\x) \, .
+\end{equation*}
+Here we have defined the Jacobian as
+\begin{equation*}
+    \defjac(\x_0) \coloneqq
+    \dfrac{\partial \defmap}{\partial \xh}\Big|_{\defmap^{-1}(\x_{0})} \, ,
+\end{equation*}
+and for now we assume that $\defmap^{-1}(\x_0)$ is well defined.
+For our purposes, this turns out to be the case, but this becomes clear when
+$\defjac$ is defined in section \ref{sec:matern_operator}.
+Notice that we have taken the exponent $\spdesqo/2$ to be 1, avoiding
+fractional or higher order operations for simplicity.
+All of the future formulations and experiments will make this assumption,
+although this can be relaxed in future work.
+With the following definitions:
+\begin{equation}
+    K(\x) \coloneqq
+    \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
+    \qquad
+    \delta(\x) \coloneqq \dfrac{\deltah}{\defdet}
+    \label{eq:matern_definitions}
+\end{equation}
+the SPDE in the computational domain's coordinate system can be written as
+\begin{equation}
+    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)\uni(\x) =
+    \defdet^{-1/2}\W(\x) \, .
+    \label{eq:spde_general}
+\end{equation}
+We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
+introduced in \citet{sampson_nonparametric_1992}.
+The key feature of this formulation is that the deformation map, $\defmap$, is
+not actually necessary, only its Jacobian.
+The question then becomes, how does one specify $\defjac$ and $\deltah$?
+This is the primary question we wish to address.
+However, we first develop the discretized form of this SPDE
+that is relevant to the finite volume grid of our computational model, the
+MITgcm.
