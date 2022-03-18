@@ -1,40 +1,54 @@
-\documentclass[12pt]{article}
-\usepackage[utf8]{inputenc}
+\documentclass[draft]{../Feb-3-22-latex-templates/agujournal2019}
 
-\usepackage{geometry}
-\usepackage{hyperref}
+% --- Journal Provided
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{soul}
+\journalname{Journal of Advances in Modeling Earth Systems (JAMES)}
+\draftfalse
+\linenumbers
+
+% --- Custom additions
 \usepackage{amsmath, amssymb}
 \usepackage{mathtools} % for \coloneqq
 \usepackage{color}
 \usepackage{graphicx}
-\usepackage{caption}
 \usepackage{natbib}
 \usepackage{cleveref}
 \usepackage{bm}
 
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    filecolor=black,
-    urlcolor=black,
-    citecolor=black
-}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
-
-\geometry{margin=1in}
-
 \usepackage{oden}
-
-\title{A Practical Gaussian Covariance Formulation for Applications with
-       Anisotropic, Nonstationary, and Multivariate Fields}
-\author{Timothy A. Smith,
-        Patrick Heimbach}
 
 \begin{document}
 
-\maketitle
+% --- Header
+\title{A Practical Gaussian Covariance Formulation for Applications with
+       Anisotropic, Nonstationary, and Multivariate Fields}
+\authors{Timothy A. Smith\affil{1,2,3}, Patrick Heimbach\affil{3,4,5}}
 
+\affiliation{1}{CIRES}
+\affiliation{2}{PSL}
+\affiliation{3}{Oden}
+\affiliation{4}{UTIG}
+\affiliation{5}{JSG}
+
+% --- Key points, abstract, plain language summary
+\begin{keypoints}
+    \item We derive a generic covariance model appropriate for anisotropic,
+        nonstationary fields \red{This is the title...}
+    \item The formulation presents a number of computational advantages compared
+        to previous work, such as easy application of to both the covariance or
+        precision operators (its inverse)
+    \item Numerical experiments agree well with theory... \red{more on this...}
+\end{keypoints}
+
+\begin{abstract}
+\end{abstract}
+
+\section*{Plain Language Summary}
+Mat\'ern, Weaver, and Courtier walk into a bar...
 
 \input{intro.tex}
 
@@ -48,8 +62,11 @@
 
 \input{discussion.tex}
 
+\appendix
 \input{block_sor.tex}
 
+\acknowledgments
+Thanks everyone.
+
 \bibliography{references.bib}
-\bibliographystyle{apalike}
 \end{document}

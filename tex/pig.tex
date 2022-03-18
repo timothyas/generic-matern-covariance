@@ -71,7 +71,7 @@ Here we show that the correlations obtained from random samples agree well with
 the structure that one would expect from the Mat\'ern model.
 We consider the correlation function associated with the isotropic Mat\'ern
 covariance from equation \eqref{eq:matern_covariance_iso}:
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \begin{aligned}
         r(\rangeh,\xh_1,\xh_2) &= r(\rangeh, ||\xh_1-\xh_2||) \\
                        &= c(\xh_1,\xh_2)/\sigma^2 \\
@@ -80,7 +80,7 @@ covariance from equation \eqref{eq:matern_covariance_iso}:
         \mathcal{B}_\meandiff
         \left(\dfrac{\sqrt{8\meandiff}}{\rangeh} ||\xh_2-\xh_1||\right) \, ,
     \end{aligned}
-\end{equation*}
+\end{equation*}\end{linenomath*}
 which emphasizes that correlation is determined purely by Euclidean distance in
 the transformed space.
 
@@ -99,7 +99,7 @@ Specifically, distances in the computational domain are mapped to the
 transformed space for arbritrary points $\x_1,\x_2\in\openBdy$ such that
 $\xh_1\coloneqq\defmap^{-1}(\x_1)$ and $\xh_2\coloneqq \defmap^{-1}(\x_2)$ as
 follows:
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \begin{aligned}
         \xh_2 - \xh_1 &= \defmap^{-1}(\x_2) - \defmap^{-1}(\x_1) \\
                       &= \left(
@@ -110,7 +110,7 @@ follows:
                         &\simeq \defjac^{-1}\big|_{\x_{1}}(\x_2-\x_1) \, .
     \end{aligned}
     \label{eq:matern_correlation_iso}
-\end{equation*}
+\end{equation*}\end{linenomath*}
 That is, we use the inverse Jacobian to map distances in the computational domain to the
 transformed space $\defdomain$, where we can compare correlation statistics to
 the Mat\'ern formula.
@@ -128,11 +128,11 @@ The sample correlation coefficent computed from the 1000 random samples are
 shown for various values of $\rangeh$ in Figure \ref{fig:matern_correlations}.
 We separately compute distances in the meridional (left panel) and vertical
 (right panel) directions as
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \delta \hat{y} = \defjac^{-1}\delta y
     \qquad
     \delta \hat{z} = \defjac^{-1}\delta z \, .
-\end{equation*}
+\end{equation*}\end{linenomath*}
 Each colored curve shows the domain averaged correlation coefficient for a
 particular $\rangeh$, and the spread denotes one standard deviation above and
 below the mean.

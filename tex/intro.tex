@@ -57,22 +57,22 @@ We then augment this differential operator with a sequence of factors that
 are suggested by \citet{weaver_correlation_2001}.
 That is, we incorporate the sequence of operations:
 $\Sigma X C $, where
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     X \coloneqq \text{diag}\left\{ 1/\hat{\sigma}_{i}\right\}_{i=1}^{N}
-\end{equation*}
+\end{equation*}\end{linenomath*}
 is a
 normalization matrix computed from the pointwise marginal variance at grid cell
 $i$: $\hat{\sigma}^2_{i}$, and
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \Sigma \coloneqq \text{diag}\left\{\sigma_\uni\right\}_{i=1}^{\nuni}
-\end{equation*}
+\end{equation*}\end{linenomath*}
 is the specified magnitude of prior uncertainty (standard deviation) for a
 generic univariate parameter field $\unis\in\uniSpace$ (e.g.\ initial temperature).
 With these definitions, $XCC^TX$ is a correlation matrix, and
-\begin{equation}
+\begin{linenomath}\begin{equation}
     \Gamma_\uni \coloneqq \Sigma X C C^T X \Sigma =
     \Gamma_\uni^{1/2}\Gamma_\uni^{T/2}
-\end{equation}
+\end{equation}\end{linenomath}
 defines the covariance for a generic univariate parameter field $\unis$.
 
 The full prior covariance for a general multivariate application is then formed
@@ -82,14 +82,14 @@ To be concrete, the prior covariance for the specific inverse problem in this
 work, i.e. for the steady state temperature, salinity,
 and velocity fields at the open boundary of the computational domain,
 is formulated as
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \priorCovMat \coloneqq
     \begin{pmatrix}
         \thetaPriorCovMat & & \\
         & \saltPriorCovMat & \\
         & & \uvelPriorCovMat \\
     \end{pmatrix} \, .
-\end{equation*}
+\end{equation*}\end{linenomath*}
 To keep this chapter general, we focus on specifying the covariance for a generic
 univariate control parameter, $\uni(\x)$ which can be considered a placeholder
 for each variable temperature, salinity, and velocity separately.

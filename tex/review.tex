@@ -5,14 +5,14 @@ In this section we review the link between an elliptic stochastic partial
 differential equation (SPDE) and Gaussian random fields.
 The Mat\'ern covariance function between two points, $\xh_1,\xh_2\in\defdomain =
 \ndspace$ can be expressed as:
-\begin{equation}
+\begin{linenomath}\begin{equation}
     c(\xh_1,\xh_2) = \dfrac{\sigma^2}{2^{\meandiff-1}
     \mathcal{G}(\meandiff)}
     \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big)^\meandiff
     \mathcal{B}_\meandiff
     \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big) \, .
     \label{eq:matern_covariance_iso}
-\end{equation}
+\end{equation}\end{linenomath}
 Here $||\cdot||$ as the Euclidean norm in $\defdomain$,
 $\mathcal{G}$ is the Gamma function,
 $\mathcal{B}_\meandiff$ is the modified
@@ -29,11 +29,11 @@ equation (\ref{eq:matern_covariance_iso}).
 
 The key relationship discussed in \citet{RSSB:RSSB777} is that any Mat\'ern field,
 $\unih(\xh)$, is a solution to the elliptic SPDE:
-\begin{equation}
+\begin{linenomath}\begin{equation}
     \Big(\deltah - \nablah\cdot\nablah\Big)^{\spdesqo/2}\hat{\uni}(\xh) =
     \Wh(\xh) \, .
     \label{eq:spde_iso}
-\end{equation}
+\end{equation}\end{linenomath}
 Here $\spdesqo = \meandiff + \materndim/2$,
 $\Wh$ is a white noise process defined on the space $\defdomain$.
 We note that the Mat\'ern covariance function describes covariances that are
@@ -71,24 +71,24 @@ The field $\unih(\xh)$ is defined in a transformed, or ``deformed''
 \citep{sampson_nonparametric_1992}, space $\defdomain$.
 Assume that we have a mapping $\defmap$ that maps between this transformed space
 and our computational domain, $\domain$:
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \defmap : \defdomain\ni\xh \rightarrow \x\in\domain \, .
-\end{equation*}
+\end{equation*}\end{linenomath*}
 With this mapping, we can employ a change of variables
 \citep{smith_change_1934} to rewrite the SPDE in the computational domain as:
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \dfrac{1}{\defdet}
     \left(\deltah -
     \defdet\nabla\cdot
     \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
     \nabla\right)\uni(\x) =
     \defdet^{-1/2}\W(\x) \, .
-\end{equation*}
+\end{equation*}\end{linenomath*}
 Here we have defined the Jacobian as
-\begin{equation*}
+\begin{linenomath*}\begin{equation*}
     \defjac(\x_0) \coloneqq
     \dfrac{\partial \defmap}{\partial \xh}\Big|_{\defmap^{-1}(\x_{0})} \, ,
-\end{equation*}
+\end{equation*}\end{linenomath*}
 and for now we assume that $\defmap^{-1}(\x_0)$ is well defined.
 For our purposes, this turns out to be the case, but this becomes clear when
 $\defjac$ is defined in section \ref{sec:matern_operator}.
@@ -97,19 +97,19 @@ fractional or higher order operations for simplicity.
 All of the future formulations and experiments will make this assumption,
 although this can be relaxed in future work.
 With the following definitions:
-\begin{equation}
+\begin{linenomath}\begin{equation}
     K(\x) \coloneqq
     \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
     \qquad
     \delta(\x) \coloneqq \dfrac{\deltah}{\defdet}
     \label{eq:matern_definitions}
-\end{equation}
+\end{equation}\end{linenomath}
 the SPDE in the computational domain's coordinate system can be written as
-\begin{equation}
+\begin{linenomath}\begin{equation}
     \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)\uni(\x) =
     \defdet^{-1/2}\W(\x) \, .
     \label{eq:spde_general}
-\end{equation}
+\end{equation}\end{linenomath}
 We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
 introduced in \citet{sampson_nonparametric_1992}.
 The key feature of this formulation is that the deformation map, $\defmap$, is

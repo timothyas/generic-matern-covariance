@@ -1,4 +1,4 @@
-\section{Appendix A: A Block Successive Over Relaxation Method}
+\section{A Block Successive Over Relaxation Method}
 \label{sec:block_sor}
 
 Applying the Mat\'ern type prior covariance operator, $C$
@@ -24,17 +24,19 @@ inconsequential when compared to the time-dependent forward model.
 The SOR method is an iterative method for solving $A\mathbf{x} = \mathbf{b}$.
 At iteration $k$, the elements of $\mathbf{x}$ are $x_i^k$ (similar
 notation for other variables), and we seek the update:
-\begin{equation}
+\begin{linenomath}\begin{equation}
     \tilde{x}_i^{k+1} = (1-\omega) x_i^k + \dfrac{\omega}{a_{ii}}
     \left( b_i - \sum_{j<i}a_{ij}\tilde{x}_j^{k+1} -
         \sum_{j>i}a_{ij}x_j^{k}\right), \qquad
         i=1,2,...,N \, ,
     \label{eq:sor_update}
-\end{equation}
+\end{equation}\end{linenomath}
 where $\omega$ is the SOR parameter.
 We compare this method to the standard Jacobi update
-$$\tilde{x}_i^{k+1} = x_i^k + \sum_{i\ne j}\dfrac{a_{ij}x_j^k}{a_{ii}}, \qquad
-i=1,2,...,N \, .$$
+\begin{linenomath*}\begin{equation*}
+    \tilde{x}_i^{k+1} = x_i^k + \sum_{i\ne j}\dfrac{a_{ij}x_j^k}{a_{ii}},
+    \qquad i=1,2,...,N \, .
+\end{equation*}\end{linenomath*}
 Here the notation $\tilde{x}_i^{k+1}$ refers to the fact this is a local update,
 i.e. there is no communication between the processes assigned to each portion of
 the computational domain.
