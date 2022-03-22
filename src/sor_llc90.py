@@ -1,9 +1,7 @@
 
-import numpy as np
-import xarray as xr
 from xmitgcm import open_mdsdataset
-import pych.pigmachine as pm
 
+from sampledriver import SampleDriver
 
 if __name__ == "__main__":
 
@@ -28,7 +26,7 @@ if __name__ == "__main__":
 
         xi = [.5, 1, 2]
 
-        driver = pm.SampleDriver(f'sor-3D-{sor}')
+        driver = SampleDriver(f'sor-3D-{sor}')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],

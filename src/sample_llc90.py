@@ -1,8 +1,8 @@
+"""Run 3D LLC sampling"""
 
-import numpy as np
-import xarray as xr
 from xmitgcm import open_mdsdataset
-import pych.pigmachine as pm
+
+from sampledriver import SampleDriver
 
 
 if __name__ == "__main__":
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     slurm = {'be_nice':True,'max_job_submissions':9,'dependency':'afterany'}
 
     # --- Launch
-    driver = pm.SampleDriver(f'sample-3D')
+    driver = SampleDriver(f'sample-3D')
     driver.start(dirs=dirs,
                  dsim=dsim,
                  mymodel=ds['maskC'],

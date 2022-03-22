@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#SBATCH -J sampledriver
-#SBATCH -o sampledriver.%j.out
-#SBATCH -e sampledriver.%j.err
+#SBATCH -J slurm-driver
+#SBATCH -o slurm-driver.%j.out
+#SBATCH -e slurm-driver.%j.err
 #SBATCH -N 1
 #SBATCH -n 28
 #SBATCH -p normal
