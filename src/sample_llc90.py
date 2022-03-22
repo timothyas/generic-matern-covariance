@@ -4,13 +4,13 @@ import xarray as xr
 from xmitgcm import open_mdsdataset
 import pych.pigmachine as pm
 
+
 if __name__ == "__main__":
 
-    ds = open_mdsdataset('/scratch/tsmith/grids/llc90', iters=None)
-    ds = ds.sortby(['Z','YC','XC'])
+    main_run='/scratch2/tsmith/generic-matern-covariance/sampling/llc90'
+    ds = open_mdsdataset(f"{main_run}/grid", iters=None, geometry='llc')
 
     # --- directories and dicts
-    main_run='/scratch2/tsmith/generic-matern-covariance/sampling/llc90'
     dirs = {'main_run'      : main_run,
             'netcdf'        : main_run+'/ncfiles'}
 
@@ -24,14 +24,14 @@ if __name__ == "__main__":
     slurm = {'be_nice':True,'max_job_submissions':9,'dependency':'afterany'}
 
     # --- Launch
-    driver = pm.SampleDriver(f'llc90-3D')
+    driver = pm.SampleDriver(f'sample-3D')
     driver.start(dirs=dirs,
                  dsim=dsim,
                  mymodel=ds['maskC'],
                  ctrl_ds=ds,
-                 NxList=[15],
-                 xiList=[2],
+                 NxList=[5, 10, 15, 20],
+                 xiList=[.5, 1, 2],
+                 sorDict={.5:1.6, 1:1.3, 2:1.06},
                  slurm=slurm,
                  n_samples=1000,
-                 smooth2DDims=None,
-                 )
+                 smooth2DDims=None)

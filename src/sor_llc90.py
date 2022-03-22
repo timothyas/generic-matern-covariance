@@ -24,18 +24,18 @@ if __name__ == "__main__":
     slurm = {'be_nice':True,'max_job_submissions':9,'dependency':'afterany'}
 
     # --- Launch
-    for sor in [1., 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7]:
+    for sor in [0.8, 0.9, 1., 1.02, 1.04, 1.06, 1.08, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7]:
 
-        xi = [.5, 1, 2, 4]
+        xi = [.5, 1, 2]
 
         driver = pm.SampleDriver(f'sor-3D-{sor}')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],
                      ctrl_ds=ds,
-                     NxList=[10],
+                     NxList=[10, 20],
                      xiList=xi,
                      sorDict={xx:sor for xx in xi},
                      slurm=slurm,
-                     n_samples=50,
+                     n_samples=10,
                      smooth2DDims=None)
