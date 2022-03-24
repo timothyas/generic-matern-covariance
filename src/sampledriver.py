@@ -327,7 +327,7 @@ class SampleDriver:
         file_contents += f'\n\neval "$(conda shell.bash hook)"\n'+\
                 f'conda activate {self.conda_env}\n\n'+\
                 f'python3 -c '+\
-                '"from pych.pigmachine import SampleDriver;'+\
+                '"from sampledriver import SampleDriver;'+\
                 f'oid = SampleDriver(\'{self.experiment}\',\'{stage}\')"\n'
 
         fname = self.dirs['main_run']+f'/submit_{self.experiment}.sh'
