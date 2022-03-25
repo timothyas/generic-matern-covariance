@@ -58,11 +58,8 @@ class MaternField():
 
         K = {}
         for key, val in self.Phi.items():
-            K[key] = 1 / self.detPhi * self.Phi[key]**2
+            K[key] = 1 / self.detPhi * val**2
         self.K = K
-
-        # This isn't used... could delete...
-        #self.aspect_ratio = _aspect_ratio(self.horizontal_length, self.vertical_length)
 
 
     def ideal_correlation(self, distance):
