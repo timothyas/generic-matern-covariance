@@ -191,6 +191,9 @@ class SampleDriver:
                     val = {float(k2):v2 for k2,v2 in val.items()}
                 setattr(self, key, val)
 
+        self.n_dims = len(self.mymodel.dims)
+        self.n_dims = self.n_dims-1 if 'face' in self.mymodel.dims or 'tile' in self.mymodel.dims else self.n_dims
+
     def _send_to_stage(self,stage):
         possible_stages = ['range_approx_one']
 
@@ -253,9 +256,7 @@ class SampleDriver:
     def smooth_writer(self,write_dir,xi,smooth_apply=True,num_inputs=1000):
         """write the data.smooth file
         """
-        ndims = len(self.mymodel.dims)
-        ndims = ndims-1 if 'face' in self.mymodel.dims or 'tile' in self.mymodel.dims else ndims
-        smooth = f'smooth{ndims}D'
+        smooth = f'smooth{self.n_dims}D'
         alg = 'matern'
         alg = alg if not smooth_apply else alg+'apply'
         maskName = 'mask'+self.gridloc
