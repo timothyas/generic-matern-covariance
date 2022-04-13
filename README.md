@@ -2,25 +2,6 @@
 
 ## TODO
 
-- Performance note, see `llcreader_with_smooth.ipynb`:
-    - I made a slight rewrite in `smooth_filtervar3d` to print out smoothfld on
-      a per time stamp basis
-    - This really cleans up the `open_smoothdataset`, now found in
-      `new_smooth_store`
-    - But, the classic `mds_store` really performs poorly for llc data
-    - So to get initial plots, I used `read_and_store` to do this the eager way
-    - But, it looks like `llcreader` can be used much more efficiently than
-      `mds_store`. By default, this chunks `face` by 3 rather than 1, has
-      ~4.2 tasks per chunk, `mds_store` does 5 ... but `llcreader` can instantly
-      (?) chunk all z levels at once, leading to far fewer chunks. Cant do this
-      with `mds_store`...
-    - Before running more experiments and going through:
-        1. Run experiment
-        2. Read in the hacked way
-        3. Create a new zarr store
-      It's a good idea to see if this llcreader implementation can "just work".
-
-
 - [x] Run some ECCO cases to compute empirical correlations, mapped to isotropic
   space
     - [x] Make `SampleDriver`
