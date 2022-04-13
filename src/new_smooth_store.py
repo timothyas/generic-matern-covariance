@@ -166,6 +166,27 @@ def _custom_grid_variables(n_dim, smoothOpNb):
                 'long_name': 'k33'
             }
         },
+        f'smooth{n_dim}DLx{smoothOpNb}': {
+            'dims': _dims(n_dim, 'W'),
+            'attrs': {
+                'standard_name': 'Lx',
+                'long_name': 'Lx'
+            }
+        },
+        f'smooth{n_dim}DLy{smoothOpNb}': {
+            'dims': _dims(n_dim,'S'),
+            'attrs': {
+                'standard_name': 'Ly',
+                'long_name': 'Ly'
+            }
+        },
+        f'smooth{n_dim}DLz{smoothOpNb}': {
+            'dims': _dims(n_dim,'L'),
+            'attrs': {
+                'standard_name': 'Lz',
+                'long_name': 'Lz'
+            }
+        },
         f'smooth{n_dim}DDelta{smoothOpNb}': {
             'dims': _dims(n_dim, 'C'),
             'attrs': {

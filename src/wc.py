@@ -11,7 +11,7 @@ import scipy.special
 # - with LLC, ordering by k is not the same as ordering by Z ... so this would not work in the OIDriver ...
 # - Here... not worrying about any of this
 
-from matern import _get_dims,  _horizontal_length_scale, _vertical_length_scale
+from matern import _get_dims
 
 class WCField():
 
@@ -40,9 +40,6 @@ class WCField():
         if self.llc and self.n_dims == 2 and self.xyz['z'] is not None:
             raise NotImplementedError(f"Due to writing routines (and probably other problems), can't do X-Z or Y-Z slice in LLC grid ... it's a global grid anyway!")
 
-        self.horizontal_length = _horizontal_length_scale(xdalike)
-        self.vertical_length = _vertical_length_scale(xdalike)
-        self.cell_volume = self.get_cell_volume()
         self.L = self.get_appropriate_lengths()
 
 
@@ -51,25 +48,25 @@ class WCField():
         if self.n_dims == 2:
 
             if self.xyz['z'] is None:
-                L = {'x': self.horizontal_length,
-                     'y': self.horizontal_length}
+                L = {'x': (self.n_range * self.xdalike['dxF']).rename('Lx'),
+                     'y': (self.n_range * self.xdalike['dyF']).rename('Ly')}
 
             elif self.xyz['y'] is None:
-                L = {'x': self.horizontal_factor * self.horizontal_length,
-                     'z': self.vertical_length}
+                L = {'x': (self.n_range * self.horizontal_factor * self.xdalike['dxF']).rename('Lx'),
+                     'z': (self.n_range * self.xdalike['drF'])}
 
             elif self.xyz['x'] is None:
-                L = {'y': self.horizontal_factor * self.horizontal_length,
-                     'z': self.vertical_length}
+                L = {'y': (self.n_range * self.horizontal_factor * self.xdalike['dyF']).rename('Ly'),
+                     'z': (self.n_range * self.xdalike['drF'])}
 
             else:
                 raise TypeError("get_appropriate_lengths dims problem 2d")
 
         else:
 
-            L = {'x': self.horizontal_factor * self.horizontal_length,
-                 'y': self.horizontal_factor * self.horizontal_length,
-                 'z': self.vertical_length}
+            L = {'x': (self.n_range * self.horizontal_factor * self.xdalike['dxF']).rename('Lx'),
+                 'y': (self.n_range * self.horizontal_factor * self.xdalike['dyF']).rename('Ly'),
+                 'z': (self.n_range * self.xdalike['drF'])}
 
         for key in L.keys():
             L[key] = L[key].broadcast_like(self.xdalike)
@@ -77,33 +74,16 @@ class WCField():
         return L
 
 
-    def get_cell_volume(self):
-
-        if self.n_dims == 2:
-            if self.xyz['z'] is None:
-                V = self.horizontal_length**2
-
-            else:
-                V = self.vertical_length * self.horizontal_length
-
-        else:
-            V = self.vertical_length * self.horizontal_length**2
-
-        return V
-
-
-    def write_binaries(self, write_dir, smoothOpNb, dtype=None):
+    def write_binaries(self, write_dir, smoothOpNb, dataprec=None):
 
         if not os.path.isdir(write_dir):
             os.makedirs(write_dir)
 
-        dataprec = str(self.horizontal_length.dtype) if dtype is None else dtype
-        dataprec = "float32" if "f4" in dataprec else dataprec
-        dataprec = "float64" if "f8" in dataprec else dataprec
-
         # Write length scales
         for key in self.L.keys():
             writeme = self.prepare_to_write(self.L[key])
+            dataprec = _get_dataprec(writeme) if dataprec is None else dataprec
+
 
             fname = os.path.join(write_dir, f"smooth{self.n_dims}DL{key}{smoothOpNb:03}")
             wrmds(fname, writeme, dataprec=dataprec)
@@ -128,3 +108,9 @@ class WCField():
             writeme = writeme.values
 
         return writeme
+
+def _get_dataprec(arr):
+    dataprec = str(arr.dtype)
+    dataprec = "float32" if "f4" in dataprec else dataprec
+    dataprec = "float64" if "f8" in dataprec else dataprec
+    return dataprec
