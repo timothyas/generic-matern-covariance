@@ -12,4 +12,4 @@
 eval "$(conda shell.bash hook)"
 conda activate py38_tim
 
-python3 sample_llc90.py
+python3 sample_wc01_llc90.py

@@ -7,6 +7,7 @@ class WCSampleDriver(SampleDriver):
 
     # New WC01 parameters
     n_time_steps     = 100
+    use_drc_max_lz   = False
 
     # Irrelevant to WC01
     jacobi_max_iters = None
@@ -61,8 +62,9 @@ class WCSampleDriver(SampleDriver):
             f' {smooth}WriteSamples({self.smoothOpNb}) = .TRUE.,\n'+\
             f' {smooth}ConstHorizontal({self.smoothOpNb}) = .FALSE.,\n'+\
             f' {smooth}ConstVertical({self.smoothOpNb}) = .FALSE.,\n'+\
+            f' {smooth}UseDRCMaxLz({self.smoothOpNb}) = .{str(self.use_drc_max_lz).upper()}.,\n'+\
             f' {smooth}Nbt({self.smoothOpNb}) = {self.n_time_steps},\n'+\
-            f' {smooth}NbRand({self.smoothOpNb})={num_inputs},\n'+\
+            f' {smooth}NbRand({self.smoothOpNb}) = {num_inputs},\n'+\
             f' {smooth}MaskName({self.smoothOpNb}) = "{maskName}",\n'+\
             ' &'
         fname = write_dir+f'/data.smooth'

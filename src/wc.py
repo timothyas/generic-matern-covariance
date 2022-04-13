@@ -44,7 +44,6 @@ class WCField():
         self.vertical_length = _vertical_length_scale(xdalike)
         self.cell_volume = self.get_cell_volume()
         self.L = self.get_appropriate_lengths()
-        print("L ", self.L)
 
 
     def get_appropriate_lengths(self):
@@ -101,7 +100,6 @@ class WCField():
         dataprec = str(self.horizontal_length.dtype) if dtype is None else dtype
         dataprec = "float32" if "f4" in dataprec else dataprec
         dataprec = "float64" if "f8" in dataprec else dataprec
-        print("dataprec: ",dataprec)
 
         # Write length scales
         for key in self.L.keys():

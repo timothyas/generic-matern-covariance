@@ -25,7 +25,7 @@ if __name__ == "__main__":
 
     # --- Launch
     for n_time_steps in [100, 150, 200, 250, 300, 400, 500, 1000, 1500, 2000]:
-        driver = WCSampleDriver(f'wc01-3D-nbt{n_time_steps:03d}')
+        driver = WCSampleDriver(f'wc01-3D-drc-nbt{n_time_steps:03d}')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],
@@ -34,4 +34,5 @@ if __name__ == "__main__":
                      xiList=[1],
                      n_time_steps=n_time_steps,
                      slurm=slurm,
-                     n_samples=1000)
+                     n_samples=1000,
+                     use_drc_max_lz=True)
