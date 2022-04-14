@@ -9,9 +9,8 @@
     - [x] Check binaries for why this is producing NaNs
     - [x] First draft done. See sample plot of 100 sample correlation
 - [ ] Compare to WC01
-    - [ ] Take a dive into the stability criterion
-    - [ ] How do correlation lengths change with number of iterations? Even if
-      things are
+    - [x] Take a dive into the stability criterion
+    - [x] How do correlation lengths change with number of iterations?
 - [ ] Further Matern exploration and tightening up:
     - [ ] How inexact can we be?
     - [ ] Higher powers

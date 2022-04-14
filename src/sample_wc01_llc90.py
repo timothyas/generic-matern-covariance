@@ -30,7 +30,7 @@ if __name__ == "__main__":
                      dsim=dsim,
                      mymodel=ds['maskC'],
                      ctrl_ds=ds,
-                     NxList=[10],
+                     NxList=[5],
                      xiList=[1],
                      n_time_steps=n_time_steps,
                      slurm=slurm,
