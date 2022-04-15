@@ -50,6 +50,7 @@ class SampleDriver:
     xiList  = [0.5,   1,   2]#,   5]
     isotropic = False
     sorDict = {0.5:1.8, 1:1.6, 2:1.3, 4:1.2, 5:1.2}
+    elliptic_tol = 1.e-16
     smoothOpNb = 1
     smooth2DDims = 'yzw'
     jacobi_max_iters = 20000
@@ -269,14 +270,20 @@ class SampleDriver:
         smooth2ddims = '' if self.smooth2DDims is None else \
             f' {smooth}Dims({self.smoothOpNb})=\'{self.smooth2DDims}\',\n'
 
+        sor = f"{sor:e}".replace("e","D").replace("+","")
+        TOL = f"{self.elliptic_tol:e}".replace("e","D").replace("+","")
+
         file_contents = ' &SMOOTH_NML\n'+\
-            f' {smooth}Filter({self.smoothOpNb})=1,\n'+\
             smooth2ddims +\
+            f' smoothMdsDir = "smooth-output",\n'+\
             f' {smooth}Algorithm({self.smoothOpNb})=\'{alg}\',\n'+\
+            f' {smooth}CalcNormFactor({self.smoothOpNb}) = .TRUE.,\n'+\
+            f' {smooth}WriteSamples({self.smoothOpNb}) = .TRUE.,\n'+\
             f' {smooth}NbRand({self.smoothOpNb})={num_inputs},\n'+\
             f' {smooth}JacobiMaxIters({self.smoothOpNb}) = {self.jacobi_max_iters},\n'+\
             f' {smooth}SOROmega({self.smoothOpNb}) = {sor},\n'+\
             f' {smooth}MaskName({self.smoothOpNb}) = "{maskName}",\n'+\
+            f' {smooth}EllipticTol({self.smoothOpNb}) = {TOL},\n'+\
             ' &'
         fname = write_dir+f'/data.smooth'
         with open(fname,'w') as f:

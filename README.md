@@ -12,7 +12,7 @@
     - [x] Take a dive into the stability criterion
     - [x] How do correlation lengths change with number of iterations?
 - [ ] Further Matern exploration and tightening up:
-    - [ ] How inexact can we be?
+    - [ ] How inexact can we be? 10-2 looks good, checking 10-1
     - [ ] Higher powers
     - [ ] Intuition plots:
         - [ ] Z vs Longitude plot of samples for a single slice
