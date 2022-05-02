@@ -1,3 +1,6 @@
+# Etc
+.DS_Store
+
 # python related
 Untitled*.ipynb
 dask-worker-space
