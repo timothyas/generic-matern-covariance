@@ -1,5 +1,66 @@
 \section{Introduction}
 \label{sec:intro}
+
+\textbf{What are covariance models used for, relevant to us?}\\
+Geophysical inverse problems, such as numerical weather prediction \red{cite} or
+oceanographic state estimation \red{cite}, are typically ill-posed due to the
+sparsity of data relative to the size of the control vector.
+A classical method for handling this ill-posedness is to prescribe some estimate
+of the background-state error, capturing our degree of confidence in the
+control vector at a given point in space and time \red{cite}.
+In deterministic inverse problems, this is referred to as regularization and
+corresponds to prior information in the probabilistic sense.
+For all practical applications, true knowledge of the background state error
+must be approximated.
+A common approach is to prescribe a static covariance, where standard
+deviations and length-scales that describe the covariance are captured by
+various parameters.
+\red{Dynamic error covariance?}
+
+For applications with simple geometries, covariance models can be specified with
+simple exponential functions.
+However, alternative approaches are required for more complicated domains,
+such as oceanographic state estimation,
+where irregular continental boundaries impede the use of spherical harmonics or
+more straightforward analytical functions.
+In such applications, it is advantageous to cast the background-state covariance
+in terms of geophysical coordinates and employ models based on differential
+equations which have some correspondence to covariance information.
+\red{More overview}
+
+In oceanographic state estimation, the most widely used static background state
+covariance model is based on the work by \citet[][WC01
+hereafter]{weaver_correlation_2001},
+\citep[e.g.][]{forgetECCOv4,nguyen_arctic_2021,mazloff_eddy-permitting_2010,moore_regional_2011-1}.
+\begin{itemize}
+    \item Specify correlation via diffusion operator
+    \item normalize by standard deviation
+    \item re-scale to achieve desired background state error covariance
+\end{itemize}
+This has the advantages of being
+\begin{itemize}
+    \item scalable to high dimensions
+    \item handles boundaries well
+\end{itemize}
+However,
+\begin{itemize}
+    \item To achieve anisotropy due to vastly different correlation
+        length-scales in the horizontal compared to the vertical, requires the
+        assumption of separability. This seems to work in practice even though
+        there is no true justification for it, but comes at the computational
+        expense of applying
+        solving an explicit diffusion equation twice - once for the horizontal
+        and again for the vertical.
+    \item The number of pseudo time steps required for this diffusion solve to
+        be numerically stable requires some trial and error. In WC01, the
+        authors provide a minimum threshold, but in practice this is not
+        sufficiently long enough, requiring some trial and error to determine
+        the appropriate integration time.
+\end{itemize}
+
+
+
+\subsection{Old intro}
 A fundamental requirement for the inverse problem that we address in this work
 is the specification of a prior distribution, $\priorDist(\params)$.
 Recall from chapter XX that the multivariate control vector
