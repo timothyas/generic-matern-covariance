@@ -82,124 +82,30 @@ At the core of our development is a range parameter, which can be intuitively
 interpreted as an indication of the number of neighboring grid cells at which
 correlation decays.
 Our numerical experiments show how one can use this parameter together with the
-isotropic, stationary Mat\'ern correlation function to achieve desirable
-statistics in much more general case.
+isotropic, stationary Mat\'ern correlation function to predict and achieve desirable
+statistics in the more general case.
 Moreover, we show that the elliptic PDE at the heart of the covariance model can
-be solved with a high (~$\bigo(10^{-2})$) tolerance while still achieving the
-desired correlation statistics, such that it is very efficient
+be solved with a high ($\sim\bigo(10^{-2})$) tolerance while still achieving the
+desired correlation statistics, such that it is very efficient.
 \red{Discuss how this is advantageous to WC01 guess work?}
 
-
-
-
-\subsection{Old intro}
-A fundamental requirement for the inverse problem that we address in this work
-is the specification of a prior distribution, $\priorDist(\params)$.
-Recall from chapter XX that the multivariate control vector
-$\params$ consists of the
-potential temperature, salinity, and zonal velocity at the western boundary of
-the domain:
-$\params \coloneqq [\thetaParams^T,\saltParams^T,\uvelParams^T]^T \in\paramSpace$.
-As is common in large scale geophysical inverse problems, we specify the prior
-distribution for the control vector
-to be Gaussian: $\priorDist(\params) \coloneqq \mathcal{N}(\params_0, \priorCovMat)$.
-
-Our first objective in the inverse problem is to specify the prior
-covariance $\priorCovMat$.
-To do this, we obtain univariate prior covariances for
-each individual field: $\thetaPriorCovMat$, $\saltPriorCovMat$,
-$\uvelPriorCovMat$, which are then stacked block-diagonally to form
-$\priorCovMat$ (see below for details).
-Our primary focus in this chapter is to describe the generic formulation for
-each of these univariate covariance matrices.
-To facilitate the discussion, we refer to a generic univariate control variable
-$\uni(\x)$ (or $\unis$ upon discretization), which in our specific case is a
-placeholder for temperature, salinity, and zonal velocity, and is similarly
-applicable to other inverse problems.
-We use the general methodology outlined here to specify a prior covariance in
-chapter XX.
-
-In oceanographic inverse problems, covariance models must address at least
-these three issues.
-\begin{enumerate}
-    \item Irregular boundaries imposed by continents
-    \item Anisotropy due to the shallow fluid-like nature of the ocean
-    \item Multivariate control parameters
-\end{enumerate}
-It is common to use covariance models based on differential operators in order
-to handle irregular boundaries, and the question is then how to address the
-other two issues within a differential equation.
-
-A common approach to specifying the prior covariance in oceanographic inverse
-problems is based on a generalized
-diffusion equation \citep{weaver_correlation_2001}.
-In this chapter, we outline an alternative approach that brings some practical
-advantages which are discussed in section \ref{sec:matern_discussion}.
-%#that has a similar structure to the
-%#this model, but employs a version of the differential
-%#operator presented in \citet{RSSB:RSSB777}.
-%The general methodology is as follows.
-We define a differential operator that can be represented by the matrix $C$,
-that follows the flexible development from \citet{RSSB:RSSB777}.
-We note that the matrix form is used for convenience, but that matrices are
-never explicitly formed.
-We show that the operator $C$ specifies the covariance matrix $CC^T$, that
-is almost identical to a Mat\'ern covariance aside from boundary affects
-imposed by $C$.
-We then augment this differential operator with a sequence of factors that
-are suggested by \citet{weaver_correlation_2001}.
-That is, we incorporate the sequence of operations:
-$\Sigma X C $, where
-\begin{linenomath*}\begin{equation*}
-    X \coloneqq \text{diag}\left\{ 1/\hat{\sigma}_{i}\right\}_{i=1}^{N}
-\end{equation*}\end{linenomath*}
-is a
-normalization matrix computed from the pointwise marginal variance at grid cell
-$i$: $\hat{\sigma}^2_{i}$, and
-\begin{linenomath*}\begin{equation*}
-    \Sigma \coloneqq \text{diag}\left\{\sigma_\uni\right\}_{i=1}^{\nuni}
-\end{equation*}\end{linenomath*}
-is the specified magnitude of prior uncertainty (standard deviation) for a
-generic univariate parameter field $\unis\in\uniSpace$ (e.g.\ initial temperature).
-With these definitions, $XCC^TX$ is a correlation matrix, and
-\begin{linenomath}\begin{equation}
-    \Gamma_\uni \coloneqq \Sigma X C C^T X \Sigma =
-    \Gamma_\uni^{1/2}\Gamma_\uni^{T/2}
-\end{equation}\end{linenomath}
-defines the covariance for a generic univariate parameter field $\unis$.
-
-The full prior covariance for a general multivariate application is then formed
-by specifying individual covariance operators as above, and stacking them
-together block diagonally.
-To be concrete, the prior covariance for the specific inverse problem in this
-work, i.e. for the steady state temperature, salinity,
-and velocity fields at the open boundary of the computational domain,
-is formulated as
-\begin{linenomath*}\begin{equation*}
-    \priorCovMat \coloneqq
-    \begin{pmatrix}
-        \thetaPriorCovMat & & \\
-        & \saltPriorCovMat & \\
-        & & \uvelPriorCovMat \\
-    \end{pmatrix} \, .
-\end{equation*}\end{linenomath*}
-To keep this chapter general, we focus on specifying the covariance for a generic
-univariate control parameter, $\uni(\x)$ which can be considered a placeholder
-for each variable temperature, salinity, and velocity separately.
-We wait until
-chapter xx to discuss the specification of the prior
-for each parameter, as this is becomes specific to our application.
-Finally, we note that nonzero off diagonal terms in $\priorCovMat$ above (or an
-additional operator) could be used to specify cross covariance between each
-variable.
-We consider this future work, and discuss potential options in
-section XX.
-
-In the following sections we review the general Mat\'ern type covariance
-form that is suggested by \citet{RSSB:RSSB777}.
-We then develop the differential operator, $C$, that
-forms the backbone of our covariance model.
-We show that our numerical implementation of the covariance model produces correlation
-length scales that are expected from the analysis in section
-\ref{sec:matern_operator}.
-We conclude by discussing some advantages that this approach offers.
+% Is this really necessary?
+The paper is laid out as follows.
+In \cref{sec:matern_review} we give some context for how the covariance model is
+used in data assimilation or inverse problems.
+We provide a general overview of the covariance model developed in WC01, and
+then review the Mat\'ern type covariance developments in \citet{RSSB:RSSB777}
+which we build on.
+In \cref{sec:matern_operator} we show the discretized form of the covariance model as
+relevant to finite volume discretization schemes that are common to ocean
+general circulation models.
+We then describe how the covariance model parameters can be specified to achieve
+an intuitive relationship between the isotropic, stationary form and the more
+general anisotropic, nonstationary form.
+In \cref{sec:llc90} we show numerical results of the nonstationary, anisotropic
+correlation model applied to the global ocean, using the ``Lat-Lon-Cap''
+discretization (topology?) from \citet{forgetECCOv4}.
+The numerically derived correlations compare well to our theoretical
+expectations
+Finally, in \cref{sec:matern_discussion} we compare to WC01, and provide
+conclusions in X.

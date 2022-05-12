@@ -1,3 +1,193 @@
+\section{Mathematical Context and Background}
+\label{sec:review}
+
+
+\subsection{Inverse Problem Formulation}
+\label{ssec:da_formulation}
+
+We consider the general problem of finding the optimal control vector,
+$\params$, which minimizes the regularized model-data misfit cost function
+\begin{linenomath*}\begin{equation*}
+    \cf(\params) =
+        \dfrac{1}{2}||\pto(\params) - \data||_{\obsCovMat^{-1}}^2
+        +
+        \dfrac{1}{2}||\params - \priorParams||_{\priorCovMat^{-1}}^2 \, .
+\end{equation*}\end{linenomath*}
+The solution to this inverse problem, $\paramsMAP$, arises from a tradeoff between fitting the
+observational data, $\data$, as governed by the parameter to observable map
+$\pto(\cdot)$, and minimizing deviations from the background-state $\priorParams$.
+On the one hand, the observational error covariance matrix
+$\obsCovMat$ represents our uncertainty
+in the observational data, together with our confidence in the model's ability
+to represent the observed values \red{CITE REPRESENTATIVENESS}.
+On the other hand, the background-state covariance matrix $\priorCovMat$
+represents our uncertainty in the prior estimate or background state,
+$\priorParams$.
+\red{Here or somewhere, mention notation as in Id? and follows WC01 as closely
+as possible.... also note that these are formed as matrices but we use operators}
+
+In this work, our focus is to develop a covariance model that can be used to
+specify $\priorCovMat$.
+In the general case, the control vector $\params$ could be multivariate,
+including initial conditions of the system state, uncertain boundary
+conditions, or uncertain parameter fields.
+As such, the background-state covariance is
+further decomposed so that a balance operator, $\balanceOperator$, is used
+to handle the multivariate (i.e.\ cross-variable) covariance relationships
+separately from the univariate (independent) covariances as
+\begin{linenomath*}\begin{equation*}
+    \priorCovMat \coloneqq \balanceOperator\unbalancedPriorCovMat\balanceOperator^T \,
+    ,
+\end{equation*}\end{linenomath*}
+following \red{Derber and Bourtier, (1999)}.
+The matrix $\unbalancedPriorCovMat$ describes the covariance for the unbalanced
+variables and has a block-diagonal structure, such that each
+covariance is described independently.
+The unbalanced covariance is further factored as
+\begin{linenomath*}\begin{equation*}
+    \unbalancedPriorCovMat \coloneqq \Sigma \corrMat \Sigma
+\end{equation*}\end{linenomath*}
+where $\Sigma$ is a diagonal scaling matrix, containing the desired pointwise
+standard deviation values and $\corrMat$ is a block diagonal correlation matrix,
+describing each variable's independent correlation structure.
+To be concrete, this can be viewed as
+\begin{linenomath*}\begin{equation*}
+    \unbalancedPriorCovMat =
+    \begin{pmatrix}
+        \Sigma_\alpha\corrMat_\alpha\Sigma_\alpha & 0 & \cdots & 0 \\
+        0 & \Sigma_\beta\corrMat_\beta\Sigma_\beta & \cdots & 0 \\
+        0 & 0 & \ddots & 0  \\
+        0 & 0 & \cdots & \Sigma_\gamma\corrMat_\gamma\Sigma_\gamma \\
+    \end{pmatrix}
+\end{equation*}\end{linenomath*}
+where $\alpha, \beta, \gamma$ are placeholders for unique variables, and each
+$\Sigma_\alpha, \corrMat_\alpha$ pair describes the amplitude of pointwise standard deviation
+and spatial correlation for each variable.
+
+In this work, we present a methodology by which one can generically specify $\corrMat_\alpha$
+with anisotropic and nonstationary correlations encoded into the field $\alpha$.
+\red{\textbf{What to do next?}}
+\begin{itemize}
+    \item Talk about WC01 operator? and then get into why we want to do what we
+        do?
+    \item or go straight into Mat\'ern?
+\end{itemize}
+
+
+
+\subsection{Old intro}
+A fundamental requirement for the inverse problem that we address in this work
+is the specification of a prior distribution, $\priorDist(\params)$.
+Recall from chapter XX that the multivariate control vector
+$\params$ consists of the
+potential temperature, salinity, and zonal velocity at the western boundary of
+the domain:
+$\params \coloneqq [\thetaParams^T,\saltParams^T,\uvelParams^T]^T \in\paramSpace$.
+As is common in large scale geophysical inverse problems, we specify the prior
+distribution for the control vector
+to be Gaussian: $\priorDist(\params) \coloneqq \mathcal{N}(\params_0, \priorCovMat)$.
+
+Our first objective in the inverse problem is to specify the prior
+covariance $\priorCovMat$.
+To do this, we obtain univariate prior covariances for
+each individual field: $\thetaPriorCovMat$, $\saltPriorCovMat$,
+$\uvelPriorCovMat$, which are then stacked block-diagonally to form
+$\priorCovMat$ (see below for details).
+Our primary focus in this chapter is to describe the generic formulation for
+each of these univariate covariance matrices.
+To facilitate the discussion, we refer to a generic univariate control variable
+$\uni(\x)$ (or $\unis$ upon discretization), which in our specific case is a
+placeholder for temperature, salinity, and zonal velocity, and is similarly
+applicable to other inverse problems.
+We use the general methodology outlined here to specify a prior covariance in
+chapter XX.
+
+In oceanographic inverse problems, covariance models must address at least
+these three issues.
+\begin{enumerate}
+    \item Irregular boundaries imposed by continents
+    \item Anisotropy due to the shallow fluid-like nature of the ocean
+    \item Multivariate control parameters
+\end{enumerate}
+It is common to use covariance models based on differential operators in order
+to handle irregular boundaries, and the question is then how to address the
+other two issues within a differential equation.
+
+A common approach to specifying the prior covariance in oceanographic inverse
+problems is based on a generalized
+diffusion equation \citep{weaver_correlation_2001}.
+In this chapter, we outline an alternative approach that brings some practical
+advantages which are discussed in section \ref{sec:matern_discussion}.
+%#that has a similar structure to the
+%#this model, but employs a version of the differential
+%#operator presented in \citet{RSSB:RSSB777}.
+%The general methodology is as follows.
+We define a differential operator that can be represented by the matrix $C$,
+that follows the flexible development from \citet{RSSB:RSSB777}.
+We note that the matrix form is used for convenience, but that matrices are
+never explicitly formed.
+We show that the operator $C$ specifies the covariance matrix $CC^T$, that
+is almost identical to a Mat\'ern covariance aside from boundary affects
+imposed by $C$.
+We then augment this differential operator with a sequence of factors that
+are suggested by \citet{weaver_correlation_2001}.
+That is, we incorporate the sequence of operations:
+$\Sigma X C $, where
+\begin{linenomath*}\begin{equation*}
+    X \coloneqq \text{diag}\left\{ 1/\hat{\sigma}_{i}\right\}_{i=1}^{N}
+\end{equation*}\end{linenomath*}
+is a
+normalization matrix computed from the pointwise marginal variance at grid cell
+$i$: $\hat{\sigma}^2_{i}$, and
+\begin{linenomath*}\begin{equation*}
+    \Sigma \coloneqq \text{diag}\left\{\sigma_\uni\right\}_{i=1}^{\nuni}
+\end{equation*}\end{linenomath*}
+is the specified magnitude of prior uncertainty (standard deviation) for a
+generic univariate parameter field $\unis\in\uniSpace$ (e.g.\ initial temperature).
+With these definitions, $XCC^TX$ is a correlation matrix, and
+\begin{linenomath}\begin{equation}
+    \Gamma_\uni \coloneqq \Sigma X C C^T X \Sigma =
+    \Gamma_\uni^{1/2}\Gamma_\uni^{T/2}
+\end{equation}\end{linenomath}
+defines the covariance for a generic univariate parameter field $\unis$.
+
+The full prior covariance for a general multivariate application is then formed
+by specifying individual covariance operators as above, and stacking them
+together block diagonally.
+To be concrete, the prior covariance for the specific inverse problem in this
+work, i.e. for the steady state temperature, salinity,
+and velocity fields at the open boundary of the computational domain,
+is formulated as
+\begin{linenomath*}\begin{equation*}
+    \priorCovMat \coloneqq
+    \begin{pmatrix}
+        \thetaPriorCovMat & & \\
+        & \saltPriorCovMat & \\
+        & & \uvelPriorCovMat \\
+    \end{pmatrix} \, .
+\end{equation*}\end{linenomath*}
+To keep this chapter general, we focus on specifying the covariance for a generic
+univariate control parameter, $\uni(\x)$ which can be considered a placeholder
+for each variable temperature, salinity, and velocity separately.
+We wait until
+chapter xx to discuss the specification of the prior
+for each parameter, as this is becomes specific to our application.
+Finally, we note that nonzero off diagonal terms in $\priorCovMat$ above (or an
+additional operator) could be used to specify cross covariance between each
+variable.
+We consider this future work, and discuss potential options in
+section XX.
+
+In the following sections we review the general Mat\'ern type covariance
+form that is suggested by \citet{RSSB:RSSB777}.
+We then develop the differential operator, $C$, that
+forms the backbone of our covariance model.
+We show that our numerical implementation of the covariance model produces correlation
+length scales that are expected from the analysis in section
+\ref{sec:matern_operator}.
+We conclude by discussing some advantages that this approach offers.
+
+
 \section{Review of the Mat\'ern class covariance}
 \label{sec:matern_review}
 

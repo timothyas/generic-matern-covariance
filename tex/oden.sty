@@ -86,6 +86,15 @@
 \newcommand{\priorCovMat}{%
 \ensuremath{\Gamma_{\text{prior}}}}        % Prior covariance matrix
 %
+\newcommand{\balanceOperator}{%
+    \ensuremath{\mathbf{K}_{b}}}
+%
+\newcommand{\unbalancedPriorCovMat}{%
+    \ensuremath{\hat{\Gamma}_\text{prior}}}
+%
+\newcommand{\corrMat}{%
+    \ensuremath{C}}
+%
 \newcommand{\postCov}{%
           \ensuremath{\mathcal{C}_\text{post}}}    % Posterior covariance operator
 \newcommand{\postCovMat}{%
@@ -168,6 +177,7 @@
 \newcommand{\HOI}{\ensuremath{H_{\text{OI}}}}
 
 % --- Separate for each variable
+\newcommand{\priorParams}{\ensuremath{\params_{0}}}
 \newcommand{\thetaParams}{\ensuremath{{\bm{\theta}}}}
 \newcommand{\saltParams}{\ensuremath{\mathbf{S}}}
 \newcommand{\uvelParams}{\ensuremath{\mathbf{u}}}
