@@ -1,13 +1,12 @@
 \section{Introduction}
 \label{sec:intro}
 
-\textbf{What are covariance models used for, relevant to us?}\\
 Geophysical inverse problems, such as numerical weather prediction \red{cite} or
 oceanographic state estimation \red{cite}, are typically ill-posed due to the
 sparsity of data relative to the size of the control vector.
 A classical method for handling this ill-posedness is to prescribe some estimate
 of the background-state error, capturing our degree of confidence in the
-control vector at a given point in space and time \red{cite}.
+estimated control vector at a given point in space and time \red{cite}.
 In deterministic inverse problems, this is referred to as regularization and
 corresponds to prior information in the probabilistic sense.
 For all practical applications, true knowledge of the background state error
@@ -21,42 +20,75 @@ For applications with simple geometries, covariance models can be specified with
 simple exponential functions.
 However, alternative approaches are required for more complicated domains,
 such as oceanographic state estimation,
-where irregular continental boundaries impede the use of spherical harmonics or
-more straightforward analytical functions.
+where irregular continental boundaries impede the use of spherical harmonics,
+which are commonly used in atmospheric inverse problems, or other analytical
+functions.
 In such applications, it is advantageous to cast the background-state covariance
 in terms of geophysical coordinates and employ models based on differential
 equations which have some correspondence to covariance information.
 \red{More overview}
 
-In oceanographic state estimation, the most widely used static background state
-covariance model is based on the work by \citet[][WC01
-hereafter]{weaver_correlation_2001},
-\citep[e.g.][]{forgetECCOv4,nguyen_arctic_2021,mazloff_eddy-permitting_2010,moore_regional_2011-1}.
-\begin{itemize}
-    \item Specify correlation via diffusion operator
-    \item normalize by standard deviation
-    \item re-scale to achieve desired background state error covariance
-\end{itemize}
-This has the advantages of being
-\begin{itemize}
-    \item scalable to high dimensions
-    \item handles boundaries well
-\end{itemize}
-However,
-\begin{itemize}
-    \item To achieve anisotropy due to vastly different correlation
-        length-scales in the horizontal compared to the vertical, requires the
-        assumption of separability. This seems to work in practice even though
-        there is no true justification for it, but comes at the computational
-        expense of applying
-        solving an explicit diffusion equation twice - once for the horizontal
-        and again for the vertical.
-    \item The number of pseudo time steps required for this diffusion solve to
-        be numerically stable requires some trial and error. In WC01, the
-        authors provide a minimum threshold, but in practice this is not
-        sufficiently long enough, requiring some trial and error to determine
-        the appropriate integration time.
-\end{itemize}
+In oceanographic state estimation, the most widely used static background-state
+covariance model is based on the work by
+\citet[][WC01 hereafter]{weaver_correlation_2001},
+\citep[e.g.][]{nguyen_arctic_2021,forgetECCOv4,moore_regional_2011-1,mazloff_eddy-permitting_2010,gebbie_strategies_2006}.
+At its core, the WC01 model employs a diffusion-based operator to achieve
+correlation length scales, which are rescaled to produce the desired covariance
+information (see Section XX for a more detailed review).
+Generally speaking, the model is advantageous because
+the diffusion operator scales well to high dimensional inverse problems
+(e.g. $>10^7$ degrees of freedom in \citet{forgetECCOv4}).
+Additionally, irregular continental boundaries are handled naturally by
+supplying boundary conditions to the differential equation - typically zero
+flux.
+
+% Drawbacks
+%\begin{itemize}
+%   Actually, this isn't generally true ... it's just that this is the way that
+%   most people implement WC01
+%   See WC01 section 5d
+%    \item To achieve anisotropy due to vastly different correlation
+%        length-scales in the horizontal compared to the vertical, requires the
+%        assumption of separability. This seems to work in practice even though
+%        there is no true justification for it, but comes at the computational
+%        expense of applying
+%        solving an explicit diffusion equation twice - once for the horizontal
+%        and again for the vertical.
+%
+%   Is it worth it to point this one out on its own?
+%    \item The number of pseudo time steps required for this diffusion solve to
+%        be numerically stable requires some trial and error. In WC01, the
+%        authors provide a minimum threshold, but in practice this is not
+%        sufficiently long enough, requiring some trial and error to determine
+%        the appropriate integration time.
+%\end{itemize}
+
+% So what's new here? Background.
+More recently, \citet{RSSB:RSSB777} showed an alternative approach for
+prescribing Mat\'ern-type Gaussian covariance relations in random fields.
+The approach is highly scalable and applicable to computational domains with
+irregular boundaries for similar reasons as for the WC01 model -
+it is based on the solution to an elliptic Partial
+Differential Equation (PDE).
+Moreover, \citet{RSSB:RSSB777} allude to a mapping method that would allow the
+covariance model to achieve anisotropic and nonstationary relations.
+As of yet, however, there has been no development or implementation of this
+mapping method to geophysical inverse problems.
+
+Here, we show how the mapping method introduced by \citet{RSSB:RSSB777}
+can be parameterized based on the underlying discretization
+in order to achieve anisotropic and nonstationary relationships.
+At the core of our development is a range parameter, which can be intuitively
+interpreted as an indication of the number of neighboring grid cells at which
+correlation decays.
+Our numerical experiments show how one can use this parameter together with the
+isotropic, stationary Mat\'ern correlation function to achieve desirable
+statistics in much more general case.
+Moreover, we show that the elliptic PDE at the heart of the covariance model can
+be solved with a high (~$\bigo(10^{-2})$) tolerance while still achieving the
+desired correlation statistics, such that it is very efficient
+\red{Discuss how this is advantageous to WC01 guess work?}
+
 
 
 
