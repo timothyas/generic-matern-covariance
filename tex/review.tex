@@ -3,7 +3,7 @@
 
 In order to provide some mathematical context for our covariance model
 developments, we first outline the generic inverse problem that is central to
-a variety of applications such as numerical weather prediction or state
+a variety of applications such as numerical weather prediction and state
 estimation.
 Our notation closely follows \citet{ide_unified_1997}, and we note that matrix
 notation is used to describe the problem, but these matrices are never formed
@@ -86,128 +86,61 @@ and spatial correlation for each variable.
 
 
 \subsection{The WC01 Correlation Model}
-\begin{itemize}
-    \item Talk about WC01 operator
-    \item Discuss why it works
-    \item Discuss some disadvantages
-\end{itemize}
+\label{ssec:wc01_review}
 
 
-\subsection{Old intro}
-A fundamental requirement for the inverse problem that we address in this work
-is the specification of a prior distribution, $\priorDist(\params)$.
-Recall from chapter XX that the multivariate control vector
-$\params$ consists of the
-potential temperature, salinity, and zonal velocity at the western boundary of
-the domain:
-$\params \coloneqq [\thetaParams^T,\saltParams^T,\uvelParams^T]^T \in\paramSpace$.
-As is common in large scale geophysical inverse problems, we specify the prior
-distribution for the control vector
-to be Gaussian: $\priorDist(\params) \coloneqq \mathcal{N}(\params_0, \priorCovMat)$.
-
-Our first objective in the inverse problem is to specify the prior
-covariance $\priorCovMat$.
-To do this, we obtain univariate prior covariances for
-each individual field: $\thetaPriorCovMat$, $\saltPriorCovMat$,
-$\uvelPriorCovMat$, which are then stacked block-diagonally to form
-$\priorCovMat$ (see below for details).
-Our primary focus in this chapter is to describe the generic formulation for
-each of these univariate covariance matrices.
-To facilitate the discussion, we refer to a generic univariate control variable
-$\uni(\x)$ (or $\unis$ upon discretization), which in our specific case is a
-placeholder for temperature, salinity, and zonal velocity, and is similarly
-applicable to other inverse problems.
-We use the general methodology outlined here to specify a prior covariance in
-chapter XX.
-
-In oceanographic inverse problems, covariance models must address at least
-these three issues.
-\begin{enumerate}
-    \item Irregular boundaries imposed by continents
-    \item Anisotropy due to the shallow fluid-like nature of the ocean
-    \item Multivariate control parameters
-\end{enumerate}
-It is common to use covariance models based on differential operators in order
-to handle irregular boundaries, and the question is then how to address the
-other two issues within a differential equation.
-
-A common approach to specifying the prior covariance in oceanographic inverse
-problems is based on a generalized
-diffusion equation \citep{weaver_correlation_2001}.
-In this chapter, we outline an alternative approach that brings some practical
-advantages which are discussed in section \ref{sec:matern_discussion}.
-%#that has a similar structure to the
-%#this model, but employs a version of the differential
-%#operator presented in \citet{RSSB:RSSB777}.
-%The general methodology is as follows.
-We define a differential operator that can be represented by the matrix $C$,
-that follows the flexible development from \citet{RSSB:RSSB777}.
-We note that the matrix form is used for convenience, but that matrices are
-never explicitly formed.
-We show that the operator $C$ specifies the covariance matrix $CC^T$, that
-is almost identical to a Mat\'ern covariance aside from boundary affects
-imposed by $C$.
-We then augment this differential operator with a sequence of factors that
-are suggested by \citet{weaver_correlation_2001}.
-That is, we incorporate the sequence of operations:
-$\Sigma X C $, where
-\begin{linenomath*}\begin{equation*}
-    X \coloneqq \text{diag}\left\{ 1/\hat{\sigma}_{i}\right\}_{i=1}^{N}
-\end{equation*}\end{linenomath*}
-is a
-normalization matrix computed from the pointwise marginal variance at grid cell
-$i$: $\hat{\sigma}^2_{i}$, and
-\begin{linenomath*}\begin{equation*}
-    \Sigma \coloneqq \text{diag}\left\{\sigma_\uni\right\}_{i=1}^{\nuni}
-\end{equation*}\end{linenomath*}
-is the specified magnitude of prior uncertainty (standard deviation) for a
-generic univariate parameter field $\unis\in\uniSpace$ (e.g.\ initial temperature).
-With these definitions, $XCC^TX$ is a correlation matrix, and
+The primary contribution of WC01 is a correlation model that can be used to
+formulate $\corrMat_\alpha$.
+The operator is based on the solution of a generalized diffusion equation,
+amounting to the repeated application of a Laplacian-like operator.
+The operator can generally be written as
 \begin{linenomath}\begin{equation}
-    \Gamma_\uni \coloneqq \Sigma X C C^T X \Sigma =
-    \Gamma_\uni^{1/2}\Gamma_\uni^{T/2}
+    \corrMat_\text{WC01} = \left(
+    I + \nabla\cdot\kappa\nabla \right)^p W^{-1/2} \,
 \end{equation}\end{linenomath}
-defines the covariance for a generic univariate parameter field $\unis$.
+where $W \coloneqq \text{diag}\{V_i\}_{i=1}^{\nuni}$ is a diagonal matrix of
+grid cell volume elements.
+The tensor, $\kappa$, controls the correlation length scales imposed on the
+random field in question.
+Correlation length scales are isotropic (i.e.\ the same in all directions) and
+stationary (i.e.\ they do not change with spatial location) when $\kappa$ is
+constant such that
+\begin{linenomath}\begin{equation}
+    L^2 = 2\kappa T \, ,
+\end{equation}\end{linenomath}
+where $T\coloneqq p \Delta t$ is the total ``diffusion'' time and $L$ is the
+desired length scale.
+In general, the diffusion tensor can be formulated to produce anisotropic and
+nonstationary length scales, and applied to spherical domains.
+However, a few subtle issues arise in the numerical its implementation.
+First, the number of timesteps, $p$, required to integrate the diffusion
+equation for numerical stability is somewhat unclear.
+In WC01, a necessary but insufficient stability requirement
+$p > 2 (L/\Delta x)^2$ is given.
+However, in practice uncovering the true required value of $p$ requires some
+guess work, and in our experience is
+\red{a factor of $\sim 3$} of this lower bound.
+\red{Note Master's thesis from MIT on variable diffusion tensor stability?}
+Additionally, adjoint-based data assimilation systems based on algorithmic
+differentiation may require additional storage (or RAM) due to the
+pseudo-timestepping nature of the diffusion approach.
 
-The full prior covariance for a general multivariate application is then formed
-by specifying individual covariance operators as above, and stacking them
-together block diagonally.
-To be concrete, the prior covariance for the specific inverse problem in this
-work, i.e. for the steady state temperature, salinity,
-and velocity fields at the open boundary of the computational domain,
-is formulated as
-\begin{linenomath*}\begin{equation*}
-    \priorCovMat \coloneqq
-    \begin{pmatrix}
-        \thetaPriorCovMat & & \\
-        & \saltPriorCovMat & \\
-        & & \uvelPriorCovMat \\
-    \end{pmatrix} \, .
-\end{equation*}\end{linenomath*}
-To keep this chapter general, we focus on specifying the covariance for a generic
-univariate control parameter, $\uni(\x)$ which can be considered a placeholder
-for each variable temperature, salinity, and velocity separately.
-We wait until
-chapter xx to discuss the specification of the prior
-for each parameter, as this is becomes specific to our application.
-Finally, we note that nonzero off diagonal terms in $\priorCovMat$ above (or an
-additional operator) could be used to specify cross covariance between each
-variable.
-We consider this future work, and discuss potential options in
-section XX.
-
-In the following sections we review the general Mat\'ern type covariance
-form that is suggested by \citet{RSSB:RSSB777}.
-We then develop the differential operator, $C$, that
-forms the backbone of our covariance model.
-We show that our numerical implementation of the covariance model produces correlation
-length scales that are expected from the analysis in section
-\ref{sec:matern_operator}.
-We conclude by discussing some advantages that this approach offers.
+In this work we formulate an operator for $\corrMat_\alpha$ which bypasses these
+issues entirely.
+First, we avoid the issue of ``guessing'' the required time steps for numerical
+stability because application of our correlation operator amounts to solving an
+elliptic PDE, for which a tolerance can be prescribed.
+Moreover, we show that for practical applications this tolerance can be reliably
+prescribed as being quite high $\bigo(10^{-2})$, such that solving the required
+elliptic PDE can be very efficient.
+Finally, the operator is self-adjoint and so implementing the covariance model
+within any adjoint based solver is a nonissue.
+To provide some details, we next outline the basis for this Mat\'ern covariance
+model from \citet{RSSB:RSSB777}.
 
 
-\section{Review of the Mat\'ern class covariance}
-\label{sec:matern_review}
+\subsection{Review of the Mat\'ern class covariance}
+\label{ssec:matern_review}
 
 In this section we review the link between an elliptic stochastic partial
 differential equation (SPDE) and Gaussian random fields.
@@ -267,9 +200,8 @@ elliptic equations to apply a covariance operator that is formally dense.
 More importantly, \citet{RSSB:RSSB777} showed that the SPDE form allows
 one to easily describe Gaussian fields with more general covariance structures.
 For instance, by allowing the parameter $\deltah$ to vary in space, the solution
-becomes nonstationary and the Mat\'ern covariance applies locally.\\
+becomes nonstationary and the Mat\'ern covariance applies locally.
 
-\noindent\textbf{A more general covariance model. }
 In \citet{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
 coordinate system can allow for a Mat\'ern class covariance
 model that can easily incorporate anisotropy and nonstationarity.
