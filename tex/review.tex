@@ -16,7 +16,7 @@ Finally, we discuss the developments from \citet{RSSB:RSSB777}, outlining the
 connection between the solution to a Stochastic PDE (SPDE) and a Gaussian random
 field with Mat\'ern type covariance.
 This review sets up our development of an anistropic, nonstationary covariance
-model which is presented in Section \ref{sec:matern_operator}.
+model which is presented in Section \ref{sec:discretization_matern}.
 
 
 \subsection{Inverse Problem Formulation}
@@ -118,21 +118,21 @@ equation for numerical stability is somewhat unclear.
 In WC01, a necessary but insufficient stability requirement
 $p > 2 (L/\Delta x)^2$ is given.
 However, in practice uncovering the true required value of $p$ requires some
-guess work, and in our experience is
-\red{a factor of $\sim 3$} of this lower bound.
-\red{Note Master's thesis from MIT on variable diffusion tensor stability?}
+guess work, and in our experience is multiplicative factor of this lower bound
+(typically $\sim 3$ for our application).
 Additionally, adjoint-based data assimilation systems based on algorithmic
-differentiation may require additional storage (or RAM) due to the
-pseudo-timestepping nature of the diffusion approach.
+differentiation may require additional storage, random access memory, or recomputations in order
+to keep track of intermediate results during the adjoint (i.e.\ reverse) timestepping
+in the diffusion model.
 
 In this work we formulate an operator for $\corrMat_\alpha$ which bypasses these
 issues entirely.
-First, we avoid the issue of ``guessing'' the required time steps for numerical
-stability because application of our correlation operator amounts to solving an
-elliptic PDE, for which a tolerance can be prescribed.
+First, we avoid the issue of having to guess the required time steps for numerical
+stability because the application of our correlation operator amounts to solving an
+elliptic PDE, for which a tolerance can be prescribed more readily.
 Moreover, we show that for practical applications this tolerance can be reliably
-prescribed as being quite high $\bigo(10^{-2})$, such that solving the required
-elliptic PDE can be very efficient.
+prescribed to be quite high $\bigo(10^{-2})$, such that solving the required
+elliptic PDE is computationally efficient.
 Finally, the operator is self-adjoint and so implementing the covariance model
 within any adjoint based solver is a nonissue.
 To provide some details, we next outline the basis for this Mat\'ern covariance
@@ -163,7 +163,7 @@ marginal variance, $\deltah>0$ is a scaling parameter, and $\meandiff>0$
 controls the mean-square differentiability of the underlying statistical process
 described by the Mat\'ern covariance.
 The reason for defining symbols with a hat ($\hat{\cdot}$), will become clear
-in the next subsection.
+in \cref{sec:discretization_matern}.
 Throughout, we refer to a ``Mat\'ern field'' as any Gaussian field that has
 covariance that can be described by the Mat\'ern covariance function,
 equation (\ref{eq:matern_covariance_iso}).
