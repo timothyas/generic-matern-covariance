@@ -17,6 +17,8 @@
 - [ ] Compare to WC01
     - [x] Take a dive into the stability criterion
     - [x] How do correlation lengths change with number of iterations?
+    - [ ] Do we still get the factor of ~3 when the diffusivity is constant
+      (stationary)?
 - [ ] Further Matern exploration and tightening up:
     - [ ] How inexact can we be? 10-2 looks good, checking 10-1
     - [ ] Higher powers
@@ -27,7 +29,6 @@
         - [ ] More samples
         - [ ] interquartile range (or something) rather than +/-
           std (crossing 0 issue)
-
 - [ ] Think about an OI application
 
 
