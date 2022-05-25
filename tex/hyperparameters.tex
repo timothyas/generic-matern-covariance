@@ -1,68 +1,92 @@
-\section{Specification of covariance model hyperparameters}
+\section{Parameterizing the Correlation Model}
 \label{sec:matern_operator}
 
-\noindent\textbf{Rescaling the Laplacian term.}
-Consider a 2D spatial field $\uni(\x)$ that exhibits spatial variability at the
-length scales $L_y$ and $L_z$ in each dimension.
-We motivate our approach by considering the magnitude of
-the Laplacian term without any rescaling (i.e. without $K$):
-\begin{linenomath}\begin{equation}
-    \nabla^2 \uni(\x) \sim \dfrac{U}{L_y^2} + \dfrac{U}{L_z^2}
-    \label{eq:iso_lap}
-\end{equation}\end{linenomath}
-where we suppose that $\uni(\x)\sim U$.
-We finally suppose that $L_y >> L_z$, such that the field experiences highly
+Here we propose to use the SPDE operator described by \citet{RSSB:RSSB777}
+together with the correlation/covariance formulation suggested by WC01.
+That is, we define a correlation operator via its square root as
+\begin{linenomath*}\begin{equation}
+    \corrMat^{1/2} \coloneqq \normalizer
+    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)^{-1}
+    \defdet^{-1/2}
+\end{equation}\end{linenomath*}
+where $\corrMat \coloneqq \corrMat^{1/2}\corrMat^{T/2}$, and $\normalizer$ is
+once again a variance-preserving normalization matrix defined by the operations
+that precede it.
+The degree to which neighboring points are correlated are controlled by
+$\defjac(\x)$ and $\deltah$, and here we discuss how these can be assigned for
+practical applications in oceanographic state estimation.
+We note that in this discussion we loosely use the infinite dimensional forms of
+these operators in order to ease the presentation, but provide a more careful
+derivation of their discretized form in \cref{sec:discretization_matern}.
+
+First, we address the Jacobian $\defjac(\x)$, which appears in the tensor
+$K(\x)$.
+We illustrate how this operator controls correlation length scales and
+motivate its parameterization with a simple scaling analysis.
+Consider a 3D field $\uni(\x)\sim U$ that exhibits spatial variability at the
+length scales, $L_h$, $L_h$, and $L_z$ in each dimension
+where $L_h, L_h >> L_z$, such that the field exhibits highly
 anisotropic fluctuations.
 This is a common situation in large scale geophysical fluid
 dynamics, where fields (e.g.\ temperature, salinity, velocity) exhibit length scales of
 variability that are much greater in either horizontal dimension compared to the
 vertical.
-We make a note on the terminology used here.
-In oceanography, the difference in horizontal and vertical scales
-is a result of the small aspect ratio, or the shallow fluid nature of the ocean.
-Because of the vast difference in scales, the horizontal dimensions are usually
-considered entirely independent of the vertical, and ``anisotropy'' is typically
-used to refer to heterogeneity between the horizontal components.
-However, here we use anisotropy to refer to the difference between horizontal
-and vertical scales, resulting from the small aspect ratio \citep{vallis2006}.
+\footnote{
+    We make a note on the terminology used here.
+    In oceanography, the difference in horizontal and vertical scales
+    is a result of the small aspect ratio, or the shallow fluid nature of the ocean.
+    Because of the vast difference in scales, the horizontal dimensions are usually
+    considered entirely independent of the vertical, and ``anisotropy'' is typically
+    used to refer to heterogeneity between the horizontal components.
+    However, here we use anisotropy to refer to the difference between horizontal
+    and vertical scales, resulting from the small aspect ratio \citep{vallis2006}.
+}
 
-The specification of an isotropic covariance model amounts to specifying scalar
-parameters in equation (\ref{eq:spde_iso}).
-In our hypothetical anisotropic  situation, this would result in unrealistically large or
-small correlation lengths along either dimension.
-Numerically this occurs because of the lack of balance between the terms in
-equation (\ref{eq:iso_lap}): $U/L_y^2 << U/L_z^2$.
-Our goal is therefore to define the elements of $K$ such that
+Without any rescaling, i.e.\ without $K$,
+the Laplacian term in $\maternOp$ is imbalanced
+\begin{linenomath*}\begin{equation}
+    \begin{aligned}
+        \nabla^2 \uni(\x)
+            & \sim \dfrac{U}{L_h^2} + \dfrac{U}{L_h^2} + \dfrac{U}{L_z^2} \\
+            & \simeq \dfrac{U}{L_z^2} \, .
+    \end{aligned}
+    \label{eq:iso_lap}
+\end{equation}\end{linenomath*}
+As a result, the correlation model will
+have unrealistically large or small correlations in the horizontal or vertical.
+Our goal is therefore to define the elements of $K$ such that each term is of
+the same order of magnitude and
 \begin{linenomath*}\begin{equation*}
-    \nabla\cdot K\nabla \sim (a+b)U
+    \nabla\cdot K\nabla \sim 3U \, .
 \end{equation*}\end{linenomath*}
-where $a \sim b$ are of the same order of magnitude.
 
 To achieve this balance between Laplacian terms, we suggest a straightforward,
 perhaps obvious, specification of $\defjac$:
 \begin{linenomath*}\begin{equation*}
     \defjac =
         \begin{pmatrix}
-            L_y & 0     \\
-            0   & L_z   \\
+            L_h & 0 & 0     \\
+            0 & L_h & 0     \\
+            0 & 0   & L_z   \\
         \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
 where we simply ignore the off-diagonal elements of $\defjac$.
-The determinant in this case is $\defdetnox = L_yL_z$ and
+The determinant in this case is $\defdetnox = L_h^2L_z$ and
 according to the definitions in equation (\ref{eq:matern_definitions}):
 \begin{linenomath*}\begin{equation*}
     K =
         \begin{pmatrix}
-            L_y/L_z & 0     \\
-            0   & L_z/L_y   \\
+            1/L_z & 0 & 0     \\
+            0 & 1/L_z & 0     \\
+            0 & 0   & L_z/L_h^2   \\
         \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
 so that
 \begin{linenomath*}\begin{equation*}
-    \nabla\cdot K(\x)\nabla\uni(\x) \simeq L\unis  \sim \dfrac{2}{L_yL_z}U \, .
+    \nabla\cdot K(\x)\nabla\uni(\x) \sim \dfrac{3}{L_h^2L_z}U \, .
 \end{equation*}\end{linenomath*}
 The key is that $K$ scales each term in the Laplacian so that they are
-approximately the same, and the operator is balanced in either direction.\\
+approximately the same order of magnitude, and the operator is balanced in either direction.\\
 %This example can further be extended by allowing the length scales $L_1$ and
 %$L_2$ to vary in space, such that correlations are nonstationary.
 

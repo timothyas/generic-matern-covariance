@@ -31,8 +31,8 @@ $\params$, which minimizes the regularized model-data misfit cost function
         \dfrac{1}{2}||\params - \priorParams||_{\priorCovMat^{-1}}^2 \, .
 \end{equation*}\end{linenomath*}
 The solution to this inverse problem, $\paramsMAP$, arises from a tradeoff between fitting the
-observational data, $\data$, as governed by the parameter to observable map
-$\pto(\cdot)$, and minimizing deviations from the background-state $\priorParams$.
+observational data, $\data$, via the observation operator, $\pto(\cdot)$,
+and minimizing deviations from the background-state $\priorParams$.
 This tradeoff is governed by the two error covariances, $\obsCovMat$ and
 $\priorCovMat$, which dictate how much deviation is acceptable in either term.
 On the one hand, the observational error covariance matrix
@@ -88,26 +88,34 @@ and spatial correlation for each variable.
 \subsection{The WC01 Correlation Model}
 \label{ssec:wc01_review}
 
-
 The primary contribution of WC01 is a correlation model that can be used to
 formulate $\corrMat_\alpha$.
 The operator is based on the solution of a generalized diffusion equation,
 amounting to the repeated application of a Laplacian-like operator.
-The operator can generally be written as
-\begin{linenomath}\begin{equation}
-    \corrMat_\text{WC01} = \left(
-    I + \nabla\cdot\kappa\nabla \right)^p W^{-1/2} \,
-\end{equation}\end{linenomath}
-where $W \coloneqq \text{diag}\{V_i\}_{i=1}^{\nuni}$ is a diagonal matrix of
-grid cell volume elements.
+In order to specify $\corrMat_\alpha$, they define its square root
+\begin{linenomath*}\begin{equation}
+    \corrMat^{1/2}_\text{WC01} = \normalizer
+        \left(I + \nabla\cdot\kappa\nabla \right)^p W^{-1/2} \,
+\end{equation}\end{linenomath*}
+such that
+$\corrMat_\text{WC01} \coloneqq \corrMat_\text{WC01}^{1/2}\corrMat_\text{WC01}^{T/2}$.
+Here, $W \coloneqq \text{diag}\{V_i\}_{i=1}^{\nuni}$ is a diagonal matrix of
+grid cell volume elements and the matrix
+\begin{linenomath*}\begin{equation*}
+    \normalizer \coloneqq \text{diag}\{1/\tilde{\sigma_i}\}_{i=1}^{\nuni}
+\end{equation*}\end{linenomath*}
+is a normlization matrix filled with the pointwise inverse standard deviation of the
+operation $\left(I+\nabla\cdot\kappa\nabla \right)^p W^{-1/2}$.
+This definition ensures that the filter defined by $\corrMat^{1/2}_\text{WC01}$
+preserves variance.
 The tensor, $\kappa$, controls the correlation length scales imposed on the
 random field in question.
 Correlation length scales are isotropic (i.e.\ the same in all directions) and
 stationary (i.e.\ they do not change with spatial location) when $\kappa$ is
 constant such that
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation*}
     L^2 = 2\kappa T \, ,
-\end{equation}\end{linenomath}
+\end{equation*}\end{linenomath*}
 where $T\coloneqq p \Delta t$ is the total ``diffusion'' time and $L$ is the
 desired length scale.
 In general, the diffusion tensor can be formulated to produce anisotropic and
@@ -146,14 +154,14 @@ In this section we review the link between an elliptic stochastic partial
 differential equation (SPDE) and Gaussian random fields.
 The Mat\'ern covariance function between two points, $\xh_1,\xh_2\in\defdomain =
 \ndspace$ can be expressed as:
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation}
     c(\xh_1,\xh_2) = \dfrac{\sigma^2}{2^{\meandiff-1}
     \mathcal{G}(\meandiff)}
     \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big)^\meandiff
     \mathcal{B}_\meandiff
     \Big(\sqrt{\deltah} ||\xh_2-\xh_1||\Big) \, .
     \label{eq:matern_covariance_iso}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 Here $||\cdot||$ as the Euclidean norm in $\defdomain$,
 $\mathcal{G}$ is the Gamma function,
 $\mathcal{B}_\meandiff$ is the modified
@@ -170,11 +178,11 @@ equation (\ref{eq:matern_covariance_iso}).
 
 The key relationship discussed in \citet{RSSB:RSSB777} is that any Mat\'ern field,
 $\unih(\xh)$, is a solution to the elliptic SPDE:
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation}
     \Big(\deltah - \nablah\cdot\nablah\Big)^{\spdesqo/2}\hat{\uni}(\xh) =
     \Wh(\xh) \, .
     \label{eq:spde_iso}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 Here $\spdesqo = \meandiff + \materndim/2$,
 $\Wh$ is a white noise process defined on the space $\defdomain$.
 We note that the Mat\'ern covariance function describes covariances that are
@@ -237,22 +245,22 @@ fractional or higher order operations for simplicity.
 All of the future formulations and experiments will make this assumption,
 although this can be relaxed in future work.
 With the following definitions:
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation}
     K(\x) \coloneqq
     \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
     \qquad
     \delta(\x) \coloneqq \dfrac{\deltah}{\defdet}
     \label{eq:matern_definitions}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 the SPDE in the computational domain's coordinate system can be written as
-\begin{linenomath}\begin{equation}
-    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)\uni(\x) =
+\begin{linenomath*}\begin{equation}
+    \underbrace{\Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)}_{\maternOp(\x)}\uni(\x) =
     \defdet^{-1/2}\W(\x) \, .
     \label{eq:spde_general}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
 introduced in \citet{sampson_nonparametric_1992}.
 The key feature of this formulation is that the deformation map, $\defmap$, is
 not actually necessary, only its Jacobian.
 The question then becomes, how does one specify $\defjac$ and $\deltah$?
-This is the primary question we wish to address.
+This is the primary question that we address.
