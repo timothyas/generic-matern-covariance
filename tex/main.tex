@@ -21,6 +21,9 @@
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 \usepackage{oden}
 
+% Removes redundant "appendix"
+\crefname{appendix}{}{}
+
 \begin{document}
 
 % --- Header
@@ -56,8 +59,6 @@ Mat\'ern, Weaver, and Courtier walk into a bar...
 
 \input{hyperparameters.tex}
 
-\input{pig.tex}
-
 \input{llc90.tex}
 
 \input{discussion.tex}
@@ -66,6 +67,9 @@ Mat\'ern, Weaver, and Courtier walk into a bar...
 \input{discretization.tex}
 
 \input{block_sor.tex}
+
+\input{pig.tex}
+
 
 \acknowledgments
 Thanks everyone.

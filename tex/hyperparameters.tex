@@ -19,7 +19,10 @@ We note that in this discussion we loosely use the infinite dimensional forms of
 these operators in order to ease the presentation, but provide a more careful
 derivation of their discretized form in \cref{sec:discretization_matern}.
 
-First, we address the Jacobian $\defjac(\x)$, which appears in the tensor
+\subsection{Scaling the Laplacian Term}
+\label{ssec:scaling_laplacian}
+
+First, we address the Jacobian, $\defjac(\x)$, which appears in the tensor
 $K(\x)$.
 We illustrate how this operator controls correlation length scales and
 motivate its parameterization with a simple scaling analysis.
@@ -28,7 +31,7 @@ length scales, $L_h$, $L_h$, and $L_z$ in each dimension
 where $L_h, L_h >> L_z$, such that the field exhibits highly
 anisotropic fluctuations.
 This is a common situation in large scale geophysical fluid
-dynamics, where fields (e.g.\ temperature, salinity, velocity) exhibit length scales of
+dynamics, where fields (e.g.\ temperature, velocity) exhibit length scales of
 variability that are much greater in either horizontal dimension compared to the
 vertical.
 \footnote{
@@ -86,12 +89,34 @@ so that
     \nabla\cdot K(\x)\nabla\uni(\x) \sim \dfrac{3}{L_h^2L_z}U \, .
 \end{equation*}\end{linenomath*}
 The key is that $K$ scales each term in the Laplacian so that they are
-approximately the same order of magnitude, and the operator is balanced in either direction.\\
+approximately the same order of magnitude, and the operator is balanced in either direction.
 %This example can further be extended by allowing the length scales $L_1$ and
 %$L_2$ to vary in space, such that correlations are nonstationary.
 
-\noindent\textbf{The range parameter.}
-The other term in equation (\ref{eq:spde_general}) to be defined is $\deltah$.
+At this point, we must prescribe values for $L_h(\x)$ and $L_z(\x)$ to fill
+$\defjac(\x)$.
+Considering the discretization of the Laplacian, a simple choice for these can
+be based on the underlying grid of the ocean model.
+For the numerical experiments in this paper, we choose
+\red{$L_h(i,j) = \sqrt{\Delta x_g(i,j) \Delta y_g(i,j)}$},
+and $L_z(k) = \Delta r_f(k)$ (\cref{fig:mitgcm_grid}) where $i$, $j$, $k$ refer
+to indices of the computational grid.
+We consider the choice to use the grid elements directly to be reasonable
+because anisotropy and nonstationarity is usually encoded into the grid.
+For instance, regarding nonstationarity, it is reasonable to assume that
+correlation length scales near the surface of the ocean are relatively short as
+a result of the locality of atmosphere-ocean interactions that occur there.
+On the other hand, near the ocean floor motion is presumed to be more
+quiescient, and correlation length scales are correspondingly longer.
+Many ocean models
+\citep[e.g.][]{nguyen_arctic_2021, forgetECCOv4}
+incorporate these assumptions into the vertical grid resolution.
+
+
+\subsection{The Range Parameter}
+\label{ssec:range_parameter}
+
+The other term in (\cref{eq:spde_general}) to be defined is $\deltah$.
 Here we resort to the empirical relation suggested in
 \citet{RSSB:RSSB777}:
 \begin{linenomath*}\begin{equation*}
@@ -101,53 +126,24 @@ The so-called range parameter, $\rangeh$, defines the
 distance between two points at which correlation drops to 0.1.
 While this may seem like swapping one unknown for the other, it is usually easier to
 define correlation length scales than simply guessing values for $\deltah$.
-With this relation we have
+With this relation and our choice for $\defjac(\x)$ in
+\cref{ssec:scaling_laplacian} we have
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-        \delta_i &= \dfrac{8\meandiff}{\rangeh^2\defdetdi} \\
-                 &= \dfrac{8}{\rangeh^2 L_y L_z} \, ,
+        \delta(i,j,k) &= \dfrac{8\meandiff}{\rangeh^2\defdetd} \\
+                 &= \dfrac{8\meandiff}{\rangeh^2 L_h(i,j,k)^2 L_z(i,j,k)} \, .
     \end{aligned}
 \end{equation*}\end{linenomath*}
-where we have substituted $\meandiff=1$, avoiding fractional or higher order exponents
-in the SPDE (recall equation \eqref{eq:spde_iso}), and $\defdetdi = L_yL_z$.
-Note that both this term and the Laplacian term are now of a similar order of
+With this choice, both this term and the Laplacian term are now of a similar order of
 magnitude
 \begin{linenomath*}\begin{equation*}
-    D_{\delta}\unis \sim L\unis \sim \bigo\left(\dfrac{1}{L_y L_z}\right)
+    D_{\delta}\unis \sim \nabla \cdot K \nabla \unis \sim
+    \bigo\left(\dfrac{1}{L_h^2 L_z}\right) \, ,
 \end{equation*}\end{linenomath*}
-\\
-
-\noindent\textbf{Practical specification of the hyperparameters.}
-With the definitions above, now one has to assign $L_y$, $L_z$, and $\rangeh$.
-Considering the discretization of the Laplacian, a simple and intuitive choice
-for $L_y$ and $L_z$ would be grid scale elements $\Delta y$ and $\Delta r$,
-or factors thereof.
-From a scaling analysis, this seems intuitive since
-\begin{linenomath*}\begin{equation*}
-    \begin{aligned}
-        D_z
-        &=
-        \text{diag}\left\{\dfrac{1}{
-            \sqrt{\vol_i\defdetdi}}\right\}_{i=1}^{\nuni} \\
-        &=
-        \text{diag}\left\{\dfrac{1}{
-            \sqrt{\Delta y_{g}^{i}\Delta r_{f}^{i}
-        \defdetdi}}\right\}_{i=1}^{\nuni} \\
-        &= \text{diag}\left\{\dfrac{1}{
-            \Delta y_{g}^{i}\Delta r_{f}^{i}}\right\}_{i=1}^{\nuni}
-    \end{aligned}\, ,
-\end{equation*}\end{linenomath*}
-for instance if $L_y=\Delta y_g$ and $L_z=\Delta r_f$, so that
-\begin{linenomath*}\begin{equation*}
-    D_z\mathbf{z} \sim \bigo\left(\dfrac{1}{L_y L_z}\right) \, ,
-\end{equation*}\end{linenomath*}
-and all terms are of the same order of magnitude.
-In general circulation models, these choices for $L_y$ and $L_z$ are generally
-reasonable because anisotropy is encoded into the mesh.
-It turns out that specifying the length scales as such provides for a
-practical implementation, as the range parameter can be chosen as a simple
-scaling to amplify or attenuate the correlation lengths.
-One can then intuitively regard $\hat\rho$ as a nondimensional parameter that
-controls the
+where we note that $\meandiff \sim \bigo(1)$, and we take this to be
+$\meandiff = 1/2$ for the experiments in this work since $d=3$, see
+\cref{eq:spde_iso}.
+With $L_h$ and $L_z$ defined by the model grid elements, one can intuitively
+regard $\rangeh$ as a nondimensional parameter that controls the
 ``number of neighboring grid cells'' at which correlation decays to 0.1.
-Our numerical experiments in section \ref{sec:matern_pig} make this clear.
+Our numerical experiments in \cref{sec:llc90} make this clear.
