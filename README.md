@@ -4,6 +4,21 @@
 
 - somewhere mention the Gaussian, probabilistic stuff
 - remove the double statements of "we can use a high tolerance yo"
+- In conclusions, note that time could additionally be handled as a separate
+  dimension, and now "grid cells" has the interpretation of "time steps", once
+  we normalize by deltat
+- disambiguate cov and corr ...
+- abrupt transition in 3.2 from x to grid indices...
+- Note the difference by factor of two between rho and "usual" instances of
+  rho... i.e. normally rhohat = sqrt(2 epsilon) / deltahat,
+  not sqrt(8 epsilon) / deltahat
+
+## More literature review
+
+- Guillet, Weaver, et al 2019: Implicit, and observation correlations
+- Weaver and Mirouze, 2013: Is this where implicit form is first introduced?
+- Yaremchuk and Smith, 2011 & Yaremchuk and Sentchev, 2012: other references
+- Purser et al, 2019: Beta functions
 
 
 ## TODO
@@ -21,6 +36,7 @@
       (stationary)?
 - [ ] Further Matern exploration and tightening up:
     - [ ] How inexact can we be? 10-2 looks good, checking 10-1
+    - [ ] Report average numbers
     - [ ] Higher powers
     - [ ] Intuition plots:
         - [ ] Z vs Longitude plot of samples for a single slice
