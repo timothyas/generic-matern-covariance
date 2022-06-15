@@ -69,8 +69,10 @@ class MaternField():
         arg = np.sqrt(8*self.mean_differentiability)/self.n_range * distance
 
         left = arg ** self.mean_differentiability
-        right = scipy.special.kv(self.mean_differentiability, arg)
-        return factor * left * right
+        where = xr.where if isinstance(distance, xr.DataArray) else np.where
+        right = where(distance == 0, 1, scipy.special.kv(self.mean_differentiability, arg))
+        result = factor * left * right
+        return where(distance == 0 , 1, result)
 
 
     def get_deformation_jacobian(self):
