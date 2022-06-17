@@ -34,9 +34,15 @@ Here we do not use the Jacobian, but just compute based on neighboring grid
 cells.
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/llc90_nondimensional_correlation_k.pdf}
-    \caption{Correlation coefficient using the LLC90 (global ocean) grid, with
-        distances computed in the vertical dimension from 100 samples. The coefficient is
+    \includegraphics[width=\textwidth]{../figures/matern_llc90_correlation-k25-iy120-ix80-1000samples-4curves.pdf}
+    \caption{Correlation coefficient from a subset of the LLC90 in the Pacific
+        Ocean, with computations carried out across "inner"
+        (158, 118)$^\circ$W,
+        (62, 2)$^\circ$S and
+        with an "outer" (allowing neighboring interactions spanning out to)
+        (178, 98)$^\circ$W,
+        (76$^\circ$S, 29$^\circ$N).
+        distances computed in each dimension from 1000 samples. The coefficient is
         computed from the random samples used to estimate
         $\hat{\sigma}$ and $X$. Each color denotes correlations computed for a
         different value of $\rangeh$, and the spread is determined by one standard
