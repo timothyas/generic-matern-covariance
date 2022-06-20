@@ -12,6 +12,9 @@
 - Note the difference by factor of two between rho and "usual" instances of
   rho... i.e. normally rhohat = sqrt(2 epsilon) / deltahat,
   not sqrt(8 epsilon) / deltahat
+- Since we have access to B and Binverse, could use this for obs operator ...
+  change 1st intro paragraph based on this
+- geophysical inverse problems to variational data assimilation
 
 ## More literature review
 
