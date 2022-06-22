@@ -199,14 +199,22 @@ class CorrelationCalculator():
 
 if __name__ == "__main__":
 
-    stdout = "stdout.correlation-timing.1000samples.log"
+    # Note to self, this is faster to load in and read, rather than parallelize
+    #from dask_jobqueue import SLURMCluster
+    #from dask.distributed import Client
+
+    #cluster = SLURMCluster(log_directory="/scratch2/tsmith/dask-jobqueue-space")
+    #cluster.adapt(minimum=0, maximum=10)
+    #client = Client(cluster)
+
+    stdout = "stdout.isoxy.correlation-timing.1000samples.log"
     localtime = Timer(filename=stdout)
     walltime = Timer(filename=stdout)
 
     walltime.start("Starting job")
 
     for n_range in [5, 10, 15, 20]:
-        for log10tol in [-1, -2, -4, -6, -8, -10, -12, -14]:
+        for log10tol in [-14]:
             localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
             cc = CorrelationCalculator(n_range=n_range,
                                        log10tol=log10tol,
