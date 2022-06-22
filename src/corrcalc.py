@@ -9,6 +9,7 @@ from pych import read_jacobi_iters
 from matern import MaternField
 from new_smooth_store import open_smoothdataset
 from llcutils import get_pacific
+from timer import Timer
 
 class CorrelationCalculator():
     """Read in samples, compute correlation for subset of domain, save"""
@@ -170,3 +171,27 @@ class CorrelationCalculator():
         store = zarr.NestedDirectoryStore(path=self.zstore_path)
         ds = ds.chunk(self.save_chunks)
         ds.to_zarr(store=store)
+
+
+if __name__ == "__main__":
+
+    from dask_jobqueue import SLURMCluster
+    from dask.distributed import Client
+
+    cluster = SLURMCluster(log_directory="/scratch2/tsmith/dask-jobqueue-space")
+    cluster.adapt(minimum=0, maximum=20)
+    client = Client(cluster)
+
+    localtime = Timer(filename="stdout.log")
+    walltime = Timer(filename="stdout.log")
+
+    walltime.start("Starting job")
+
+    for n_range in [5, 10, 15, 20]:
+        for log10tol in [-14, -1, -2, -4, -6, -8, -10, -12, -14]:
+            localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
+            cc = CorrelationCalculator(n_range=n_range, log10tol=log10tol)
+            cc()
+            localtime.stop()
+
+    walltime.stop("Total Walltime")
