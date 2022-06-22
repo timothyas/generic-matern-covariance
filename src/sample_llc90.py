@@ -24,13 +24,13 @@ if __name__ == "__main__":
     slurm = {'be_nice':True,'max_job_submissions':9,'dependency':'afterany'}
 
     # --- Launch
-    for log10tol in [0, -1, -2, -4, -6, -8, -10, -12, -14, -16]:
-        driver = SampleDriver(f'matern-sample-log10tol{log10tol:03d}-3D')
+    for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
+        driver = SampleDriver(f'matern/log10tol{log10tol:03d}-3D')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],
                      ctrl_ds=ds,
-                     NxList=[5, 10],
+                     NxList=[5, 10, 15, 20],
                      xiList=[1],
                      sorDict={.5:1.6, 1:1.3, 2:1.06},
                      slurm=slurm,
