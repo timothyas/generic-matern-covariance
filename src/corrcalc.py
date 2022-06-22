@@ -21,6 +21,7 @@ class CorrelationCalculator():
     mean_differentiability = 1/2
 
     # set dimensions and subregion
+    n_shift             = 50
     dimlist             = ("ix", "iy", "k")
     outer               = {"ix": slice( 40, 120), "iy": slice(200,  45)}
     inner               = {"ix": slice( 60, 100), "iy": slice(160,  80)}
@@ -35,10 +36,6 @@ class CorrelationCalculator():
                            "k"      : 1,
                            "iy"     : -1,
                            "ix"     : -1}
-    @property
-    def n_shift(self):
-        return 2*self.n_range
-
 
     @property
     def run_dir(self):
@@ -182,13 +179,14 @@ if __name__ == "__main__":
     cluster.adapt(minimum=0, maximum=20)
     client = Client(cluster)
 
-    localtime = Timer(filename="stdout.log")
-    walltime = Timer(filename="stdout.log")
+    stdout = "stdout.correlation-timing.log"
+    localtime = Timer(filename=stdout)
+    walltime = Timer(filename=stdout)
 
     walltime.start("Starting job")
 
     for n_range in [5, 10, 15, 20]:
-        for log10tol in [-14, -1, -2, -4, -6, -8, -10, -12, -14]:
+        for log10tol in [-1, -2, -4, -6, -8, -10, -12, -14]:
             localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
             cc = CorrelationCalculator(n_range=n_range, log10tol=log10tol)
             cc()
