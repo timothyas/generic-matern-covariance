@@ -55,6 +55,10 @@ class SampleDriver:
     smooth2DDims = 'yzw'
     jacobi_max_iters = 20000
     conda_env = 'py38_tim'
+    @property
+    def exp_fname(self):
+        return self.experiment.replace("/", "-")
+
     def __init__(self, experiment,stage=None):
         """Should this initialize? Or do we want another method to do it?
 
@@ -125,7 +129,7 @@ class SampleDriver:
 
         # --- Write the directories
         def write_json(mydict,mysuff):
-            json_file = f'json/{self.experiment}'+mysuff
+            json_file = f'json/{self.exp_fname}'+mysuff
             with open(json_file,'w') as f:
                 json.dump(mydict, f)
 
@@ -136,8 +140,8 @@ class SampleDriver:
 
         # --- Write ctrl and obs datasets to netcdf
         myctrl = xr.Dataset({'mymodel':mymodel})
-        myctrl.to_netcdf(dirs['nctmp']+f'/{self.experiment}_ctrl.nc')
-        ctrl_ds.to_netcdf(dirs['nctmp']+f'/{self.experiment}_cds.nc')
+        myctrl.to_netcdf(dirs['nctmp']+f'/{self.exp_fname}_ctrl.nc')
+        ctrl_ds.to_netcdf(dirs['nctmp']+f'/{self.exp_fname}_cds.nc')
 
         # --- "pickup" experiment at startat
         self.pickup()
@@ -151,7 +155,7 @@ class SampleDriver:
 
         # --- Read
         def read_json(mysuff):
-            json_file = f'json/{self.experiment}' + mysuff
+            json_file = f'json/{self.exp_fname}' + mysuff
             if not os.path.isfile(json_file):
                 return None
 
@@ -163,8 +167,8 @@ class SampleDriver:
         dsim = read_json('_sim.json')
         kwargs = read_json('_kwargs.json')
 
-        myctrl = xr.open_dataset(dirs['nctmp']+f'/{self.experiment}_ctrl.nc')
-        cds = xr.open_dataset(dirs['nctmp']+f'/{self.experiment}_cds.nc')
+        myctrl = xr.open_dataset(dirs['nctmp']+f'/{self.exp_fname}_ctrl.nc')
+        cds = xr.open_dataset(dirs['nctmp']+f'/{self.exp_fname}_cds.nc')
 
         modeldims=list(myctrl['mymodel'].dims)
 
@@ -338,7 +342,7 @@ class SampleDriver:
                 '"from sampledriver import SampleDriver;'+\
                 f'oid = SampleDriver(\'{self.experiment}\',\'{stage}\')"\n'
 
-        fname = self.dirs['main_run']+f'/submit_{self.experiment}.sh'
+        fname = self.dirs['main_run']+f'/submit_{self.exp_fname}.sh'
         with open(fname,'w') as f:
             f.write(file_contents)
         return fname

@@ -14,12 +14,14 @@ import scipy.special
 class MaternField():
 
     def __init__(self, xdalike, n_range, horizontal_factor,
-                 isotropic=False):
+                 isotropic=False,
+                 isoxy=False):
 
-        self.xdalike = xdalike
-        self.n_range = n_range
-        self.horizontal_factor = horizontal_factor
-        self.isotropic = isotropic
+        self.xdalike            = xdalike
+        self.n_range            = n_range
+        self.horizontal_factor  = horizontal_factor
+        self.isotropic          = isotropic
+        self.isoxy              = isoxy
 
         # Set some properties that don't change
         self.dims = xdalike.dims
@@ -46,7 +48,7 @@ class MaternField():
                 self.delta_hat**self.mean_differentiability
         self.ideal_variance = scipy.special.gamma(self.mean_differentiability) / denom
 
-        self.horizontal_length = _horizontal_length_scale(xdalike)
+        self.Lx, self.Ly = _horizontal_length_scale(xdalike, self.isoxy)
         self.vertical_length = _vertical_length_scale(xdalike)
         self.cell_volume = self.get_cell_volume()
 
@@ -78,8 +80,8 @@ class MaternField():
     def get_deformation_jacobian(self):
         """Get Jacobian of deformation tensor, and its determinant"""
 
-        ux = (self.horizontal_factor * self.horizontal_length).broadcast_like(self.xdalike)
-        vy = (self.horizontal_factor * self.horizontal_length).broadcast_like(self.xdalike)
+        ux = (self.horizontal_factor * self.Lx).broadcast_like(self.xdalike)
+        vy = (self.horizontal_factor * self.Ly).broadcast_like(self.xdalike)
         wz = self.vertical_length.copy().broadcast_like(self.xdalike)
 
         if self.n_dims == 2:
@@ -121,13 +123,16 @@ class MaternField():
 
         if self.n_dims == 2:
             if self.xyz['z'] is None:
-                V = self.horizontal_length**2
+                V = self.Ly * self.Lx
+
+            elif self.xyz['y'] is None:
+                V = self.vertical_length * self.Lx
 
             else:
-                V = self.vertical_length * self.horizontal_length
+                V = self.vertical_length * self.Ly
 
         else:
-            V = self.vertical_length * self.horizontal_length**2
+            V = self.vertical_length * self.Ly * self.Lx
 
         return V
 
@@ -205,22 +210,32 @@ def _aspect_ratio(L, H):
     return aspect
 
 
-def _horizontal_length_scale(xds):
+def _horizontal_length_scale(xds, isoxy):
     """Get horizontal length scale from data array or dataset"""
 
     xds = xds.to_dataset(name='tmp') if isinstance(xds, xr.DataArray) else xds
 
-    if 'rA' in xds:
-        L = np.sqrt(xds['rA'])
-    elif 'dyG' in xds:
-        L = xds['dyG']
-    elif 'dxG' in xds:
-        L = xds['dxG']
-    else:
-        raise TypeError(f"Couldn't find recognizable horizontal length scale in dataset: {xds}")
+    Lx = None
+    Ly = None
 
-    L.name = 'L'
-    return L
+    if isoxy:
+        if "rA" in xds:
+            Lx = np.sqrt(xds['rA'])
+            Ly = np.sqrt(xds['rA'])
+    else:
+        if "dxF" in xds:
+            Lx = xds["dxF"]
+        elif "dxG" in xds:
+            Lx = xds["dxG"]
+
+        if "dyF" in xds:
+            Ly = xds["dyF"]
+        elif "dyG" in xds:
+            Ly = xds["dyG"]
+
+    Lx.name = 'Lx'
+    Ly.name = 'Ly'
+    return Lx, Ly
 
 
 def _vertical_length_scale(xds):

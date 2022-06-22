@@ -34,8 +34,8 @@ class PacificMap:
         self.new_grid  = pr.geometry.GridDefinition(lons=self.new_grid_lon,
                                                     lats=self.new_grid_lat)
 
-    def __call__(self, da, ax=None, projection=ccrs.Robinson(),
-                 lon_0=-160,
+    def __call__(self, da, ax=None, projection=ccrs.Robinson(central_longitude=-180),
+                 lon_0=-180,
                  lon_bds=[142,-40],
                  lat_bds=[-65,65],
                  show_cbar=True,
@@ -66,8 +66,6 @@ class PacificMap:
 
         # Find index where data is split for mapping
         split_lon_idx = round(x.shape[1]/(360/(lon_0 if lon_0>0 else lon_0+360)))
-        print(split_lon_idx)
-
 
         # Plot each separately
         p = ax.pcolormesh(x, y, field,

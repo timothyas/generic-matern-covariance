@@ -19,15 +19,18 @@ class CorrelationCalculator():
     horizontal_factor   = 1
     n_samples           = 1000
     mean_differentiability = 1/2
+    isoxy               = False
 
     # set dimensions and subregion
     n_shift             = 50
     dimlist             = ("ix", "iy", "k")
-    outer               = {"ix": slice( 40, 120), "iy": slice(200,  45)}
-    inner               = {"ix": slice( 60, 100), "iy": slice(160,  80)}
+    outer               = {"ix": slice( 40, 140), "iy": slice(230, 40)}
+    inner               = {"ix": slice( 60, 120), "iy": slice(210, 60)}
 
     # dask/zarr stuff
+    drop_coords         = True
     persist             = True
+    load_samples        = False
     work_chunks         = {"sample" : 100,
                            "k"      : 50,
                            "iy"     : -1,
@@ -38,23 +41,41 @@ class CorrelationCalculator():
                            "ix"     : -1}
 
     @property
+    def main_run_dir(self):
+        if self.isoxy:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-isoxy"
+        else:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern"
+
+    @property
     def run_dir(self):
-        return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-sample-log10tol{self.log10tol:03d}-3D-C/run.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
+        return f"{self.main_run_dir}/log10tol{self.log10tol:03d}-3D-C/run.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
 
 
     @property
     def diag_dir(self):
         return self.run_dir + "/smooth-output"
 
+    @property
+    def main_zstore_path(self):
+        if self.isoxy:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-isoxy"
+        else:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr"
+
 
     @property
     def zstore_path(self):
-        return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-correlation.log10tol{self.log10tol:03d}.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
+        return f"{self.main_zstore_path}/log10tol{self.log10tol:03d}.{self.n_range:02d}dx.{self.horizontal_factor:02}xi.{self.n_samples:04d}samples"
 
 
     def __init__(self, **kwargs):
         for key, val in kwargs.items():
             setattr(self, key, val)
+
+        if self.load_samples and self.persist:
+            warnings.warn("CorrelationCalculator.__init__: load_samples and persist set, ignoring persist and will load ginv_norm field into memory")
+            self.persist = False
 
 
     def __call__(self):
@@ -80,11 +101,12 @@ class CorrelationCalculator():
 
 
         # Drop unnecessary stuff, keep maskC
-        ds = ds.reset_coords("maskC")
-        ds = ds.reset_coords(drop=True)
-        keep = ['maskC', 'smooth3Dnorm001', 'smooth3Dfld001', 'smooth3Dmean001']
-        remove = [v for v in list(ds.data_vars) if v not in keep]
-        ds = ds.drop(remove)
+        if self.drop_coords:
+            ds = ds.reset_coords("maskC")
+            ds = ds.reset_coords(drop=True)
+            keep = ['maskC', 'smooth3Dnorm001', 'smooth3Dfld001', 'smooth3Dmean001']
+            remove = [v for v in list(ds.data_vars) if v not in keep]
+            ds = ds.drop(remove)
 
         # Isolate subregion
         ds = get_pacific(ds)
@@ -108,6 +130,10 @@ class CorrelationCalculator():
         if self.persist:
             for key in ["maskC", "smooth3Dnorm001", "smooth3Dmean001", "ginv_norm", "ginv_norm_mean"]:
                 ds[key] = ds[key].persist()
+
+        elif self.load_samples:
+            ds["ginv_norm_mean"].load();
+            ds["ginv_norm"].load();
 
         return ds
 
@@ -144,6 +170,7 @@ class CorrelationCalculator():
 
             cds[f"corr_{dim}"] = xr.concat(corrfld, dim="shifty")
 
+        cds.attrs = {"description": f"1D correlations computed from {len(xda.sample)} samples"}
         return cds
 
 
@@ -172,14 +199,7 @@ class CorrelationCalculator():
 
 if __name__ == "__main__":
 
-    from dask_jobqueue import SLURMCluster
-    from dask.distributed import Client
-
-    cluster = SLURMCluster(log_directory="/scratch2/tsmith/dask-jobqueue-space")
-    cluster.adapt(minimum=0, maximum=20)
-    client = Client(cluster)
-
-    stdout = "stdout.correlation-timing.log"
+    stdout = "stdout.correlation-timing.1000samples.log"
     localtime = Timer(filename=stdout)
     walltime = Timer(filename=stdout)
 
@@ -188,7 +208,12 @@ if __name__ == "__main__":
     for n_range in [5, 10, 15, 20]:
         for log10tol in [-1, -2, -4, -6, -8, -10, -12, -14]:
             localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
-            cc = CorrelationCalculator(n_range=n_range, log10tol=log10tol)
+            cc = CorrelationCalculator(n_range=n_range,
+                                       log10tol=log10tol,
+                                       n_samples=1000,
+                                       isoxy=True,
+                                       load_samples=True,
+                                       persist=False)
             cc()
             localtime.stop()
 
