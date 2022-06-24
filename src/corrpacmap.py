@@ -19,73 +19,47 @@ class CorrelationPacMap(CorrelationCalculator):
         -> compute correlation at single point in 3D
     """
 
-    spot        = {"ix": 90, "iy": 165, "k":25}
+    name = "equator"
+    spot = {"ix": 90, "iy": 165, "k":25}
+
+    drop_coords = False
+    select_outer_subregion  = False
+
+    save_chunks = {"k": 1, "iy": -1, "ix": -1}
+
+#    @property
+#    def spot_xy(self):
+#        return {k:spot[k] for k in ["ix","iy"]}
+#
+#    @property
+#    def spot_xz(self):
+#        return {k:spot[k] for k in ["ix","iy"]}
 
     @property
-    def spot_xy(self):
-        return {k:spot[k] for k in ["ix","iy"]}
-
-    @property
-    def spot_xz(self):
-        return {k:spot[k] for k in ["ix","iy"]}
+    def main_zstore_path(self):
+        return super().main_zstore_path.replace("matern-correlation", "matern-pacmap")
 
     @property
     def zstore_path(self):
-        return super().zstore_path.replace("matern-correlation", "matern-correlation-pacmap")
+        return f"{self.main_zstore_path}/{name}.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
 
-    def __call__(self):
+
+    def __call__(self, client=None):
 
         # Get samples
         ds = self.open_dataset()
 
         # Compute correlation dataset
-        cds = self.calc_correlation(ds["ginv_norm"], ds["ginv_norm_mean"])
+        cds = self.calc_correlation(ds["ginv_norm"], ds["ginv_norm_mean"], client=client)
 
         cds = self.expand_dims(cds)
         self.save_results(cds)
-
-
-    def open_dataset(self):
-        ds = open_smoothdataset(data_dir=self.diag_dir,
-                                grid_dir=self.run_dir,
-                                geometry="llc",
-                                k_chunksize=self.work_chunks["k"],
-                                iter_stop=self.n_samples+1)
-
-        # Drop unnecessary stuff, keep maskC
-        if self.drop_coords:
-            ds = ds.reset_coords("maskC")
-            ds = ds.reset_coords(drop=True)
-            keep = ['maskC', 'smooth3Dnorm001', 'smooth3Dfld001', 'smooth3Dmean001']
-            remove = [v for v in list(ds.data_vars) if v not in keep]
-            ds = ds.drop(remove)
-
-        # Isolate subregion
-        ds = get_pacific(ds)
-
-        # rechunk
-        ds = ds.chunk(self.work_chunks)
-
-        # Compute some things
-        with xr.set_options(keep_attrs=True):
-            ds['smooth3Dnorm001'] = ds['smooth3Dnorm001'].where(ds['maskC'])
-        ds['ginv_norm'] = ds['smooth3Dfld001'] * ds['smooth3Dnorm001']
-        ds['ginv_norm_mean'] = ds['smooth3Dmean001'] * ds['smooth3Dnorm001']
-
-        if self.persist:
-            for key in ["maskC", "smooth3Dnorm001", "smooth3Dmean001", "ginv_norm", "ginv_norm_mean"]:
-                ds[key] = ds[key].persist()
-
-        return ds
 
 
     def calc_correlation(self, xda, xda_mean, client=None):
 
         # make container with ideal/expected correlation
         cds = xr.Dataset()
-
-        nz_shift = min(24, self.n_shift)
-        shift_z  = np.arange(-nz_shift, nz_shift+1)
 
         # do this part once
         x_deviation = xda - xda_mean
@@ -95,12 +69,12 @@ class CorrelationPacMap(CorrelationCalculator):
             x_deviation = x_deviation.persist()
 
         # for each k shift, compute xy correlations
+        all_k  = self.get_shifted_indices("k", xda["k"])
         if client is None:
 
-            for ks in shift_z:
+            for this_k in all_k:
 
                 corrlist = []
-                this_k = self.spot["k"] + ks
                 tmp = self.calc_xyshifts(xdev=x_deviation.sel(k=this_k),
                                          spot_deviation=spot_deviation,
                                          spot_ssr_inv=spot_ssr_inv)
@@ -108,7 +82,7 @@ class CorrelationPacMap(CorrelationCalculator):
         else:
 
 
-            xdevs = [x_deviation.sel(k=self.spot["k"]+ks) for ks in shift_z]
+            xdevs = [x_deviation.sel(k=this_k) for this_k in all_k]
             futures = client.map(self.calc_xyshifts, xdevs,
                                  spot_deviation=spot_deviation,
                                  spot_ssr_inv=spot_ssr_inv)
@@ -132,17 +106,56 @@ class CorrelationPacMap(CorrelationCalculator):
 
         corr_xy = xr.zeros_like(xdev.sel(sample=0).drop("sample"))
 
-        shift_xy = np.arange(-self.n_shift, self.n_shift+1)
-        for yshift in shift_xy:
-            for xshift in shift_xy.copy():
-                shift = {"ix": self.spot["ix"] + xshift,
-                         "iy": self.spot["iy"] + yshift}
+        all_y = self.get_shifted_indices("iy", xdev["iy"])
+        all_x = self.get_shifted_indices("ix", xdev["ix"])
+        for this_y in all_y:
+            for this_x in all_x:
+                this_xy = {"ix": this_x, "iy": this_y}
 
-                y_deviation = xdev.sel(shift).drop(["ix", "iy", "k"])
+                y_deviation = xdev.sel(this_xy).drop(["ix", "iy", "k"])
                 numerator = (spot_deviation * y_deviation).sum("sample")
                 y_ssr = np.sqrt( (y_deviation**2).sum("sample") )
 
                 corr = numerator * spot_ssr_inv / y_ssr
-                corr_xy.loc[shift] = corr
+                corr_xy.loc[this_xy] = corr
 
         return corr_xy
+
+
+    def get_shifted_indices(self, dim, arr):
+        """get lower and upper bounds for shifting, make an array"""
+
+        lo = max(int(arr.min()), self.spot[dim] - self.n_shift)
+        hi = min(int(arr.max()), self.spot[dim] + self.n_shift)
+        return np.arange(lo, hi)
+
+
+if __name__ == "__main__":
+
+    from dask.distributed import Client
+
+    stdout = "stdout.pacmap-timing.1000samples.log"
+    localtime = Timer(filename=stdout)
+    walltime = Timer(filename=stdout)
+
+    walltime.start("Starting job")
+
+    equator = {"ix":  90, "iy": 165, "k": 25}
+    coast   = {"ix": 130, "iy": 180, "k":  0}
+
+    for name, spot in zip(["equator", "coast"], [equator, coast]):
+        cc = CorrelationPacMap(name=name,
+                               spot=spot,
+                               n_range=20,
+                               log10tol=-15,
+                               n_samples=1000,
+                               drop_coords=False,
+                               load_samples=True,
+                               persist=False)
+
+        client = Client()
+        cc(client=client)
+        client.close()
+        localtime.stop()
+
+    walltime.stop("Total Walltime")

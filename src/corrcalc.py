@@ -26,6 +26,7 @@ class CorrelationCalculator():
     dimlist             = ("ix", "iy", "k")
     outer               = {"ix": slice( 40, 140), "iy": slice(230, 40)}
     inner               = {"ix": slice( 60, 120), "iy": slice(210, 60)}
+    select_outer_subregion = True
 
     # dask/zarr stuff
     drop_coords         = True
@@ -101,40 +102,23 @@ class CorrelationCalculator():
 
 
         # Drop unnecessary stuff, keep maskC
-        if self.drop_coords:
-            ds = ds.reset_coords("maskC")
-            ds = ds.reset_coords(drop=True)
-            keep = ['maskC', 'smooth3Dnorm001', 'smooth3Dfld001', 'smooth3Dmean001']
-            remove = [v for v in list(ds.data_vars) if v not in keep]
-            ds = ds.drop(remove)
+        ds = self._drop_coords(ds) if self.drop_coords else ds
 
         # Isolate subregion
         ds = get_pacific(ds)
-        ds = ds.sel(self.outer)
+        if self.select_outer_subregion:
+            ds = ds.sel(self.outer)
 
         # rechunk
         ds = ds.chunk(self.work_chunks)
 
         # Compute some things
-        with xr.set_options(keep_attrs=True):
-            ds['smooth3Dnorm001'] = ds['smooth3Dnorm001'].where(ds['maskC'])
-        ds['ginv_norm'] = ds['smooth3Dfld001'] * ds['smooth3Dnorm001']
-        ds['ginv_norm_mean'] = ds['smooth3Dmean001'] * ds['smooth3Dnorm001']
+        ds = self.calc_ginv_norm(ds)
 
         # Get number of iterations for solve
-        myiters = read_jacobi_iters(f"{self.run_dir}/STDOUT.0000", which_jacobi="3D")
-        myiters = xr.DataArray(myiters[:len(ds.sample)], ds['sample'].coords, ds['sample'].dims,
-                               attrs={'description': 'Number of iterations to converge, given tolerance and range'})
-        ds['sor_iters'] = myiters
+        ds = self.get_sor_iters(ds)
 
-        if self.persist:
-            for key in ["maskC", "smooth3Dnorm001", "smooth3Dmean001", "ginv_norm", "ginv_norm_mean"]:
-                ds[key] = ds[key].persist()
-
-        elif self.load_samples:
-            ds["ginv_norm_mean"].load();
-            ds["ginv_norm"].load();
-
+        ds = self.persist_or_load(ds)
         return ds
 
 
@@ -196,6 +180,42 @@ class CorrelationCalculator():
         ds = ds.chunk(self.save_chunks)
         ds.to_zarr(store=store)
 
+    @staticmethod
+    def _drop_coords(ds):
+        ds = ds.reset_coords("maskC")
+        ds = ds.reset_coords(drop=True)
+        keep = ['maskC', 'smooth3Dnorm001', 'smooth3Dfld001', 'smooth3Dmean001']
+        remove = [v for v in list(ds.data_vars) if v not in keep]
+        ds = ds.drop(remove)
+        return ds
+
+
+    @staticmethod
+    def calc_ginv_norm(ds):
+        with xr.set_options(keep_attrs=True):
+            ds['smooth3Dnorm001'] = ds['smooth3Dnorm001'].where(ds['maskC'])
+        ds['ginv_norm'] = ds['smooth3Dfld001'] * ds['smooth3Dnorm001']
+        ds['ginv_norm_mean'] = ds['smooth3Dmean001'] * ds['smooth3Dnorm001']
+        return ds
+
+
+    def get_sor_iters(self, ds):
+        myiters = read_jacobi_iters(f"{self.run_dir}/STDOUT.0000", which_jacobi="3D")
+        myiters = xr.DataArray(myiters[:len(ds.sample)], ds['sample'].coords, ds['sample'].dims,
+                               attrs={'description': 'Number of iterations to converge, given tolerance and range'})
+        ds['sor_iters'] = myiters
+        return ds
+
+    def persist_or_load(self, ds):
+        if self.persist:
+            for key in ["maskC", "smooth3Dnorm001", "smooth3Dmean001", "ginv_norm", "ginv_norm_mean"]:
+                ds[key] = ds[key].persist()
+
+        elif self.load_samples:
+            ds["ginv_norm_mean"].load();
+            ds["ginv_norm"].load();
+
+        return ds
 
 if __name__ == "__main__":
 
@@ -207,19 +227,19 @@ if __name__ == "__main__":
     #cluster.adapt(minimum=0, maximum=10)
     #client = Client(cluster)
 
-    stdout = "stdout.isoxy.correlation-timing.1000samples.log"
+    stdout = "stdout.correlation-timing.1000samples.log"
     localtime = Timer(filename=stdout)
     walltime = Timer(filename=stdout)
 
     walltime.start("Starting job")
 
     for n_range in [5, 10, 15, 20]:
-        for log10tol in [-14]:
+        for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
             localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
             cc = CorrelationCalculator(n_range=n_range,
                                        log10tol=log10tol,
                                        n_samples=1000,
-                                       isoxy=True,
+                                       isoxy=False,
                                        load_samples=True,
                                        persist=False)
             cc()
