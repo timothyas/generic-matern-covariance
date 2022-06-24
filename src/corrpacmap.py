@@ -27,21 +27,13 @@ class CorrelationPacMap(CorrelationCalculator):
 
     save_chunks = {"k": 1, "iy": -1, "ix": -1}
 
-#    @property
-#    def spot_xy(self):
-#        return {k:spot[k] for k in ["ix","iy"]}
-#
-#    @property
-#    def spot_xz(self):
-#        return {k:spot[k] for k in ["ix","iy"]}
-
     @property
     def main_zstore_path(self):
-        return super().main_zstore_path.replace("matern-correlation", "matern-pacmap")
+        return super().main_zstore_path.replace("/matern-corr", "/matern-pacmap")
 
     @property
     def zstore_path(self):
-        return f"{self.main_zstore_path}/{name}.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
+        return f"{self.main_zstore_path}/{self.name}.{self.n_range:02d}dx.{self.horizontal_factor:02}xi"
 
 
     def __call__(self, client=None):
@@ -53,7 +45,7 @@ class CorrelationPacMap(CorrelationCalculator):
         cds = self.calc_correlation(ds["ginv_norm"], ds["ginv_norm_mean"], client=client)
 
         cds = self.expand_dims(cds)
-        self.save_results(cds)
+        self.save_results(cds.to_dataset(name=f"corr_{self.name}"))
 
 
     def calc_correlation(self, xda, xda_mean, client=None):
@@ -91,7 +83,7 @@ class CorrelationPacMap(CorrelationCalculator):
 
         corrfld = xr.concat(corrlist, dim="k")
         corrfld.attrs = {"description": f"3D correlation field computed about spot",
-                         "spot": self.spot}
+                         "spot": str(self.spot)}
         return corrfld
 
 
@@ -144,6 +136,7 @@ if __name__ == "__main__":
     coast   = {"ix": 130, "iy": 180, "k":  0}
 
     for name, spot in zip(["equator", "coast"], [equator, coast]):
+        localtime.start(name)
         cc = CorrelationPacMap(name=name,
                                spot=spot,
                                n_range=20,
@@ -153,9 +146,13 @@ if __name__ == "__main__":
                                load_samples=True,
                                persist=False)
 
+        ds = cc.open_dataset()
         client = Client()
-        cc(client=client)
+        cds = cc.calc_correlation(ds.ginv_norm, ds.ginv_norm_mean, client=client)
         client.close()
+
+        cc.save_results(cds.to_dataset(name=f"corr_{cc.name}"))
+
         localtime.stop()
 
     walltime.stop("Total Walltime")
