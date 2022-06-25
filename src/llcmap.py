@@ -34,10 +34,10 @@ class PacificMap:
         self.new_grid  = pr.geometry.GridDefinition(lons=self.new_grid_lon,
                                                     lats=self.new_grid_lat)
 
-    def __call__(self, da, ax=None, projection=ccrs.Robinson(central_longitude=-180),
-                 lon_0=-180,
-                 lon_bds=[142,-40],
-                 lat_bds=[-65,65],
+    def __call__(self, da, ax=None, projection=ccrs.Robinson(central_longitude=-120),
+                 lon_0=-120,
+                 lon_bds=[-180, -60],
+                 lat_bds=[-30, 30],
                  show_cbar=True,
                  cbar_label='',
                  **plt_kwargs):
@@ -64,9 +64,6 @@ class PacificMap:
             ax.set_extent([lon_bds[0],lon_bds[1],lat_bds[0],lat_bds[1]], ccrs.PlateCarree())
         x,y = self.new_grid_lon, self.new_grid_lat
 
-        # Find index where data is split for mapping
-        split_lon_idx = round(x.shape[1]/(360/(lon_0 if lon_0>0 else lon_0+360)))
-
         # Plot each separately
         p = ax.pcolormesh(x, y, field,
                            vmax=vmax, vmin=vmin, cmap=cmap,
@@ -77,17 +74,27 @@ class PacificMap:
         ax.add_feature(cf.COASTLINE.with_scale('50m'), zorder=3)
 
         # Add gridlines
-        ax.gridlines(crs=ccrs.PlateCarree(),
-                      draw_labels=True,
-                      linewidth=1, color='gray', alpha=0.5, linestyle='-')
+        gl = ax.gridlines(crs=ccrs.PlateCarree(),
+                          xlocs=np.arange(lon_bds[0], lon_bds[1]+1, 30),
+                          ylocs=np.arange(lat_bds[0], lat_bds[1]+1, 15),
+                          draw_labels=True,
+                          linewidth=1, color='gray', alpha=0.2, linestyle='-')
+        gkw = {}
+        spec = ax.get_subplotspec()
+        gkw["left_labels"] = spec.is_first_col()
+        gkw["right_labels"] = spec.is_last_col()
+        gkw["top_labels"] = spec.is_first_row()
+        gkw["bottom_labels"] = spec.is_last_row()
+        for key, val in gkw.items():
+            setattr(gl, key, val)
 
         # Colorbar...
         if show_cbar:
             cb=plt.colorbar(p,ax=ax,shrink=.8,label=cbar_label,
                             orientation='horizontal',pad=0.05)
-            cb.ax.tick_params()
 
-        return ax
+        return p
+
 
     def regrid(self,xda):
         """regrid xda based on llcmap grid"""
