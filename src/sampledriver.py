@@ -20,6 +20,7 @@ import xarray as xr
 
 import rosypig as rp
 from matern import MaternField
+from barotropicradiusmatern import BarotropicRadiusMaternField
 
 class SampleDriver:
     """Defines the driver for getting an Eigenvalue decomposition
@@ -49,12 +50,14 @@ class SampleDriver:
     NxList  = [5, 10, 15, 20, 30, 40]
     xiList  = [0.5,   1,   2]#,   5]
     isotropic = False
+    barotropic_length_scale = False
     sorDict = {0.5:1.8, 1:1.6, 2:1.3, 4:1.2, 5:1.2}
     elliptic_tol = 1.e-16
     smoothOpNb = 1
     smooth2DDims = 'yzw'
     jacobi_max_iters = 20000
     conda_env = 'py38_tim'
+
     @property
     def exp_fname(self):
         return self.experiment.replace("/", "-")
@@ -225,6 +228,8 @@ class SampleDriver:
 
         ... pass to the next step
         """
+        MF = MaternField if not self.barotropic_length_scale else \
+             BarotropicRadiusMaternField
         jid_list = []
         for Nx in self.NxList:
             for xi in self.xiList:
@@ -236,10 +241,10 @@ class SampleDriver:
                                    smooth_apply=False,
                                    num_inputs=self.n_samples)
 
-                matern = MaternField(xdalike=self.mymodel,
-                                     n_range=Nx,
-                                     horizontal_factor=xi,
-                                     isotropic=self.isotropic)
+                matern = MF(xdalike=self.mymodel,
+                            n_range=Nx,
+                            horizontal_factor=xi,
+                            isotropic=self.isotropic)
                 matern.write_binaries(write_dir=write_dir,
                                       smoothOpNb=self.smoothOpNb)
 

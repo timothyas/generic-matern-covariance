@@ -48,20 +48,53 @@ class MaternField():
                 self.delta_hat**self.mean_differentiability
         self.ideal_variance = scipy.special.gamma(self.mean_differentiability) / denom
 
-        self.Lx, self.Ly = _horizontal_length_scale(xdalike, self.isoxy)
+        self.Lx, self.Ly = self.get_horizontal_length_scale(xdalike)
         self.vertical_length = _vertical_length_scale(xdalike)
         self.cell_volume = self.get_cell_volume()
 
 
         self.Phi, self.detPhi = self.get_deformation_jacobian()
-        self.rhs_factor = 1 / np.sqrt(self.detPhi) / np.sqrt(self.cell_volume)
-        self.delta = (self.delta_hat / self.detPhi ).broadcast_like(xdalike)
+
+        # Protect against division by 0
+        detPhiInv = xr.where(self.detPhi == 0, 0., self.detPhi)
+        volInv = xr.where(self.cell_volume == 0, 0., self.detPhi)
+
+        self.rhs_factor = np.sqrt(detPhiInv * volInv)
+        self.delta = (self.delta_hat * detPhiInv).broadcast_like(xdalike)
         self.delta.name = 'delta'
 
         K = {}
         for key, val in self.Phi.items():
-            K[key] = 1 / self.detPhi * val**2
+            K[key] = detPhiInv * val**2
         self.K = K
+
+
+    def get_horizontal_length_scale(self, xds):
+        """Get horizontal length scale from data array or dataset"""
+
+        xds = xds.to_dataset(name='tmp') if isinstance(xds, xr.DataArray) else xds
+
+        Lx = None
+        Ly = None
+
+        if self.isoxy:
+            if "rA" in xds:
+                Lx = np.sqrt(xds['rA'])
+                Ly = np.sqrt(xds['rA'])
+        else:
+            if "dxF" in xds:
+                Lx = xds["dxF"]
+            elif "dxG" in xds:
+                Lx = xds["dxG"]
+
+            if "dyF" in xds:
+                Ly = xds["dyF"]
+            elif "dyG" in xds:
+                Ly = xds["dyG"]
+
+        Lx.name = 'Lx'
+        Ly.name = 'Ly'
+        return Lx, Ly
 
 
     def ideal_correlation(self, distance):
@@ -164,7 +197,8 @@ class MaternField():
         # If vertical dimension is present, we want to sort it from surface to depth
         # this is "descending" sort for Z (or Zl, Zu, Zp1...) coordinate, and
         # and "ascending" for k (or k_l, etc..)
-        writeme = xda.where(~np.isnan(xda), 0.)
+        checks = ~np.isnan(xda) | ~np.isinf(xda)
+        writeme = xda.where(checks, 0.)
         if self.xyz['z'] is not None:
             ascending = False if 'Z' in self.xyz['z'] else True
             writeme = writeme.sortby(self.xyz['z'], ascending=ascending)
@@ -208,34 +242,6 @@ def _aspect_ratio(L, H):
     aspect = H / L
     aspect.name = 'aspect'
     return aspect
-
-
-def _horizontal_length_scale(xds, isoxy):
-    """Get horizontal length scale from data array or dataset"""
-
-    xds = xds.to_dataset(name='tmp') if isinstance(xds, xr.DataArray) else xds
-
-    Lx = None
-    Ly = None
-
-    if isoxy:
-        if "rA" in xds:
-            Lx = np.sqrt(xds['rA'])
-            Ly = np.sqrt(xds['rA'])
-    else:
-        if "dxF" in xds:
-            Lx = xds["dxF"]
-        elif "dxG" in xds:
-            Lx = xds["dxG"]
-
-        if "dyF" in xds:
-            Ly = xds["dyF"]
-        elif "dyG" in xds:
-            Ly = xds["dyG"]
-
-    Lx.name = 'Lx'
-    Ly.name = 'Ly'
-    return Lx, Ly
 
 
 def _vertical_length_scale(xds):
