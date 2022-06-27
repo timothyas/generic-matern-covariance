@@ -20,6 +20,7 @@ class CorrelationCalculator():
     n_samples           = 1000
     mean_differentiability = 1/2
     isoxy               = False
+    baro_rad            = False
 
     # set dimensions and subregion
     n_shift             = 50
@@ -45,6 +46,8 @@ class CorrelationCalculator():
     def main_run_dir(self):
         if self.isoxy:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-isoxy"
+        elif self.baro_rad:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-barotropic-radius"
         else:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern"
 
@@ -61,6 +64,8 @@ class CorrelationCalculator():
     def main_zstore_path(self):
         if self.isoxy:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-isoxy"
+        elif self.baro_rad:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-barotropic-radius"
         else:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr"
 
