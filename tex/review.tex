@@ -1,7 +1,7 @@
 \section{Mathematical Context and Background}
 \label{sec:review}
 
-In order to provide some mathematical context for our covariance model
+In order to provide some mathematical context for our correlation model
 developments, we first outline the generic inverse problem that is central to
 a variety of applications such as numerical weather prediction and state
 estimation.
@@ -10,13 +10,15 @@ notation is used to describe the problem, but these matrices are never formed
 explicitly.
 Rather, all matrices presented can be described as operators that can be applied
 scalably in high dimensional inverse problems.
-We then review how the WC01 correlation model fits into the background state
-error covariance.
+We then review correlation models that are based on the application of a
+diffusion operator \citep{weaver_correlation_2001,mirouze_representation_2010},
+which are commonly used for large scale geophysical inverse problems
+\citep[e.g.][]{forgetECCOv4}.
 Finally, we discuss the developments from \citet{RSSB:RSSB777}, outlining the
 connection between the solution to a Stochastic PDE (SPDE) and a Gaussian random
 field with Mat\'ern type covariance.
-This review sets up our development of an anistropic, nonstationary covariance
-model which is presented in Section \ref{sec:discretization_matern}.
+This review sets up our development of an anistropic, nonstationary correlation
+model which is presented in \cref{sec:matern_operator}.
 
 
 \subsection{Inverse Problem Formulation}
@@ -43,8 +45,11 @@ On the other hand, the background-state covariance matrix $\priorCovMat$
 represents our uncertainty in the prior estimate or background state,
 $\priorParams$.
 
-In this work, our focus is on the development of the background-state error
-covariance, $\priorCovMat$.
+To be explicit, we focus on how our correlation model fits into the
+background-state error covariance, $\priorCovMat$.
+However, we note that the formulation could be used for specifying correlations
+between observations in a similar fashion to \citet{guillet_modelling_2019}, but
+we leave this for future investigation.
 In the general case, the control vector $\params$ could be multivariate,
 including initial conditions of the system state, uncertain boundary
 conditions, or uncertain parameter fields.
@@ -83,13 +88,25 @@ To be concrete, this can be viewed as
 where $\alpha, \beta, \gamma$ are placeholders for unique variables, and each
 $\Sigma_\alpha, \corrMat_\alpha$ pair describes the amplitude of pointwise standard deviation
 and spatial correlation for each variable.
+The goal of this paper is to specify a formulation of $\corrMat_\alpha$, but we
+first review past work which has achieved this with a diffusion-like
+operator.
 
 
-\subsection{The WC01 Correlation Model}
+\subsection{Diffusion Based Correlation Models}
 \label{ssec:wc01_review}
 
-The primary contribution of WC01 is a correlation model that can be used to
-formulate $\corrMat_\alpha$.
+A common, general method for specifying the correlation structure for
+$\corrMat_\alpha$ in variational data assimilation systems, especially for
+oceanographic applications  is through a generalized diffusion
+operator.
+The operator is defined as follows
+\begin{linenomath*}\begin{equation}
+    \mathcal{A}_\text{diff} =
+        \left(I + \nabla\cdot\kappa\nabla \right)^p W^{-1/2} \,
+\end{equation}\end{linenomath*}
+
+
 The operator is based on the solution of a generalized diffusion equation,
 amounting to the repeated application of a Laplacian-like operator.
 In order to specify $\corrMat_\alpha$, they define its square root

@@ -15,6 +15,8 @@
 - Since we have access to B and Binverse, could use this for obs operator ...
   change 1st intro paragraph based on this
 - geophysical inverse problems to variational data assimilation
+- get more citations of WC01 or diffusion like examples in use e.g. carrier and
+  Ngodock ...? Met Office?
 
 ## More literature review
 
