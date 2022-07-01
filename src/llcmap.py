@@ -93,7 +93,7 @@ class PacificMap:
             cb=plt.colorbar(p,ax=ax,shrink=.8,label=cbar_label,
                             orientation='horizontal',pad=0.05)
 
-        return p
+        return p, gl
 
 
     def regrid(self,xda):
