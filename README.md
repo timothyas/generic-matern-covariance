@@ -2,28 +2,39 @@
 
 ## Writing TODOs
 
+- geophysical inverse problems to variational data assimilation ??
+
+### Intro
 - somewhere mention the Gaussian, probabilistic stuff
 - remove the double statements of "we can use a high tolerance yo"
-- In conclusions, note that time could additionally be handled as a separate
-  dimension, and now "grid cells" has the interpretation of "time steps", once
-  we normalize by deltat
 - disambiguate cov and corr ...
-- abrupt transition in 3.2 from x to grid indices...
-- Note the difference by factor of two between rho and "usual" instances of
-  rho... i.e. normally rhohat = sqrt(2 epsilon) / deltahat,
-  not sqrt(8 epsilon) / deltahat
-- Since we have access to B and Binverse, could use this for obs operator ...
-  change 1st intro paragraph based on this
-- geophysical inverse problems to variational data assimilation
+
 - get more citations of WC01 or diffusion like examples in use e.g. carrier and
   Ngodock ...? Met Office?
 
-## More literature review
 
-- Guillet, Weaver, et al 2019: Implicit, and observation correlations
-- Weaver and Mirouze, 2013: Is this where implicit form is first introduced?
-- Yaremchuk and Smith, 2011 & Yaremchuk and Sentchev, 2012: other references
-- Purser et al, 2019: Beta functions
+### Review
+- Swap out range parameter definition, and a light version needs to be in the
+  review section
+- Then, clean up "representative length scale" with e.g. Daley? not sure what
+  best to use...
+- Note the difference by factor of two between rho and "usual" instances of
+  rho... i.e. normally rhohat = sqrt(2 epsilon) / deltahat,
+  not sqrt(8 epsilon) / deltahat
+- Statement about "matern field" is where the covariance analytical function
+  holds ... but do I actually use that term?
+- add an equation for the matern correlation function
+
+### Methods
+- Probably get rid of the footnote about anisotropy...
+
+### Discussion
+- In conclusions, note that time could additionally be handled as a separate
+  dimension, and now "grid cells" has the interpretation of "time steps", once
+  we normalize by deltat ... there are definitely other citations to mention
+  here (some by the Lindgren et al crew)
+- Since we have access to B and Binverse, could use this for obs operator ...
+
 
 
 ## TODO

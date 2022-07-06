@@ -1,23 +1,91 @@
-\section{Parameterizing the Correlation Model}
+\section{A Nonstationary and Anisotropic Mat\'ern Correlation Operator}
 \label{sec:matern_operator}
 
 Here we propose to use the SPDE operator described by \citet{RSSB:RSSB777}
-together with the correlation/covariance formulation suggested by WC01.
-That is, we define a correlation operator via its square root as
+as a means to describe an anisotropic, nonstationary correlation model in a
+similar manner to the diffusion-based methods described in
+\cref{ssec:wc01_review}.
+To do so, we employ the ``mapping method'' described by \citet{RSSB:RSSB777}
+which we show for the general $M$th order SPDE in \cref{ssec:mapping_method}.
+We then provide suggestions on how to parameterize the model for intuitive use
+in practical applications in \cref{ssec:scaling_laplacian,ssec:range_parameter}.
+
+
+\subsection{Mapping Method via Change of Variables}
+\label{ssec:mapping_method}
+
+In \citet{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
+coordinate system can allow for a Mat\'ern class covariance
+model that can easily incorporate anisotropy and nonstationarity.
+To do so, consider solutions to the isotropic and stationary SPDE
+(\cref{eq:spde_iso}), $\unih(\xh)$, to be defined in a transformed, or
+``deformed'' \citep{sampson_nonparametric_1992}, space $\defdomain$.
+Then, assume that we have a mapping $\defmap$ that maps between this transformed space
+and our computational domain, $\domain$:
+\begin{linenomath*}\begin{equation*}
+    \defmap : \defdomain\ni\xh \rightarrow \x\in\domain \, .
+\end{equation*}\end{linenomath*}
+With this mapping, we can employ a change of variables
+\citep{smith_change_1934} to rewrite the SPDE in the computational domain as:
+\begin{linenomath*}\begin{equation*}
+    \dfrac{1}{\defdet^M}
+    \left(\deltah -
+    \defdet\nabla\cdot
+    \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
+    \nabla\right)^M\uni(\x) =
+    \defdet^{-1/2}\W(\x) \, .
+\end{equation*}\end{linenomath*}
+Here we have defined the Jacobian as
+\begin{linenomath*}\begin{equation*}
+    \defjac(\x_0) \coloneqq
+    \dfrac{\partial \defmap}{\partial \xh}\Big|_{\defmap^{-1}(\x_{0})} \, ,
+\end{equation*}\end{linenomath*}
+and for now we assume that $\defmap^{-1}(\x_0)$ is well defined.
+For our purposes, this turns out to be the case, but this becomes clear when
+$\defjac$ is defined in \cref{sec:matern_operator}.
+%Notice that we have taken the exponent $M=1$, avoiding
+%fractional or higher order operations for simplicity.
+%All of the future formulations and experiments will make this assumption,
+%although this can be relaxed in future work.
+With the following definitions:
+\begin{linenomath*}\begin{equation}
+    K(\x) \coloneqq
+    \dfrac{\defjac(\x)\defjac(\x)^T}{\defdet}
+    \qquad
+    \delta(\x) \coloneqq \dfrac{\deltah}{\defdet}
+    \label{eq:matern_definitions}
+\end{equation}\end{linenomath*}
+the SPDE in \cref{eq:spde_iso} can be written in the computational domain's coordinate system as
+\begin{linenomath*}\begin{equation}
+    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)^M \uni(\x) =
+    \defdet^{-1/2}\W(\x) \, .
+    \label{eq:spde_general}
+\end{equation}\end{linenomath*}
+We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
+introduced in \citet{sampson_nonparametric_1992}.
+
+Here, we propose to use this generic form to define a square root of the
+correlation matrix in a similar fashion to
+\citet{weaver_correlation_2001, mirouze_representation_2010,
+carrier_background-error_2010}
+as follows,
 \begin{linenomath*}\begin{equation}
     \corrMat^{1/2} \coloneqq \normalizer
-    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)^{-1}
-    \defdet^{-1/2}
+    \Big(\delta(\x)- \nabla\cdot K(\x)\nabla\Big)^{-M}
+    \defdet^{-1/2} \, ,
+    \label{eq:matern_operator}
 \end{equation}\end{linenomath*}
-where $\corrMat \coloneqq \corrMat^{1/2}\corrMat^{T/2}$, and $\normalizer$ is
+where $\normalizer$ is
 once again a variance-preserving normalization matrix defined by the operations
 that precede it.
-The degree to which neighboring points are correlated are controlled by
-$\defjac(\x)$ and $\deltah$, and here we discuss how these can be assigned for
-practical applications in oceanographic state estimation.
-We note that in this discussion we loosely use the infinite dimensional forms of
-these operators in order to ease the presentation, but provide a more careful
-derivation of their discretized form in \cref{sec:discretization_matern}.
+In this model,
+anisotropy and nonstationarity are controlled by
+$\defjac(\x)$ and $\deltah$, and in the following subsections we discuss how these can be assigned for
+practical applications in geophysical inverse problems.
+We note that in this discussion we loosely mix the use of
+finite dimensional matrices and infinite dimensional operators
+in order to ease the presentation, but we provide a more careful
+derivation of their discretized forms in \cref{sec:discretization_matern}.
 
 \subsection{Scaling the Laplacian Term}
 \label{ssec:scaling_laplacian}
@@ -27,8 +95,9 @@ $K(\x)$.
 We illustrate how this operator controls correlation length scales and
 motivate its parameterization with a simple scaling analysis.
 Consider a 3D field $\uni(\x)\sim U$ that exhibits spatial variability at the
-length scales, $L_h$, $L_h$, and $L_z$ in each dimension
-where $L_h, L_h >> L_z$, such that the field exhibits highly
+length scales, $L_x$, $L_y$, and $L_z$ in the direction of longitude, latitude,
+and height, respectively,
+where $L_x, L_y >> L_z$, such that the field exhibits highly
 anisotropic fluctuations.
 This is a common situation in large scale geophysical fluid
 dynamics, where fields (e.g.\ temperature, velocity) exhibit length scales of
@@ -38,9 +107,9 @@ vertical.
     We make a note on the terminology used here.
     In oceanography, the difference in horizontal and vertical scales
     is a result of the small aspect ratio, or the shallow fluid nature of the ocean.
-    Because of the vast difference in scales, the horizontal dimensions are usually
-    considered entirely independent of the vertical, and ``anisotropy'' is typically
-    used to refer to heterogeneity between the horizontal components.
+    Because of the vast difference in scales, the horizontal dimensions are
+    sometimes considered entirely independent of the vertical, and ``anisotropy''
+    can be used to refer to heterogeneity between the horizontal components.
     However, here we use anisotropy to refer to the difference between horizontal
     and vertical scales, resulting from the small aspect ratio \citep{vallis2006}.
 }
@@ -50,7 +119,7 @@ the Laplacian term in $\maternOp$ is imbalanced
 \begin{linenomath*}\begin{equation}
     \begin{aligned}
         \nabla^2 \uni(\x)
-            & \sim \dfrac{U}{L_h^2} + \dfrac{U}{L_h^2} + \dfrac{U}{L_z^2} \\
+            & \sim \dfrac{U}{L_x^2} + \dfrac{U}{L_y^2} + \dfrac{U}{L_z^2} \\
             & \simeq \dfrac{U}{L_z^2} \, .
     \end{aligned}
     \label{eq:iso_lap}
@@ -68,39 +137,39 @@ perhaps obvious, specification of $\defjac$:
 \begin{linenomath*}\begin{equation*}
     \defjac =
         \begin{pmatrix}
-            L_h & 0 & 0     \\
-            0 & L_h & 0     \\
+            L_x & 0 & 0     \\
+            0 & L_y & 0     \\
             0 & 0   & L_z   \\
         \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
 where we simply ignore the off-diagonal elements of $\defjac$.
-The determinant in this case is $\defdetnox = L_h^2L_z$ and
-according to the definitions in equation (\ref{eq:matern_definitions}):
+The determinant in this case is $\defdetnox = L_xL_yL_z$ and
+according to the definitions in \cref{eq:matern_definitions}:
 \begin{linenomath*}\begin{equation*}
     K =
         \begin{pmatrix}
             1/L_z & 0 & 0     \\
             0 & 1/L_z & 0     \\
-            0 & 0   & L_z/L_h^2   \\
+            0 & 0   & L_z/(L_xL_y)   \\
         \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
 so that
 \begin{linenomath*}\begin{equation*}
-    \nabla\cdot K(\x)\nabla\uni(\x) \sim \dfrac{3}{L_h^2L_z}U \, .
+    \nabla\cdot K(\x)\nabla\uni(\x) \sim \dfrac{3}{L_xL_yL_z}U \, .
 \end{equation*}\end{linenomath*}
 The key is that $K$ scales each term in the Laplacian so that they are
 approximately the same order of magnitude, and the operator is balanced in either direction.
 %This example can further be extended by allowing the length scales $L_1$ and
 %$L_2$ to vary in space, such that correlations are nonstationary.
 
-At this point, we must prescribe values for $L_h(\x)$ and $L_z(\x)$ to fill
+At this point, we must prescribe values for $L_x(\x)$, $L_y(\x)$, and $L_z(\x)$ to fill
 $\defjac(\x)$.
 Considering the discretization of the Laplacian, a simple choice for these can
-be based on the underlying grid of the ocean model.
+be based on the underlying grid of the general circulation model.
 For the numerical experiments in this paper, we choose
-\red{$L_h(i,j) = \sqrt{\Delta x_g(i,j) \Delta y_g(i,j)}$},
-and $L_z(k) = \Delta r_f(k)$ (\cref{fig:mitgcm_grid}) where $i$, $j$, $k$ refer
-to indices of the computational grid.
+$L_x(i,j) = \Delta x_g(i,j)$, $L_y(i,j) = \Delta y_g(i,j)$,
+and $L_z(k) = \Delta r_f(k)$ (\cref{fig:mitgcm_grid}) where we have switched
+from the spatial coordinate $\x\in\domain$ to the computational grid indices $i$, $j$, $k$.
 We consider the choice to use the grid elements directly to be reasonable
 because anisotropy and nonstationarity is usually encoded into the grid.
 For instance, regarding nonstationarity, it is reasonable to assume that
@@ -116,34 +185,46 @@ incorporate these assumptions into the vertical grid resolution.
 \subsection{The Range Parameter}
 \label{ssec:range_parameter}
 
-The other term in (\cref{eq:spde_general}) to be defined is $\deltah$.
+The other term in \cref{eq:spde_general} to be defined is $\deltah$.
 Here we resort to the empirical relation suggested in
 \citet{RSSB:RSSB777}:
 \begin{linenomath*}\begin{equation*}
     \rangeh = \sqrt{\dfrac{8\meandiff}{\deltah}} \, .
 \end{equation*}\end{linenomath*}
 The so-called range parameter, $\rangeh$, defines the
-distance between two points at which correlation drops to 0.1.
-While this may seem like swapping one unknown for the other, it is usually easier to
-define correlation length scales than simply guessing values for $\deltah$.
+distance between two points at which correlation drops to 0.14.
+We note that the range parameter used here is larger by a factor of two than
+what is commonly often used, for instance this is twice the scale parameter used
+by \citet{mirouze_representation_2010}.
+We prefer the definition used here because the relation described above provides an intuitive
+understanding of $\rangeh$.
+
+%While it may seem like we have swapped one unknown for another, it is usually easier to
+%define correlation length scales than simply guessing values for $\deltah$.
 With this relation and our choice for $\defjac(\x)$ in
 \cref{ssec:scaling_laplacian} we have
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
         \delta(i,j,k) &= \dfrac{8\meandiff}{\rangeh^2\defdetd} \\
-                 &= \dfrac{8\meandiff}{\rangeh^2 L_h(i,j,k)^2 L_z(i,j,k)} \, .
+                      &= \dfrac{8\meandiff}{\rangeh^2 L_x(i,j,k)L_y(i,j,k) L_z(i,j,k)} \, .
     \end{aligned}
 \end{equation*}\end{linenomath*}
 With this choice, both this term and the Laplacian term are now of a similar order of
 magnitude
 \begin{linenomath*}\begin{equation*}
     D_{\delta}\unis \sim \nabla \cdot K \nabla \unis \sim
-    \bigo\left(\dfrac{1}{L_h^2 L_z}\right) \, ,
+    \bigo\left(\dfrac{\meandiff}{L_xL_yL_z}\right) \, ,
 \end{equation*}\end{linenomath*}
-where we note that $\meandiff \sim \bigo(1)$, and we take this to be
-$\meandiff = 1/2$ for the experiments in this work since $d=3$, see
-\cref{eq:spde_iso}.
-With $L_h$ and $L_z$ defined by the model grid elements, one can intuitively
-regard $\rangeh$ as a nondimensional parameter that controls the
-``number of neighboring grid cells'' at which correlation decays to 0.1.
-Our numerical experiments in \cref{sec:llc90} make this clear.
+where we note that $\meandiff \sim \bigo(1)$ is a reasonable assumption since
+$\meandiff=5/2 \implies M=2$ gives a good approximation to a Gaussian
+correlation when $d=3$, see \red{FIG}.
+
+With $L_x$, $L_y$, and $L_z$ defined by the model grid elements, the elliptic
+operator in \cref{eq:matern_operator} is effectively nondimensionalized.
+We assert that with this definition, one can use this operator on an
+anisotropic and spatially varying computational grid armed with the intuition that
+$\rangeh$ is a nondimensional parameter that controls the
+``number of neighboring grid cells'' at which correlation decays to 0.14.
+Our numerical experiments in \cref{sec:llc90} show that this is a good
+approximation in the case of a realistic global ocean model grid.
+
