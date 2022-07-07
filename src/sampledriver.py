@@ -57,7 +57,7 @@ class SampleDriver:
     smooth2DDims = 'yzw'
     jacobi_max_iters = 20000
     conda_env = 'py38_tim'
-    num_applications = 1
+    n_applications = 1
 
     @property
     def exp_fname(self):
@@ -294,7 +294,7 @@ class SampleDriver:
             f' {smooth}SOROmega({self.smoothOpNb}) = {sor},\n'+\
             f' {smooth}MaskName({self.smoothOpNb}) = "{maskName}",\n'+\
             f' {smooth}EllipticTol({self.smoothOpNb}) = {TOL},\n'+\
-            f' {smooth}NumApplications({self.smoothOpNb}) = {self.num_applications},\n'+\
+            f' {smooth}NumApplications({self.smoothOpNb}) = {self.n_applications},\n'+\
             ' &'
         fname = write_dir+f'/data.smooth'
         with open(fname,'w') as f:

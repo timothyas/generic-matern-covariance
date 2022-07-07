@@ -25,8 +25,8 @@ if __name__ == "__main__":
 
     # --- Launch
     log10tol = -3
-    for n_apps in [2, 3, 4]:
-        driver = SampleDriver(f'matern-{n_apps:02d}/log10tol{log10tol:03d}-3D')
+    for n_apps in [2]: #, 3, 4]:
+        driver = SampleDriver(f'matern-{n_apps:02d}-test/log10tol{log10tol:03d}-3D')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],
@@ -38,4 +38,4 @@ if __name__ == "__main__":
                      n_samples=1000,
                      smooth2DDims=None,
                      elliptic_tol=10**log10tol,
-                     num_applications=n_apps)
+                     n_applications=n_apps)

@@ -17,8 +17,8 @@ class CorrelationCalculator():
     n_range             = None
     log10tol            = None
     horizontal_factor   = 1
+    n_applications      = 1
     n_samples           = 1000
-    mean_differentiability = 1/2
     isoxy               = False
     baro_rad            = False
 
@@ -43,11 +43,19 @@ class CorrelationCalculator():
                            "ix"     : -1}
 
     @property
+    def mean_differentiability(self):
+        return 2*self.n_applications - 3/2
+
+
+    @property
     def main_run_dir(self):
         if self.isoxy:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-isoxy"
         elif self.baro_rad:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-barotropic-radius"
+
+        elif self.n_applications > 1:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-{self.n_applications:02d}-test"
         else:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern"
 
@@ -66,9 +74,11 @@ class CorrelationCalculator():
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-isoxy"
         elif self.baro_rad:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-barotropic-radius"
+        elif self.n_applications > 1:
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-{self.n_applications:02d}apps"
+
         else:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr"
-
 
     @property
     def zstore_path(self):
@@ -206,6 +216,8 @@ class CorrelationCalculator():
 
     def get_sor_iters(self, ds):
         myiters = read_jacobi_iters(f"{self.run_dir}/STDOUT.0000", which_jacobi="3D")
+
+        myiters = np.array([ np.sum(myiters[i:i+self.n_applications]) for i in np.arange(0, self.n_samples*self.n_applications, self.n_applications)])
         myiters = xr.DataArray(myiters[:len(ds.sample)], ds['sample'].coords, ds['sample'].dims,
                                attrs={'description': 'Number of iterations to converge, given tolerance and range'})
         ds['sor_iters'] = myiters

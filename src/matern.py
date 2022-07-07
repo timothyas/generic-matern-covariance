@@ -15,13 +15,15 @@ class MaternField():
 
     def __init__(self, xdalike, n_range, horizontal_factor,
                  isotropic=False,
-                 isoxy=False):
+                 isoxy=False,
+                 n_applications=1):
 
         self.xdalike            = xdalike
         self.n_range            = n_range
         self.horizontal_factor  = horizontal_factor
         self.isotropic          = isotropic
         self.isoxy              = isoxy
+        self.n_applications     = n_applications
 
         # Set some properties that don't change
         self.dims = xdalike.dims
@@ -40,7 +42,8 @@ class MaternField():
         if self.llc and self.n_dims == 2 and self.xyz['z'] is not None:
             raise NotImplementedError(f"Due to writing routines (and probably other problems), can't do X-Z or Y-Z slice in LLC grid ... it's a global grid anyway!")
 
-        self.mean_differentiability = 1/2 if self.n_dims == 3 else 1
+
+        self.mean_differentiability = 2*self.n_applications - self.n_dims/2
         self.delta_hat = 8*self.mean_differentiability / (self.n_range**2)
 
         denom = scipy.special.gamma(self.mean_differentiability + self.n_dims/2) * \
