@@ -245,7 +245,8 @@ class SampleDriver:
                 matern = MF(xdalike=self.mymodel,
                             n_range=Nx,
                             horizontal_factor=xi,
-                            isotropic=self.isotropic)
+                            isotropic=self.isotropic,
+                            n_applications=self.n_applications)
                 matern.write_binaries(write_dir=write_dir,
                                       smoothOpNb=self.smoothOpNb)
 

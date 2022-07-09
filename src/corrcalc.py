@@ -54,10 +54,8 @@ class CorrelationCalculator():
         elif self.baro_rad:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-barotropic-radius"
 
-        elif self.n_applications > 1:
-            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-{self.n_applications:02d}-test"
         else:
-            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern"
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/matern-{self.n_applications:02d}apps"
 
     @property
     def run_dir(self):
@@ -74,11 +72,8 @@ class CorrelationCalculator():
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-isoxy"
         elif self.baro_rad:
             return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-barotropic-radius"
-        elif self.n_applications > 1:
-            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-{self.n_applications:02d}apps"
-
         else:
-            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr"
+            return f"/scratch2/tsmith/generic-matern-covariance/sampling/llc90/zstores/matern-corr-{self.n_applications:02d}apps"
 
     @property
     def zstore_path(self):
@@ -250,11 +245,29 @@ if __name__ == "__main__":
 
     walltime.start("Starting job")
 
+    n_applications = 1
     for n_range in [5, 10, 15, 20]:
         for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
-            localtime.start(f"n_range = {n_range}, log10tol = {log10tol}")
+
+            localtime.start(f"n_range = {n_range}, log10tol = {log10tol}, n_applications = {n_applications}")
             cc = CorrelationCalculator(n_range=n_range,
                                        log10tol=log10tol,
+                                       n_applications=n_applications,
+                                       n_samples=1000,
+                                       isoxy=False,
+                                       load_samples=True,
+                                       persist=False)
+            cc()
+            localtime.stop()
+
+    log10tol = -3
+    for n_range in [5, 10, 15, 20]:
+        for n_applications in [1, 2, 4, 8]:
+
+            localtime.start(f"n_range = {n_range}, log10tol = {log10tol}, n_applications = {n_applications}")
+            cc = CorrelationCalculator(n_range=n_range,
+                                       log10tol=log10tol,
+                                       n_applications=n_applications,
                                        n_samples=1000,
                                        isoxy=False,
                                        load_samples=True,

@@ -59,11 +59,10 @@ class MaternField():
         self.Phi, self.detPhi = self.get_deformation_jacobian()
 
         # Protect against division by 0
-        detPhiInv = xr.where(self.detPhi == 0, 0., self.detPhi)
-        volInv = xr.where(self.cell_volume == 0, 0., self.detPhi)
+        detPhiInv = xr.where(self.detPhi == 0, 0., 1/self.detPhi)
 
-        self.rhs_factor = np.sqrt(detPhiInv * volInv)
-        self.delta = (self.delta_hat * detPhiInv).broadcast_like(xdalike)
+        self.rhs_factor = np.sqrt(detPhiInv * self.cell_volume)
+        self.delta = (self.delta_hat * detPhiInv * self.cell_volume).broadcast_like(xdalike)
         self.delta.name = 'delta'
 
         K = {}
