@@ -182,7 +182,7 @@ class CorrelationCalculator():
 
 
     def expand_dims(self, ds):
-        return ds.expand_dims({'log10tol': [self.log10tol], 'n_range': [self.n_range]})
+        return ds.expand_dims({'log10tol': [self.log10tol], 'n_range': [self.n_range], 'n_applications': [self.n_applications]})
 
 
     def save_results(self, ds):
@@ -245,21 +245,6 @@ if __name__ == "__main__":
 
     walltime.start("Starting job")
 
-    n_applications = 1
-    for n_range in [5, 10, 15, 20]:
-        for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
-
-            localtime.start(f"n_range = {n_range}, log10tol = {log10tol}, n_applications = {n_applications}")
-            cc = CorrelationCalculator(n_range=n_range,
-                                       log10tol=log10tol,
-                                       n_applications=n_applications,
-                                       n_samples=1000,
-                                       isoxy=False,
-                                       load_samples=True,
-                                       persist=False)
-            cc()
-            localtime.stop()
-
     log10tol = -3
     for n_range in [5, 10, 15, 20]:
         for n_applications in [1, 2, 4, 8]:
@@ -274,5 +259,20 @@ if __name__ == "__main__":
                                        persist=False)
             cc()
             localtime.stop()
+
+    for n_applications in [1, 2]:
+        for n_range in [5, 10, 15, 20]:
+            for log10tol in [-1, -2, -4, -7, -11, -15]:
+
+                localtime.start(f"n_range = {n_range}, log10tol = {log10tol}, n_applications = {n_applications}")
+                cc = CorrelationCalculator(n_range=n_range,
+                                           log10tol=log10tol,
+                                           n_applications=n_applications,
+                                           n_samples=1000,
+                                           isoxy=False,
+                                           load_samples=True,
+                                           persist=False)
+                cc()
+                localtime.stop()
 
     walltime.stop("Total Walltime")
