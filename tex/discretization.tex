@@ -45,12 +45,17 @@ $\cell_\jk\subset\openBdy$.
 
 Starting with the first term,
 \begin{linenomath*}\begin{equation*}
-    \delta_\jk \coloneqq \dfrac{1}{\vol_\jk}\int_{\cell_\jk}\delta(\x)\,d\x
+    \begin{aligned}
+        \delta_\jk &\coloneqq \dfrac{1}{\vol_\jk}\int_{\cell_\jk}\delta(\x)\,d\x
+        \\
+                   &=
+                   \dfrac{\deltah}{\vol_\jk}\int_{\cell_\jk}\dfrac{1}{\defdetd}\,d\x
+    \end{aligned}
 \end{equation*}\end{linenomath*}
 so that
 \begin{linenomath*}\begin{equation*}
     \int_{\cell_\jk} \delta(\x)\,\uni(\x)\, d\x =
-    \vol_\jk\,\delta_\jk\,\uni_\jk
+    \dfrac{\deltah\,\vol_\jk}{\defdetd}\uni_\jk
 \end{equation*}\end{linenomath*}
 where $\vol_\jk = \Delta y^{j}_{g} \Delta r_f^k$ is the grid cell volume,
 indicated by Figure \ref{fig:mitgcm_grid}.
@@ -197,20 +202,25 @@ equations in matrix form:
     \end{aligned}
     \label{eq:fv_spde}
 \end{equation}\end{linenomath}
-where we have (left) divided by grid cell volume so that:
+where
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-        D_\delta \coloneqq \text{diag}\{\delta_i\}_{i=1}^{\nuni} \qquad
-        D_z \coloneqq \text{diag}\left\{
-            \dfrac{1}{\sqrt{\vol_i \,\, \defdetdi}}
+        D_\delta \coloneqq \text{diag}
+            \left\{
+                \deltah\dfrac{\vol_i}{\defdetdi}
+            \right\}_{i=1}^{\nuni}
+            \qquad
+        D_z \coloneqq \text{diag}
+            \left\{
+                \sqrt{\dfrac{\vol_i}{\defdetdi}}
             \right\}_{i=1}^{\nuni}
     \end{aligned}
 \end{equation*}\end{linenomath*}
 where for notational simplicity we index each grid cell with $i$, rather than
 $j$ and $k$ as above.
 Finally, $L$ is defined by appropriately gathering terms in
-equation \eqref{eq:big_laplacian}, applying the boundary conditions discussed in the next
-subsection, and left dividing by grid cell volume.
+equation \eqref{eq:big_laplacian}, and applying the boundary conditions discussed in the next
+subsection.
 
 At last, the covariance matrix associated with the vector $\unis$ can be
 obtained by considering the joint probability distribution of

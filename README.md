@@ -14,19 +14,10 @@
 
 
 ### Review
-- Swap out range parameter definition, and a light version needs to be in the
-  review section
-- Then, clean up "representative length scale" with e.g. Daley? not sure what
-  best to use...
-- Note the difference by factor of two between rho and "usual" instances of
-  rho... i.e. normally rhohat = sqrt(2 epsilon) / deltahat,
-  not sqrt(8 epsilon) / deltahat
 - Statement about "matern field" is where the covariance analytical function
   holds ... but do I actually use that term?
-- add an equation for the matern correlation function
 
 ### Methods
-- Probably get rid of the footnote about anisotropy...
 
 ### Discussion
 - In conclusions, note that time could additionally be handled as a separate

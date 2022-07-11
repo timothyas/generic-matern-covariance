@@ -8,19 +8,19 @@ estimation.
 Our notation closely follows \citet{ide_unified_1997}, and we note that matrix
 notation is used to describe the problem, but these matrices are never formed
 explicitly.
-Rather, all matrices presented can be described as operators that can be applied
+Rather, all matrices presented are described by operators that can be applied
 scalably in high dimensional inverse problems.
 We then review correlation models that are based on the application of a
 diffusion operator \citep{weaver_correlation_2001,mirouze_representation_2010},
 which are commonly used for large scale geophysical inverse problems
-\citep[e.g.][]{forgetECCOv4}.
+\citep[e.g.][]{forgetECCOv4,moore_regional_2011-1}.
 We then discuss the developments from \citet{RSSB:RSSB777}, outlining the
 connection between the solution to a Stochastic PDE (SPDE) and a Gaussian random
 field with Mat\'ern type covariance.
 We finish by showing a comparison of auto-regressive and the more general
-Mat\'ern type correlation functions with a classical Gaussian in order to
-further motivate our development of an anistropic, nonstationary correlation
-model which is presented in \cref{sec:matern_operator}.
+Mat\'ern type correlation functions with a classical Gaussian.
+These comparisons motivate our development of an anistropic, nonstationary correlation
+model, which is presented in \cref{sec:matern_operator}.
 
 
 \subsection{Inverse Problem Formulation}
@@ -89,15 +89,20 @@ To be concrete, this can be viewed as
         0 & 0 & \cdots & \Sigma_\gamma\corrMat_\gamma\Sigma_\gamma \\
     \end{pmatrix}
 \end{equation*}\end{linenomath*}
-where $\alpha, \beta, \gamma$ are placeholders for unique variables, and each
-$\Sigma_\alpha, \corrMat_\alpha$ pair describes the amplitude of pointwise standard deviation
-and spatial correlation for each variable.
-The goal of this paper is to formulate a generic operator for $\corrMat$, or
-more specifically for its square root $\corrMat^{1/2}$ such that $\corrMat =
-\corrMat^{1/2}\corrMat^{T/2}$, that could be
-used in a variational data assimilation system to specify $\corrMat_\alpha$,
-$\corrMat_\beta$, etc.
-To provide some additional context,
+where $\alpha, \beta, \gamma$ are placeholders for unique variables,
+and each $\Sigma_\alpha, \corrMat_\alpha$ pair describes the covariance for its
+particular variable ($\alpha$, in this case).
+In this formulation, $\corrMat_\alpha$ describes the spatial correlation
+structure for the variable $\alpha$, and is scaled to a proper covariance given the
+diagonal matrix $\Sigma_\alpha$.
+
+The goal of this paper is to formulate a generic operator for $\corrMat$
+that could be
+used in a variational data assimilation system to specify
+correlations for any variable, e.g.\ $\corrMat_\alpha$, $\corrMat_\beta$, etc.
+More specifically, we specify the square root $\corrMat^{1/2}$, such that
+$\corrMat = \corrMat^{1/2}\corrMat^{T/2}$.
+To provide some additional context for this development,
 we first review past work that has achieved this with a generalized
 diffusion-based operator.
 
@@ -105,8 +110,8 @@ diffusion-based operator.
 \subsection{Diffusion Based Correlation Models}
 \label{ssec:wc01_review}
 
-A common method for specifying the correlation structure for
-$\corrMat$ in variational data assimilation systems, especially in
+A common method for specifying the correlation structure,
+$\corrMat$, in variational data assimilation systems, especially in
 oceanographic applications, is through the solution of a generalized diffusion
 equation,
 \begin{linenomath*}\begin{equation}
@@ -127,28 +132,31 @@ That is, the solution $\uni(T)$ is given by forward pseudo-time stepping
     \uni(T) = \left( I + \nabla\cdot\kappa\nabla\right)^p \uni(t_0) \, ,
     \label{eq:wc01_diffusion}
 \end{equation}\end{linenomath*}
-or equivalently through the application of the Laplacian-like operator
-$A_\text{ED} \coloneqq \left(I+\nabla\cdot\kappa\nabla\right)^p$, where $p$ is chosen in
+which requires $p$ applications of the operator
+\begin{linenomath*}\begin{equation*}
+    \edop \coloneqq \left(I+\nabla\cdot\kappa\nabla\right) \, ,
+\end{equation*}\end{linenomath*}
+where $p$ is chosen in
 order to achieve numerical stability \citep[see][for details regarding the
 discretized form of this operator, and extensions of the model briefly shown
 here]{weaver_correlation_2001}.
 The solution $\uni(T)$ is shown to have an approximately Gaussian covariance
 structure.
 A correlation model is thus defined by estimating the pointwise
-variance of $A_\text{ED}$, $\hat{\sigma}^2(\x)$, in order to define the normalization
+variance of $\edop^{p}$, $\hat{\sigma}^2(\x)$, in order to define the normalization
 matrix
 \begin{linenomath*}\begin{equation*}
-    \normalizer \coloneqq \text{diag}\{1/\hat{\sigma}_i\}_{i=1}^{\nuni} \, ,
+    \normalizer \coloneqq \text{diag}\{1/\hat{\sigma}_n\}_{n=1}^{\nuni} \, ,
 \end{equation*}\end{linenomath*}
-where we use $i$ to refer to each grid cell, such that the correlation matrix is
-defined through its square root
+where we use $n$ to refer to each grid cell, such that the correlation matrix is
+defined through its square root as
 \begin{linenomath*}\begin{equation}
-    \corrMat^{1/2}_\text{ED} \coloneqq \normalizer A_\text{ED} \, .
+    \corrMat^{1/2}_\text{ED} \coloneqq \normalizer \edop^{p} \, .
 \end{equation}\end{linenomath*}
 
 The explicit diffusion-based correlation model as briefly summarized here
 directly approximates a Gaussian structure.
-However, a limitation of the explicit diffusion approach is that in some cases, many
+However, a limitation of this approach is that in some cases, many
 iterations are required to keep the scheme stable (i.e.\ a large value of $p$ is
 required in \cref{eq:wc01_diffusion}).
 As such, \citet{mirouze_representation_2010} and
@@ -162,21 +170,21 @@ which is unconditionally stable.
 In this case, a square-root correlation operator is defined through the
 ``implicit diffusion operator''
 \begin{linenomath*}\begin{equation}
-A_\text{ID} \coloneqq \left(I - \nabla \cdot \kappa\nabla\right)^{-M}
+    \idop \coloneqq \left(I - \nabla \cdot \kappa\nabla\right)
 \end{equation}\end{linenomath*}
 as
 \begin{linenomath*}\begin{equation}
-    \corrMat^{1/2}_\text{ID} \coloneqq \normalizer A_\text{ID} \, ,
+    \corrMat^{1/2}_\text{ID} \coloneqq \normalizer \idop^{-M} \, ,
 \end{equation}\end{linenomath*}
 with $\normalizer$ defined based on the operations that precede it.
 
 \citet{mirouze_representation_2010} provide the theoretical underpinnings for
-the implicit diffusion approach, and show details regarding its discretization
+the implicit diffusion approach, and show details regarding its implementation
 in general curvilinear coordinates.
 Additionally, the authors show that this correlation model corresponds
 with an $M$th order auto-regressive (AR) function,
 which is a subclass of
-Mat\'ern type correlation models \citep[see][for more description behind the
+Mat\'ern type correlation models \citep[see][for more description of the
 parameters controlling this model]{weaver_diffusion_2013}.
 Thus, the correlation model has a more general shape, which in the limit of
 $M\rightarrow\infty$, approaches a classical Gaussian structure (see
@@ -235,8 +243,8 @@ structure to give our developments some context and motivation.
 \subsection{Review of the Mat\'ern Correlation Structure}
 \label{ssec:matern_review}
 
-In this section we review the link between an elliptic stochastic partial
-differential equation (SPDE) and Gaussian random fields.
+%In this section we review the link between an elliptic stochastic partial
+%differential equation (SPDE) and Gaussian random fields.
 The Mat\'ern covariance function between two points, $\xh_1,\xh_2\in\defdomain =
 \ndspace$ can be expressed as:
 \begin{linenomath*}\begin{equation}
@@ -266,47 +274,88 @@ when this is the case.
 The marginal variance of such a Mat\'ern field has the analytical form
 \begin{linenomath*}\begin{equation}
     \hat{\sigma} = \dfrac{\mathcal{G}(\meandiff)}{
-        \mathcal{G}(\meandiff + \materndim/2)(4\pi)^{\materndim/2}
-        \deltah^\meandiff
+        \mathcal{G}(\meandiff + \ndims/2)
+        \deltah^{\meandiff}
+        (4\pi)^{\materndim/2}
     } \, ,
     \label{eq:matern_variance}
 \end{equation}\end{linenomath*}
+where $\ndims$ is the dimensionality of the field being described.
 and thus the Mat\'ern covariance can be described via a correlation
 function, $r(\xh_1, \xh_2)$, that is scaled by the marginal variance:
-\begin{linenomath*}\begin{equation}
+\begin{linenomath*}\begin{equation*}
     c(\xh_1, \xh_2) = \hat{\sigma}\,r(\xh_1, \xh_2) \, .
-\end{equation}\end{linenomath*}
+\end{equation*}\end{linenomath*}
+%where, to be explicit,
 
-The key relationship discussed in \citet{RSSB:RSSB777} is that any solution to
+
+The key relationship discussed in \citet{RSSB:RSSB777} is that any discrete solution to
 the elliptic SPDE,
 \begin{linenomath*}\begin{equation}
     \Big(\deltah - \nablah\cdot\nablah\Big)^{M}\hat{\uni}(\xh) =
     \Wh(\xh) \, ,
     \label{eq:spde_iso}
 \end{equation}\end{linenomath*}
-is a Mat\'ern field.
+is a Mat\'ern field, for any triangulation or rectangular lattice of $\ndspace$.
 Here
 $\Wh$ is a white noise process defined on the space $\defdomain$ and
+$M\ge 1$ is the total number of times that the inverse of the operator
+\begin{linenomath*}\begin{equation*}
+\maternopiso \coloneqq (\deltah - \nablah \cdot \nablah)
+\end{equation*}\end{linenomath*}
+is applied to obtain the solution.
+This number is related to the mean differentiability and
+dimensionality of the field via the relation
 \begin{linenomath*}\begin{equation}
-    M = \meandiff/2 + \materndim/4
+    M = \meandiff/2 + \materndim/4 \, .
     \label{eq:meandiff}
 \end{equation}\end{linenomath*}
-The original connection between the Mat\'ern covariance function and solutions
-to \cref{eq:spde_iso} was proven by
-\cite{whittle_stationary_1954,whittle1963stochastic}, who
-used the spectral properties of the operator $(\deltah -
-\nablah\cdot\nablah)^M$ to show that Mat\'ern fields are the only
-stationary solutions to \cref{eq:spde_iso}.
-The result shown in \citet{RSSB:RSSB777} is
-that there is an explicit link between discrete solutions to
-\cref{eq:spde_iso} for any triangulation or rectangular lattice of $\ndspace$
-and Mat\'ern class Gaussian fields.
-More importantly, \citet{RSSB:RSSB777} showed that the SPDE form allows
-one to easily describe Gaussian fields with nonstationary and anisotropic covariance structures.
-For instance, by allowing the parameter $\deltah$ to vary in space, the solution
-becomes nonstationary and the analytical Mat\'ern covariance applies locally.
+For our purposes, we consider $M$ as a parameter which can be tuned to obtain the
+desired correlation shape (see \cref{ssec:correlation_comparison}).
+In order to simplify the solution process, we consider positive integer values
+of $M$, although the theory underlying more general cases is covered
+in \citet{RSSB:RSSB777}.
 
-Within this work, we suggest to define a correlation operator through the
+Throughout this paper we use the empirical relation discussed by
+\citet{RSSB:RSSB777} to specify $\deltah$ via
+\begin{linenomath*}\begin{equation}
+    \rangeh = \sqrt{\dfrac{8\meandiff}{\deltah}} \, .
+\end{equation}\end{linenomath*}
+The so-called ``range parameter'', $\rangeh$, defines the distance between two
+points at which correlation drops to 0.14.
+We note that the range parameter used here is larger by a factor of 2 than what
+is sometimes used \citep[e.g.][]{rasmussen_gaussian_2006},
+but we prefer this definition because of its intuitive interpretation.
+With $M$ and $\rangeh$ defined, we provide an explicit form of the Mat\'ern
+correlation function which will be used throughout:
+\begin{linenomath*}\begin{equation}
+    r(d; \rangeh, M) =
+    r(d; \rangeh, \meandiff(M)) =
+    \dfrac{1}{2^{\meandiff-1}
+    \mathcal{G}(\meandiff)}
+    \left(\sqrt{8\meandiff} \dfrac{d}{\rangeh}\right)^{\meandiff}
+    \mathcal{B}_\meandiff
+    \left(\sqrt{8\meandiff} \dfrac{d}{\rangeh}\right) \, ,
+\end{equation}\end{linenomath*}
+where $d$ is the distance between two points and $\meandiff = \meandiff(M)$ is defined via
+\cref{eq:meandiff}.
+
+%The original connection between the Mat\'ern covariance function and solutions
+%to \cref{eq:spde_iso} was proven by
+%\cite{whittle_stationary_1954,whittle1963stochastic}, who
+%used the spectral properties of the operator $(\deltah -
+%\nablah\cdot\nablah)^M$ to show that Mat\'ern fields are the only
+%stationary solutions to \cref{eq:spde_iso}.
+%The result shown in \citet{RSSB:RSSB777} is
+%that there is an explicit link between discrete solutions to
+%\cref{eq:spde_iso} for any triangulation or rectangular lattice of $\ndspace$
+%and Mat\'ern class Gaussian fields.
+%Additionally, \citet{RSSB:RSSB777} showed that the SPDE form allows
+%one to easily describe Gaussian fields with nonstationary and anisotropic covariance structures.
+%For instance, by allowing the parameter $\deltah$ to vary in space, the solution
+%becomes nonstationary and the analytical Mat\'ern covariance applies locally.
+
+In \cref{sec:matern_operator}, we suggest to define a correlation operator through the
 elliptic operator in \cref{eq:spde_iso}.
 For an isotropic and stationary case, the operator would be defined as
 \begin{linenomath*}\begin{equation}
@@ -321,30 +370,32 @@ case in \cref{sec:matern_operator}.
 \subsection{Comparing the Mat\'ern and Auto-Regressive Functions}
 \label{ssec:correlation_comparison}
 
-To first provide some motivation behind our developments of the Mat\'ern
-correlation function, we compare its structure to an AR function.
+To provide some motivation behind our developments of the Mat\'ern
+correlation function, we compare its structure to AR
+(corresponding to the operator $\idop^{-M}$; \citep{mirouze_representation_2010})
+and Gaussian functions.
 \cref{fig:correlation_comparison}(a) shows a comparison of these 1D correlation
-structures as a function of distance, where each use a representative length
-scale of $\rangeh = 4$.
-Note that this is equivalent to setting $L=2$ for the length scale in
-\citet{mirouze_representation_2010} (see definitions in Table 1).
+structures as a function of distance, $d$, where each use a representative length
+scale of $4$.
 The Mat\'ern function and Gaussian consistently reach an approximate correlation
 of 0.14 when distance is equal to $\rangeh$.
 The consistency here makes using the Mat\'ern correlation structure intuitive in
-practice: no matter what value of $M$ (or alternatively $\meandiff$, see
-\cref{eq:meandiff}), we can expect this approximate relationship to hold.
-
+practice: no matter what value of $M$ is used,
+we can expect this approximate relationship to hold.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{../figures/correlation_comparison.pdf}
     \caption{(a) Correlation as a function of distance given by
-        Mat\'ern (green; \red{EQN}),
+        Mat\'ern (green; \cref{eq:matern_corr_isostat}),
         auto-regressive (AR; orange),
-        and Gaussian (black) functions.
+        and Gaussian (black; $r_g(d) = \exp(-2 (d/4)^2)$) functions.
         For each, we choose a length scale of $\rangeh = 4$, noting for
         comparison purposes that this corresponds to $L=2$ using the notation in
         \citet{mirouze_representation_2010}.
+        Finally, we note that we use $\ndims = 3$ to compute $\meandiff(M)$ (see
+        \cref{eq:meandiff}) since this corresponds to our numerical experiments
+        in \cref{sec:llc90}.
         (b) Absolute error considering the difference between the Mat\'ern and
         AR functions with respect to a Gaussian with the same length scale.
     }
@@ -353,11 +404,11 @@ practice: no matter what value of $M$ (or alternatively $\meandiff$, see
 
 Additionally, \cref{fig:correlation_comparison}(b) shows the error in each
 Mat\'ern and AR functions relative to a Gaussian.
-We note that we get similar levels of error between the two when $M$ is half for
-the Mat\'ern function compared to the AR function.
+We note that error for the Mat\'ern function is comparable to the AR function,
+although $M$ is halved.
 This has practical implications, since in both cases $M$ corresponds to the
 number of inverse elliptic operator applications required for achieving a
-correlation operator via the implicit diffusion approach (AR) or the approach
+correlation structure via the implicit diffusion approach (AR) or the approach
 proposed here (Mat\'ern).
 Thus, if the goal is to approximate a Gaussian, then using the direct Mat\'ern
 shape results in half the required inverse elliptic solves.
