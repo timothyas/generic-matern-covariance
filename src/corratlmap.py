@@ -17,7 +17,7 @@ class CorrelationAtlMap(CorrelationPacMap):
 
     @property
     def main_zstore_path(self):
-        return super().main_zstore_path.replace("/matern-corr", "/matern-atlmap")
+        return super().main_zstore_path.replace("/matern-pacmap", "/matern-atlmap")
 
     def open_dataset(self):
         ds = open_smoothdataset(data_dir=self.diag_dir,

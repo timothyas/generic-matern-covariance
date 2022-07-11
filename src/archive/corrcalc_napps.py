@@ -19,7 +19,7 @@ if __name__ == "__main__":
     walltime.start("Starting Job")
 
     for n_range in [5, 10, 15, 20]:
-        for n_applications in [2]:
+        for n_applications in [1, 2, 4, 8]:
 
             localtime.start(f"(n_range, n_applications) = ({n_range}, {n_applications})")
 

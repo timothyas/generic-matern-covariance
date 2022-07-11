@@ -26,12 +26,12 @@ if __name__ == "__main__":
     # --- Launch
     log10tol = -3
     for n_apps in [1, 2, 4, 8]:
-        driver = SampleDriver(f'matern-{n_apps:02d}apps/log10tol{log10tol:03d}-3D')
+        driver = SampleDriver(f'matern-{n_apps:02d}apps-diagdom/log10tol{log10tol:03d}-3D')
         driver.start(dirs=dirs,
                      dsim=dsim,
                      mymodel=ds['maskC'],
                      ctrl_ds=ds,
-                     NxList=[5, 10, 15, 20],
+                     NxList=[5, 10],
                      xiList=[1],
                      sorDict={.5:1.6, 1:1.3, 2:1.06},
                      slurm=slurm,
@@ -40,18 +40,18 @@ if __name__ == "__main__":
                      elliptic_tol=10**log10tol,
                      n_applications=n_apps)
 
-    n_apps = 1
-    for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
-        driver = SampleDriver(f'matern-{n_apps:02d}apps/log10tol{log10tol:03d}-3D')
-        driver.start(dirs=dirs,
-                     dsim=dsim,
-                     mymodel=ds['maskC'],
-                     ctrl_ds=ds,
-                     NxList=[5, 10, 15, 20],
-                     xiList=[1],
-                     sorDict={.5:1.6, 1:1.3, 2:1.06},
-                     slurm=slurm,
-                     n_samples=1000,
-                     smooth2DDims=None,
-                     elliptic_tol=10**log10tol,
-                     n_applications=n_apps)
+    #n_apps = 1
+    #for log10tol in [-1, -2, -3, -4, -7, -11, -15]:
+    #    driver = SampleDriver(f'matern-{n_apps:02d}apps/log10tol{log10tol:03d}-3D')
+    #    driver.start(dirs=dirs,
+    #                 dsim=dsim,
+    #                 mymodel=ds['maskC'],
+    #                 ctrl_ds=ds,
+    #                 NxList=[5, 10, 15, 20],
+    #                 xiList=[1],
+    #                 sorDict={.5:1.6, 1:1.3, 2:1.06},
+    #                 slurm=slurm,
+    #                 n_samples=1000,
+    #                 smooth2DDims=None,
+    #                 elliptic_tol=10**log10tol,
+    #                 n_applications=n_apps)
