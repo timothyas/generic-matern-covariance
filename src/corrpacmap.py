@@ -135,23 +135,27 @@ if __name__ == "__main__":
     equator = {"ix":  90, "iy": 165, "k": 25}
     coast   = {"ix": 130, "iy": 180, "k":  0}
 
-    for name, spot in zip(["equator", "coast"], [equator, coast]):
-        localtime.start(name)
-        cc = CorrelationPacMap(name=name,
-                               spot=spot,
-                               n_range=20,
-                               log10tol=-15,
-                               n_samples=1000,
-                               drop_coords=False,
-                               load_samples=True,
-                               persist=False)
+    n_range = 20
+    n_apps = 8
+    for n_apps in [1,2,4,8]:
+        for name, spot in zip(["equator", "coast"], [equator, coast]):
+            localtime.start(f"{name}, n_range = {n_range}, n_apps = {n_apps}")
+            cc = CorrelationPacMap(name=name,
+                                   spot=spot,
+                                   n_range=n_range,
+                                   log10tol=-3,
+                                   n_samples=1000,
+                                   n_applications=n_apps,
+                                   drop_coords=False,
+                                   load_samples=True,
+                                   persist=False)
 
-        ds = cc.open_dataset()
-        client = Client()
-        cds = cc.calc_correlation(ds.ginv_norm, ds.ginv_norm_mean, client=client)
-        client.close()
+            ds = cc.open_dataset()
+            client = Client()
+            cds = cc.calc_correlation(ds.ginv_norm, ds.ginv_norm_mean, client=client)
+            client.close()
 
-        cc.save_results(cds.to_dataset(name=f"corr_{cc.name}"))
+            cc.save_results(cds.to_dataset(name=f"corr_{cc.name}"))
 
         localtime.stop()
 
