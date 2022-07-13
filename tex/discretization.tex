@@ -1,33 +1,35 @@
 \section{Discretization of the Mat\'ern SPDE}
 \label{sec:discretization_matern}
 
-In the following analysis we consider a 2D field
-$\uni(\x)$, $\x\in\openBdy$ since this is
-relevant to our control parameters, although we note that the
-extension to 3D is relatively straightforward.
-We carry out the discretization on a structured nonuniform grid according to the
-finite volume method - as is the general setting in the MITgcm.
+In the following analysis we consider a 3D field
+$\uni(\x)$, $\x\in\domain$ and show the discretized form for $\maternop^{-M}$.
+We begin by showing the form for $M=1$, and then simply illustrate how the
+operator can be applied iteratively for $M>1$.
+We carry out the discretization on a structured, nonuniform, Arakawa C
+grid \citep{arakawa_computational_1977}
+according to the finite volume method - as is the general setting in the MITgcm.
 We note that our development is similar to \citet{fuglstad_exploring_2015},
 who show a differential operator for a 2D field on a uniform grid.
 
-Figure \ref{fig:mitgcm_grid} shows the general structure of the grid, and
+\cref{fig:mitgcm_grid} shows the general structure of the grid, and
 defines the various grid cell distances used in the derivation.
-We begin by integrating equation (\ref{eq:spde_general}),
-\begin{linenomath}\begin{equation}
+We begin by integrating \cref{eq:spde_general},
+\begin{linenomath*}\begin{equation}
     \begin{aligned}
-        \int_{\openBdy} \delta(\x)\,\uni(\x)\, d\x -
-        \int_{\openBdy} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
+        \int_{\domain} \delta(\x)\,\uni(\x)\, d\x -
+        \int_{\domain} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
         &=
-        \int_{\openBdy} \W(\x)\defdet^{-1/2} \, d\x \\
-        \sum_{\jk}\int_{\cell_\jk} \delta(\x)\,\uni(\x)\, d\x -
-        \sum_{\jk}\int_{\cell_\jk} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
+        \int_{\domain} \W(\x)\defdet^{-1/2} \, d\x \\
+        \sum_{\ijk}\int_{\cell_\ijk} \delta(\x)\,\uni(\x)\, d\x -
+        \sum_{\ijk}\int_{\cell_\ijk} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
         &=
-        \sum_{\jk}\int_{\cell_\jk} \W(\x)\defdet^{-1/2} \, d\x \, ,
+        \sum_{\ijk}\int_{\cell_\ijk} \W(\x)\defdet^{-1/2} \, d\x \, ,
     \end{aligned}
     \label{eq:spde_integral}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 where in second line we distribute the integral across each grid cell
-$\cell_\jk\subset\openBdy$.
+$\cell_\ijk\subset\domain$ and $\ijk$ indicates indices in longitude, latitude,
+and depth, respectively.
 
 \begin{figure}
     \centering
@@ -46,241 +48,285 @@ $\cell_\jk\subset\openBdy$.
 Starting with the first term,
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-        \delta_\jk &\coloneqq \dfrac{1}{\vol_\jk}\int_{\cell_\jk}\delta(\x)\,d\x
+        \delta_\ijk &\coloneqq \dfrac{1}{\vol_\ijk}\int_{\cell_\ijk}\delta(\x)\,d\x
         \\
                    &=
-                   \dfrac{\deltah}{\vol_\jk}\int_{\cell_\jk}\dfrac{1}{\defdetd}\,d\x
+                   \dfrac{\deltah}{\vol_\ijk}\int_{\cell_\ijk}\dfrac{1}{\defdetd}\,d\x
     \end{aligned}
 \end{equation*}\end{linenomath*}
 so that
 \begin{linenomath*}\begin{equation*}
-    \int_{\cell_\jk} \delta(\x)\,\uni(\x)\, d\x =
-    \dfrac{\deltah\,\vol_\jk}{\defdetd}\uni_\jk
+    \int_{\cell_\ijk} \delta(\x)\,\uni(\x)\, d\x =
+    \deltah\dfrac{\vol_\ijk}{\defdetd}\uni_\ijk
 \end{equation*}\end{linenomath*}
-where $\vol_\jk = \Delta y^{j}_{g} \Delta r_f^k$ is the grid cell volume,
+where $\vol_\ijk = \Delta x ^{i,j}_{g} \Delta y^{i,j}_{g} \Delta r_f^k$ is the grid cell volume,
 indicated by Figure \ref{fig:mitgcm_grid}.
 We note that a cartesian style notation
-is used, but spherical polar coordinates are used in the computation, and the
-MITgcm supports generic curvilinear coordinates.
-Generally, the coordinate directions $(x,y,z)$ correspond to $(\lambda,\phi,r)$,
-i.e. longitude, latitude, and height.
-In the spherical polar case, the differential elements are
-\begin{linenomath*}\begin{equation*}
-    \Delta x = r_0 \cos(\phi)\Delta\lambda \qquad
-    \Delta y = r_0 \Delta \phi \qquad
-    \Delta z = \Delta r
-\end{equation*}\end{linenomath*}
-where $r_0 = 6,378$ km is the nominal radius of the earth, and note that in this
-coordinate system latitude $\phi$ is defined to be 0 at the equator.
+is used to ease the presentation, but a more general curvilinear coordinate system
+is used in the computation in order to support the various sectors of the
+Lat-Lon-Cap (LLC) grid
+\citep[see Section 2 and Appendix A of][for more details on the LLC grid]{forgetECCOv4}.
 
 The third term is, from the definition of a white noise process
 \citep{adler_random_2007},
 \begin{linenomath*}\begin{equation*}
-    \int_{\cell_\jk}\defdet^{-1/2}\W(\x) \, d\x
-        = \sqrt{\dfrac{\vol_\jk}{\defdetd}} z_\jk
+    \int_{\cell_\ijk}\defdet^{-1/2}\W(\x) \, d\x
+        = \sqrt{\dfrac{\vol_\ijk}{\defdetd}} z_\ijk
 \end{equation*}\end{linenomath*}
-where $z_\jk$ is an uncorrelated (independent) standard Gaussian at each grid
-cell center $\jk$, and we used:
+where $z_\ijk$ is an uncorrelated (independent) standard Gaussian at each grid
+cell center $\ijk$, and we used:
 \begin{linenomath*}\begin{equation*}
     \defdetd \coloneqq
-    \dfrac{1}{\vol_\jk}\int_{\cell_\jk}\defdet\,d\x\,.
+    \dfrac{1}{\vol_\ijk}\int_{\cell_\ijk}\defdet\,d\x\,.
 \end{equation*}\end{linenomath*}
 
 The second term, containing the Laplacian is handled as follows
 \begin{linenomath*}\begin{equation*}
-    \int_{\cell_\jk} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
-    =\int_{\cellbdy_\jk} K(\x)\nabla\,\uni(\x)\,
+    \int_{\cell_\ijk} \nabla\cdot K(\x)\nabla\,\uni(\x)\,d\x
+    =\int_{\cellbdy_\ijk} K(\x)\nabla\,\uni(\x)\,
     \cdot \hat{\mathbf{n}} \, d\s
 \end{equation*}\end{linenomath*}
 where $\hat{\mathbf{n}}$ is an outward normal to the cell boundary
-$\cellbdy_\jk$.
+$\cellbdy_\ijk$.
 Throughout this work, we assume the tensor $K(\x)$ to be represented as the
 diagonal matrix:
 \begin{linenomath*}\begin{equation*}
     K(\x) =
     \begin{pmatrix}
-        \kappa^{vy}(\x) & 0 \\
-        0 & \kappa^{wz}(\x) \\
-    \end{pmatrix} \, .
-\end{equation*}\end{linenomath*}
-Our choice here is discussed later, and could be generalized in future work.
-We represent the
-discretized form of this tensor as
-\begin{linenomath*}\begin{equation*}
-    K_\jk =
-    \begin{pmatrix}
-        \kappa^{vy}_\jk & 0 \\
-        0 & \kappa^{wz}_\jk \\
+        \kappa^{ux}(\x) & 0 & 0 \\
+        0 &\kappa^{vy}(\x) & 0 \\
+        0 & 0 & \kappa^{wz}(\x) \\
     \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
-where the elements $\kappa^{vy}_\jk$ and $\kappa^{wz}_\jk$
-are located at the $v$ and $w$ grid cell locations in Figure
-\ref{fig:mitgcm_grid}.
-Additionally
+which could be generalized in future work.
+We represent the discretized form of this tensor as
 \begin{linenomath*}\begin{equation*}
-    \kappa^{vy}_{\jk} \coloneqq \dfrac{1}{\Delta r_f^{\jk}}
-    \int_{\cellbdy_{\jk}^{S}} \kappa^{vy}(\x)\,d\x
-    \qquad
-    \kappa^{wz}_{\jk} \coloneqq \dfrac{1}{\Delta y_g^{\jk}}
-    \int_{\cellbdy_{\jk}^{B}} \kappa^{wz}(\x)\,d\x
+    K_\ijk =
+    \begin{pmatrix}
+        \kappa^{ux}_\ijk & 0 & 0 \\
+        0 & \kappa^{vy}_\ijk & 0 \\
+        0 & 0 & \kappa^{wz}_\ijk \\
+    \end{pmatrix} \, ,
 \end{equation*}\end{linenomath*}
-where $\cellbdy_{\jk}^{S}$ and $\cellbdy_{\jk}^{B}$ are the
-southern and bottom boundaries of the grid cell.
+where the elements $\kappa^{ux}_\ijk$, $\kappa^{vy}_\ijk$, and $\kappa^{wz}_\ijk$
+determine the flux in and out of the grid cell:
+\begin{linenomath*}\begin{equation*}
+    \kappa^{ux}_{\ijk} \coloneqq \dfrac{1}{\Delta y_g^{i,j}\Delta r_f^{k}}
+    \int_{\cellbdy_{\ijk}^{W}} \kappa^{ux}(\x)\,d\x
+\end{equation*}\end{linenomath*}
+\begin{linenomath*}\begin{equation*}
+    \kappa^{vy}_{\ijk} \coloneqq \dfrac{1}{\Delta x_g^{i,j}\Delta r_f^{\ijk}}
+    \int_{\cellbdy_{\ijk}^{S}} \kappa^{vy}(\x)\,d\x
+\end{equation*}\end{linenomath*}
+\begin{linenomath*}\begin{equation*}
+    \kappa^{wz}_{\ijk} \coloneqq \dfrac{1}{\Delta x_g^{i,j}\Delta y_g^{i,j}}
+    \int_{\cellbdy_{\ijk}^{B}} \kappa^{wz}(\x)\,d\x
+\end{equation*}\end{linenomath*}
+where $\cellbdy_{\ijk}^{W}$, $\cellbdy_{\ijk}^{S}$, and $\cellbdy_{\ijk}^{B}$ are the
+western, southern, and bottom boundaries of the grid cell.
+Given the Arakawa C convention, we consider these elements to be
+located at the $u$, $v$, and $w$ grid cell locations in \cref{fig:mitgcm_grid}.
 The discretized gradient is approximated via the finite difference
 directional derivative at each cell face:
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-%        \pderiv{\uni}{x}(\x_\jk^W)
-%        &\simeq \dfrac{\uni_\jk - \uni_\imjk}{\Delta x_c^\jk}
-%        \qquad
-%        \pderiv{\uni}{x}(\x_\jk^E)
-%        &&\simeq \dfrac{\uni_\ipjk - \uni_\jk}{\Delta x_c^\ipjk}
-%        \\
-        \pderiv{\uni}{y}(\x_\jk^S)
-        &\simeq \dfrac{\uni_\jk - \uni_\jmk}{\Delta y_c^\jk}
+        \pderiv{\uni}{x}(\x_\ijk^W)
+        &\simeq \dfrac{\uni_\ijk - \uni_\imjk}{\Delta x_c^{i,j}}
         \qquad
-        \pderiv{\uni}{y}(\x_\jk^N)
-        &&\simeq \dfrac{\uni_\jpk - \uni_\jk}{\Delta y_c^\jpk}
+        \pderiv{\uni}{x}(\x_\ijk^E)
+        &&\simeq \dfrac{\uni_\ipjk - \uni_\ijk}{\Delta x_c^{i+1,j}}
         \\
-        \pderiv{\uni}{z}(\x_\jk^B)
-        &\simeq \dfrac{\uni_\jk - \uni_\jkm}{\Delta z_c^\jk}
+        \pderiv{\uni}{y}(\x_\ijk^S)
+        &\simeq \dfrac{\uni_\ijk - \uni_\jmk}{\Delta y_c^{i,j}}
         \qquad
-        \pderiv{\uni}{z}(\x_\jk^T)
-        &&\simeq \dfrac{\uni_\jkp - \uni_\jk}{\Delta z_c^\jkp}
+        \pderiv{\uni}{y}(\x_\ijk^N)
+        &&\simeq \dfrac{\uni_\jpk - \uni_\ijk}{\Delta y_c^{i,j+1}}
+        \\
+        \pderiv{\uni}{z}(\x_\ijk^B)
+        &\simeq \dfrac{\uni_\ijk - \uni_\ijkm}{\Delta r_c^{k}}
+        \qquad
+        \pderiv{\uni}{z}(\x_\ijk^T)
+        &&\simeq \dfrac{\uni_\ijkp - \uni_\ijk}{\Delta r_c^{k+1}}
     \end{aligned}
 \end{equation*}\end{linenomath*}
-for the south, north, bottom, and top cell faces, respectively.
+for the west, east, south, north, bottom, and top cell faces, respectively.
 Putting these definitions together,
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation}
     \begin{aligned}
-        \int_{\cellbdy_\jk}
+        \int_{\cellbdy_\ijk}
         &K(\x)\nabla\,\uni(\x)\,
         \cdot \hat{\mathbf{n}} \, d\s
         \coloneqq \\
-%        &\left[
-%            \left(
-%            \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
-%            \right)_\ipjk \,
-%            (\uni_\ipjk - \uni_\jk) -
-%            \left(
-%            \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
-%            \right)_\jk \,
-%            (\uni_\jk - \uni_\imjk)
-%        \right]+
-%        \\
         &\left[
             \left(
-            \dfrac{\kappa^{vy} \, \Delta r_f}{\Delta y_c}
-            \right)_\jpk \,
-            (\uni_\jpk - \uni_\jk) -
+                \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
+            \right)_\ipjk \,
+            (\uni_\ipjk - \uni_\ijk) -
             \left(
-            \dfrac{\kappa^{vy} \, \Delta r_f}{\Delta y_c}
-            \right)_\jk \,
-            (\uni_\jk - \uni_\jmk)
+                \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
+            \right)_\ijk \,
+            (\uni_\ijk - \uni_\imjk)
         \right]+
         \\
         &\left[
             \left(
-            \dfrac{\kappa^{wz} \, \Delta y_g}{\Delta r_c}
-            \right)_\jkp \,
-            (\uni_\jkp - \uni_\jk) -
+                \dfrac{\kappa^{vy} \, \Delta x_g \Delta r_f}{\Delta y_c}
+            \right)_\ijpk \,
+            (\uni_\ijpk - \uni_\ijk) -
             \left(
-            \dfrac{\kappa^{wz} \, \Delta y_g}{\Delta r_c}
-            \right)_\jk \,
-            (\uni_\jk - \uni_\jkm)
+                \dfrac{\kappa^{vy} \, \Delta x_g \Delta r_f}{\Delta y_c}
+            \right)_\ijk \,
+            (\uni_\ijk - \uni_\ijmk)
+        \right]+
+        \\
+        &\left[
+            \left(
+                \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
+            \right)_\ijkp \,
+            (\uni_\ijkp - \uni_\ijk) -
+            \left(
+                \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
+            \right)_\ijk \,
+            (\uni_\ijk - \uni_\ijkm)
         \right]
         \, .
     \end{aligned}
     \label{eq:big_laplacian}
-\end{equation}\end{linenomath}
-With each term in equation \eqref{eq:spde_integral} defined above, we have the system of
+\end{equation}\end{linenomath*}
+The discretized form of this operator is generated by defining the coefficients
+that form the seven point numerical stencil:
+\begin{linenomath*}\begin{equation*}
+    \begin{aligned}
+        &c_\text{east}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
+            \right)_\ipjk \,
+        \qquad
+        &&c_\text{west}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{ux} \, \Delta y_g \Delta r_f}{\Delta x_c}
+            \right)_\ijk \,
+        \\
+        &c_\text{north}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{vy} \, \Delta x_g \Delta r_f}{\Delta y_c}
+            \right)_\ijpk \,
+        &&c_\text{south}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{vy} \, \Delta x_g \Delta r_f}{\Delta y_c}
+            \right)_\ijk \,
+        \\
+        &c_\text{top}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
+            \right)_\ijkp \,
+        &&c_\text{bottom}^\ijk \coloneqq
+            \left(
+                \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
+            \right)_\ijk \,
+    \end{aligned}
+\end{equation*}\end{linenomath*}
+\begin{linenomath*}\begin{equation*}
+    c_\text{center}^\ijk \coloneqq
+        - c_\text{east}^\ijk - c_\text{west}^\ijk
+        - c_\text{north}^\ijk - c_\text{south}^\ijk
+        - c_\text{top}^\ijk - c_\text{bottom}^\ijk \, .
+\end{equation*}\end{linenomath*}
+With these definitions we define the matrix $L$ such that
+$L \unis \simeq \int_{\domain} \nabla\cdot K(\x)\nabla \, \uni(\x)\,d\x$
+where the row corresponding to the index $\ijk$
+\begin{linenomath*}\begin{equation*}
+    \left[ c_\text{top} \cdots c_\text{south} \cdots
+           c_\text{west} c_\text{center} c_\text{east} \cdots
+           c_\text{north} \cdots c_\text{bottom}
+       \right]_{\ijk}
+\end{equation*}\end{linenomath*}
+
+With each term in \cref{eq:spde_integral} defined above, we have the system of
 equations in matrix form:
-\begin{linenomath}\begin{equation}
+\begin{linenomath*}\begin{equation}
     \begin{aligned}
         (D_\delta - L) \unis &= D_z\mathbf{z}\\
         A\unis &= D_z\mathbf{z}
     \end{aligned}
     \label{eq:fv_spde}
-\end{equation}\end{linenomath}
+\end{equation}\end{linenomath*}
 where
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
         D_\delta \coloneqq \text{diag}
             \left\{
-                \deltah\dfrac{\vol_i}{\defdetdi}
-            \right\}_{i=1}^{\nuni}
+                \deltah\dfrac{\vol_n}{\defdetdi}
+            \right\}_{n=1}^{\nuni}
             \qquad
         D_z \coloneqq \text{diag}
             \left\{
-                \sqrt{\dfrac{\vol_i}{\defdetdi}}
-            \right\}_{i=1}^{\nuni}
+                \sqrt{\dfrac{\vol_n}{\defdetdi}}
+            \right\}_{n=1}^{\nuni}
+            \qquad
+        A \coloneqq \left(D_\delta - L\right)
     \end{aligned}
 \end{equation*}\end{linenomath*}
-where for notational simplicity we index each grid cell with $i$, rather than
-$j$ and $k$ as above.
-Finally, $L$ is defined by appropriately gathering terms in
-equation \eqref{eq:big_laplacian}, and applying the boundary conditions discussed in the next
-subsection.
+where for notational simplicity we index each grid cell with $n$.
+Note that when we prescribe $\defjac$ as in \cref{sec:matern_operator},
+then $\defdetdi = \vol_n$ so that $D_\delta = \deltah I$ and $D_z = I$.
+The solution, $\unis$, is the discretized form of a Mat\'ern field with
+covariance $D_z A^{-2} D_z$.
+The solution for cases when $M>1$ is simply obtained through an iterative
+application of $A^{-1}$ \citep[see also Theorem 4 in Appendix C.4
+of][]{RSSB:RSSB777}, i.e. for $M>1$:
+\begin{linenomath*}\begin{equation*}
+    A^{M-1} \unis_M = \unis
+\end{equation*}\end{linenomath*}
 
-At last, the covariance matrix associated with the vector $\unis$ can be
-obtained by considering the joint probability distribution of
-$\mathbf{z}\sim\mathcal{N}(0,I)$ and
-the relation $\mathbf{z} = D_z^{-1}A\unis$, obtained from
-equation \eqref{eq:fv_spde}.
-That is,
+
+
+\subsection{Neumann boundary conditions}
+\label{ssec:boundary_conditions}
+
+Throughout this work we use zero flux, Neumann boundary conditions as follows:
+\begin{linenomath*}\begin{equation*}
+    K(\x)\nabla\uni(\x) \cdot \hat{\mathbf{n}} = 0 \qquad \x\in\solidBdy \, .
+\end{equation*}\end{linenomath*}
+These boundary conditions are implemented by zeroing out the flux terms in the
+definition of $L$ along the boundary.
+More specifically, these are defined using a ``mask'' field which has
+values of one in the ocean and 0 on land.
+The mask is used to modify the coefficients of $L$ as follows:
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-        \pi(\mathbf{z})
-        &\propto  \exp\left\{-\dfrac{1}{2}\mathbf{z}^T\mathbf{z}\right\} \\
-        &\propto \exp\left\{-\dfrac{1}{2}\unis^T A D_z^{-2} A \unis\right\} \\
-        &\propto \pi(\unis) \, ,
+        &c_\text{east}^\ijk \coloneqq c_\text{east}^\ijk
+            m_{\ijk} m_{\ipjk}
+        \qquad
+        &&c_\text{west}^\ijk \coloneqq c_\text{west}^\ijk
+            m_{\ijk} m_{\imjk}
+        \\
+        &c_\text{north}^\ijk \coloneqq c_\text{north}^\ijk
+            m_{\ijk} m_{\ijpk}
+        \qquad
+        &&c_\text{south}^\ijk \coloneqq c_\text{south}^\ijk
+            m_{\ijk} m_{\ijmk}
+        \\
+        &c_\text{top}^\ijk \coloneqq c_\text{top}^\ijk
+            m_{\ijk} m_{\ijkp}
+        \qquad
+        &&c_\text{bottom}^\ijk \coloneqq c_\text{bottom}^\ijk
+            m_{\ijk} m_{\ijkm}
     \end{aligned}
 \end{equation*}\end{linenomath*}
-where we note that $A=A^T$.
-Thus, we define the differential operator for our covariance model as
-\begin{linenomath*}\begin{equation*}
-    C \coloneqq A^{-1} D_z \, .
-\end{equation*}\end{linenomath*}
-\\
 
-\noindent\textbf{Neumann boundary conditions.}
-So far we have omitted the discussion of boundaries for the sake of
-simplicity.
-We employ the Neumann boundary condition:
-\begin{linenomath*}\begin{equation*}
-    K(\x)\nabla\uni(\x) \cdot \hat{\mathbf{n}} = 0 \qquad \x\in\groundBdy \, .
-\end{equation*}\end{linenomath*}
-which are implemented in equation \eqref{eq:big_laplacian}
-simply by zeroing out the gradient term at solid boundaries.
-We note that this has an impact on the covariance structure that is discussed
-more concretely with the numerical results in
-\red{section XX}.\\
+\subsection{Correlation operator}
+\label{ssec:correlation_fv}
 
-\noindent\textbf{Generic form of the covariance.}
-With the Mat\'ern covariance operator $C$ defined, we recall that
-\begin{linenomath*}\begin{equation*}
-    \Gamma_{\uni} = \Gamma_{\uni}^{1/2}\Gamma_{\uni}^{T/2}
-    = \Sigma X C C^T X \Sigma \, ,
-\end{equation*}\end{linenomath*}
-and all that is left to define are the operators $X$ and $\Sigma$.
-We reserve the definition of $\Sigma$ to
-chapter xx, as this becomes somewhat specific to our
-application.
-Recall that $X$ is defined through the pointwise marginal variance of the
-covariance operator $C$.
-This can feasibly be computed as $\mathbf{e}_i^TCC^T\mathbf{e}_i$, with
-$\mathbf{e}_i$ being the canonical basis vector associated with the $i$th
-element of the grid.
-However, we compute an approximation based on samples from the covariance model, as
-suggested in \citet{weaver_correlation_2001} (and references therein).
-Samples of the Gaussian random variable with mean $\unis_0$ and covariance
-$C C^T$ are computed as
-\begin{linenomath*}\begin{equation*}
-    \unis = \unis_0 + C\mathbf{z} \, .
-\end{equation*}\end{linenomath*}
-We find $X$ by computing the standard deviation from a sample size of $N=1000$.
-We note that using this approach to approximate the variance of $C$ scales well
-to higher dimensional applications.
-Additionally, this approach fits well into our computational framework, since
-computing these random samples is a necessary first step for the randomized
-eigenvalue decomposition algorithm that is fundamental to our inference problem.
+The discretized form of the correlation operator used in this work is more
+formally defined as
+\begin{linenomath*}\begin{equation}
+    \corrMat \coloneqq \normalizer A^{-M} D_z \, .
+    \label{eq:corr_operator_fv}
+\end{equation}\end{linenomath*}
+To estimate the sample standard deviation used to fill $\normalizer$, we
+draw 1,000 independent standard normal vectors $\mathbf{z}_{l} \in \uniSpace$
+$l\in \{1, 2, ..., 1000\}$,
+solve $A^{M} \unis_{l} = D_z \mathbf{z}_{l}$, and
+compute the pointwise standard deviation from $\unis_{l}$.
+
