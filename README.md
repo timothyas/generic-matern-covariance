@@ -18,6 +18,9 @@
   holds ... but do I actually use that term?
 
 ### Methods
+- Should discuss how we get random samples, and boundary conditions
+
+### Results
 
 ### Discussion
 - In conclusions, note that time could additionally be handled as a separate

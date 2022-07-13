@@ -59,11 +59,13 @@ With the following definitions:
 the SPDE in \cref{eq:spde_iso} can be written in the computational domain's coordinate system as
 \begin{linenomath*}\begin{equation}
     \maternop^M \uni(\x) =
-    \defdet^{-1/2}\W(\x) \, .
+    \defdet^{-1/2}\W(\x) \, ,
     \label{eq:spde_general}
 \end{equation}\end{linenomath*}
-We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
-introduced in \citet{sampson_nonparametric_1992}.
+where zero flux, Neumann boundary conditions are applied at the boundaries
+(see \cref{sec:discretization_matern} for details).
+%We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
+%introduced in \citet{sampson_nonparametric_1992}.
 
 Here, we propose to use this generic form to define a square root of the
 correlation matrix in a similar fashion to
