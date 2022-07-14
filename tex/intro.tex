@@ -1,117 +1,126 @@
 \section{Introduction}
 \label{sec:intro}
 
-Large-scale geophysical inverse problems,
-such as numerical weather prediction or
+High dimensional geophysical inverse problems,
+such as numerical weather prediction and
 oceanographic state estimation, are typically ill-posed due to the
 sparsity of data relative to the size of the informed state.
 A classical method for handling this ill-posedness is to prescribe
-some estimate of the background-state error, capturing our degree of confidence in the
-estimated control vector at a given point in space and time.
-For all practical applications, true knowledge of the background-state
-uncertainty must be approximated and, to make the problem computationally
-tractable, it is often assumed to be governed by Gaussian statistics.
-Under this assumption, the uncertainty is fully described by a covariance
-matrix that is often represented by a parameterized model.
+some type of regularization in order to ``spread'' information to the uninformed
+regions and variables in the control vector.
+In the Bayesian interpretation of the inverse problem, this regularization
+is defined so that it represents the prior uncertainty or background-state error
+\citep[e.g.][]{bui-thanh_computational_2013}.
+Ideally, this uncertainty captures the true error in the background state, but
+for all practical applications the background error must be
+approximated.
+Moreover, to make the problem computationally tractable, it is often assumed
+that the background error is governed by Gaussian statistics, such that the
+uncertainty is fully described by a covariance matrix.
 
-For applications with simple geometries, covariance models can be specified with
-simple, closed form smoothing (e.g.\ exponential) functions.
-\red{some definition/development of isotropic/stationary, why aniso/nonstat
-necessary, etc}.
-In numerical weather prediction,
-covariance relationships are typically represented in terms of a spherical
-harmonic expansion \red{CITE}.
-However, alternative approaches are required for geophysical systems that have
-more complicated geometries, such as in oceanography
-where irregular continental boundaries make these techniques less practical.
-In such applications, it is advantageous to pose the background-state covariance
-model in terms of the original geophysical coordinate, and employ models based on differential
-equations that maintain some correspondence to statistical covariance.
+For realistic data assimilation (DA) problems in meteorology and
+oceanography, a well formed background error will contain covariance relationships between
+different variables (e.g.\ between temperature and velocity components),
+it will have spatially dependent length scales of covariation
+(i.e.\ nonstationarity or inhomogeneity),
+and it will respect the system's anisotropy, such that length scales of covariance differ
+appropriately in each direction \citep[e.g.][]{bannister_review_2008-1}.
+Within variational DA systems, the background error covariance is
+usually represented as an operator so that it can be applied efficiently during
+an iterative optimization algorithm.
+Thus, for an operator-based covariance model to be useful in this context, it must be
+able to respect multivariate, nonstationary, and anisotropic features that are
+necessary for the given problem setting.
 
-In oceanographic state estimation, the most widely used static background-state
-covariance model is based on the work by
-\citet[][WC01 hereafter]{weaver_correlation_2001},
-\citep[e.g.][]{nguyen_arctic_2021,forgetECCOv4,moore_regional_2011-1,mazloff_eddy-permitting_2010,gebbie_strategies_2006}.
-Briefly, the WC01 model employs a diffusion-based operator to establish
-correlation length scales, which can be rescaled to produce the desired covariance
-information (see Section \ref{ssec:wc01_review} for a more detailed review).
-Generally speaking, the model is advantageous because
-the diffusion operator at its core scales well to high dimensional inverse problems
-(e.g. $>10^8$ degrees of freedom in \citet{forgetECCOv4}).
-Additionally, irregular continental boundaries are handled naturally by
-supplying boundary conditions to the differential equation - typically zero
-flux.
+Typically, the background state error covariance is decomposed into two
+operators following \citet{derber_reformulation_1999}.
+The first, ``balance'' operator captures multivariate (i.e.\ cross-variable)
+covariance information while the second captures ``unbalanced'' (i.e.\
+univariate) covariance information.
+Our focus is on the latter operator, but we note the review by
+\citet{bannister_review_2008-2} which outlines balance operators used in
+atmospheric DA, and e.g.\ \citet{weaver_multivariate_2005,moore_regional_2011-1} for oceanographic
+examples.
 
-% Drawbacks
-%\begin{itemize}
-%   Actually, this isn't generally true ... it's just that this is the way that
-%   most people implement WC01
-%   See WC01 section 5d
-%    \item To achieve anisotropy due to vastly different correlation
-%        length-scales in the horizontal compared to the vertical, requires the
-%        assumption of separability. This seems to work in practice even though
-%        there is no true justification for it, but comes at the computational
-%        expense of applying
-%        solving an explicit diffusion equation twice - once for the horizontal
-%        and again for the vertical.
-%
-%   Is it worth it to point this one out on its own?
-%    \item The number of pseudo time steps required for this diffusion solve to
-%        be numerically stable requires some trial and error. In WC01, the
-%        authors provide a minimum threshold, but in practice this is not
-%        sufficiently long enough, requiring some trial and error to determine
-%        the appropriate integration time.
-%\end{itemize}
+Univariate covariance operators are further decomposed into two stages, where spatial
+correlations are specified first, and then scaled to the appropriate amplitude.
+In atmospheric DA, it is common to transform the control vector
+into a wavelet or spherical harmonic basis in order to specify the background
+error \citep[e.g.][]{bannister_review_2008-2}.
+However, for systems with complex boundaries like the ocean, it is far more
+straightforward to formulate the correlation operator in terms of the original,
+physical domain.
+Considering methods that operate in the physical or grid space, there are
+generally two classes of correlation models that are commonly used.
+The first class is encapsulated by explicit functional forms, including, for
+example, the functions developed by
+\citet{gaspari_construction_1999,gneiting_correlation_1999,gaspari_construction_2006},
+which have the benefit of providing compact support.
+The second class of correlation models can generally be described as a filtering
+approach.
+\citet{purser_numerical_2003-1,purser_numerical_2003-2}
+show correlation functions based on recursive filters, and
+\citet{dobricic_oceanographic_2008} extend this to be used with complex boundaries.
+More recently, \citet{purser_multigrid_2022} show a ``beta
+filter'' approach which enables compact support and a highly generalizable
+correlation shape via an efficient multigrid approach.
+Alternatively, within this class of models are those based on the solution of a
+differential equation.
 
-% So what's new here? Background.
-More recently, \citet{RSSB:RSSB777} showed an alternative approach for
-prescribing Mat\'ern-type Gaussian covariance relations in random fields.
-The approach is highly scalable and applicable to computational domains with
-irregular boundaries for similar reasons as for the WC01 model -
-it is based on the solution to an elliptic Partial
-Differential Equation (PDE).
-Moreover, \citet{RSSB:RSSB777} allude to a mapping method that would allow the
-covariance model to achieve anisotropic and nonstationary relations.
-As of yet, however, there has been no development or implementation of this
-mapping method to geophysical inverse problems.
+Correlation models that are based on the solution to differential operators have
+several advantages.
+Namely, these operators handle complex boundaries naturally and the
+infrastructure required to obtain their solution typically exist within
+the underlying numerical model.
+Within oceanographic state estimation, a widely used framework is based on the
+solution to the diffusion equation
+\citep[e.g.][]{nguyen_arctic_2021,forgetECCOv4,blockley_recent_2014,moore_regional_2011-1,daget_ensemble_2009,muccino_inverse_2008,di_lorenzo_weak_2007,weaver_three-_2003}.
+The diffusion-based framework relies on either an explicit, pseudo-time stepping
+method \citep{weaver_correlation_2001} or an implicit solution
+\citep{mirouze_representation_2010,carrier_background-error_2010,weaver_diffusion_2013},
+where the correlation structure underlying the solution corresponds to either a
+Gaussian or more general auto-regressive function, respectively.
+Alternatively, \citet{RSSB:RSSB777} show an explicit link between the numerical solution
+to a stochastic elliptic partial differential equation and a Mat\'ern-type covariance
+model.
+As of yet, however, it has remained unclear how this model could be used to
+specify univariate correlations with appropriate nonstationarity and anisotropy
+for an operational variational DA system.
 
-Here, we show how the mapping method introduced by \citet{RSSB:RSSB777}
-can be parameterized based on the finite volume method
-in order to achieve anisotropic and nonstationary relationships, such that it can easily
-be deployed in many commonly used ocean general circulation models.
-At the core of our development is a range parameter, which carries the intuitive
-interpretation as the number of neighboring grid cells at which
-correlation decays to 0.1.
+Here, we extend the work by \citet{RSSB:RSSB777}
+to show how the framework can be used within variational DA.
+Our emphasis is on oceanographic applications, although the methodology is more
+general.
+We show how the mapping method introduced by \citet{RSSB:RSSB777}
+can be used to formulate a correlation operator that respects anisotropy and
+nonstationarity in a way that is relevant to many ocean general circulation
+models.
+At the core of this model there are two parameters, which \textit{separately}
+control the shape and length scale of the correlation model.
+We show that the parameter controlling the length scale can be interpreted
+intuitively as the ``number of neighboring grid cells'' at which correlation
+drops to an expected value.
 Our numerical experiments show that correlations derived from the isotropic,
 stationary Mat\'ern correlation function can be mapped to a generic ocean model
 grid in terms of this range parameter.
 It is therefore straightforward to use this approach to achieve desirable
-anisotropic and nonstationary statistics by tuning a single parameter that
-corresponds to an ocean model grid.
-%Our numerical experiments show how one can use this parameter together with the
-%isotropic, stationary Mat\'ern correlation function to predict and achieve desirable
-%statistics in the more general case.
-%Moreover, we show that the elliptic PDE at the heart of the covariance model can
-%be solved with a high ($\sim\bigo(10^{-2})$) tolerance while still achieving the
-%desired correlation statistics, such that it is very efficient.
-%\red{Discuss how this is advantageous to WC01 guess work?}
+anisotropic and nonstationary statistics by simply tuning these two
+parameters.
 
 % Is this really necessary?
 The paper is laid out as follows.
-In \cref{sec:review} we give some context for how the covariance model is
-used in data assimilation or inverse problems.
-We provide a general overview of the covariance model developed in WC01, and
+In \cref{sec:review} we give some context for how univariate correlation models
+are used in variational data assimilation.
+We provide a review of diffusion based correlation operators, and
 then review the Mat\'ern type covariance developments in \citet{RSSB:RSSB777}
 which we build on.
-In \cref{sec:discretization_matern} we show the discretized form of the covariance model
-that is relevant to finite volume discretization schemes common to ocean
-general circulation models.
-We then describe how the covariance model parameters can be specified to achieve
-an intuitive relationship between the isotropic, stationary form and the more
-general anisotropic, nonstationary form.
-In \cref{sec:llc90} we show numerical results of the nonstationary, anisotropic
-correlation model applied to the global ocean, using the ``Lat-Lon-Cap''
-grid introduced by \citet{forgetECCOv4}.
-Finally, in \cref{sec:matern_discussion} we show how our methodology compares to the
-commonly used WC01 covariance model, and conclude with a discussion on the subtle numerical
-advantages of this approach.
+In \cref{sec:matern_operator} we show how the Mat\'ern model can be mapped from
+its isotropic, stationary form into a more complex computational domain.
+We then provide suggestions for parameterizing the model so that it can
+intuitively capture anisotropy and nonstationarity.
+In \cref{sec:llc90} we show numerical results of this correlation model
+applied to the global ocean, using the ``Lat-Lon-Cap'' grid introduced by
+\citet{forgetECCOv4}.
+Finally, in \cref{sec:matern_discussion} we provide some discussion on the
+advantages of this model, and a general comparison to the widely used
+diffusion based models.

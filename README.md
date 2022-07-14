@@ -3,6 +3,11 @@
 ## Writing TODOs
 
 - geophysical inverse problems to variational data assimilation ??
+- possible abbreviations:
+    - Lindgren 2011
+    - Variational DA -> VDA
+    - elliptic PDE, PDE, SPDE ,... etc
+
 
 ### Intro
 - somewhere mention the Gaussian, probabilistic stuff
