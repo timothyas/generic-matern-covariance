@@ -91,7 +91,8 @@ function.
         70$^\circ$S and 37$^\circ$N.
         Similar plots showing correlation as a function of meridional and
         vertical distance are provided in the Supplemental Material.
-        Sample correlation is computed from 1,000 random samples.
+        Correlation is computed from 1,000 random samples with a tolerance of
+        $10^{-3}$ (see \cref{ssec:tolerance}).
     }
     \label{fig:llc90_correlations}
 \end{figure}
@@ -139,8 +140,9 @@ to the zonal direction.
         (c \& d) The same sample correlation fields as above, shown in the
         depth-longitude plane.
         (e \& f) The local horizontal and vertical grid spacing, respectively.
-        The sample correlation fields are computed from 1,000 random samples,
-        with $\rangeh = 20$ and $M=2$.
+        The correlation fields are computed from 1,000 random samples,
+        with $\rangeh = 20$, $M=2$, and a solver tolerance of $10^{-3}$ (see
+        \cref{ssec:tolerance}).
     }
     \label{fig:llc90_correlation_maps}
 \end{figure}
@@ -193,7 +195,8 @@ implicit diffusion approach in Section 4.2 of
         show the corresponding fields in the depth-longitude plane along 10.5$^\circ$N.
         The largest deviations from the theoretical value are near the boundaries, as
         expected.
-        All fields are estimated from 1,000 random samples using $M=2$.
+        All fields are estimated from 1,000 random samples using $M=2$ and a
+        solver tolerance of $10^{-3}$ (see \cref{ssec:tolerance}).
     }
     \label{fig:std_ratio}
 \end{figure}
