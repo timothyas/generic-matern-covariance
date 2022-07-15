@@ -7,18 +7,20 @@ similar manner to the diffusion-based methods described in
 \cref{ssec:wc01_review}.
 To do so, we employ the ``mapping method'' described by \citet{RSSB:RSSB777}
 which we show for the general $M$th order SPDE in \cref{ssec:mapping_method}.
-We then provide suggestions on how to parameterize the model for intuitive use
-in practical applications in \cref{ssec:scaling_laplacian,ssec:nonstationarity}.
+In summary, the basic idea we present is to use the mapping method to
+nondimensionalize or re-scale the elliptic operator.
+We provide a simple scaling argument for why this is a good idea in
+\cref{ssec:scaling_laplacian}, and discuss practical choices for the
+nondimensionalization based on the grid scale in \cref{ssec:nonstationarity}.
 
-
-\subsection{Mapping Method via Change of Variables}
+\subsection{Mapping method or change of variables}
 \label{ssec:mapping_method}
 
 In \citet{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
 coordinate system allows one to readily incorporate anisotropy and
 nonstationarity into a Mat\'ern covariance model.
-To do so, consider solutions to the isotropic and stationary SPDE
-(\cref{eq:spde_iso}), $\unih(\xh)$, to be defined in a transformed, or
+In this mapping method, we consider solutions to the isotropic, stationary SPDE
+(\ref{eq:spde_iso}) to be defined in a transformed, or
 ``deformed'' \citep{sampson_nonparametric_1992}, space $\defdomain$.
 Then, assume that we have a mapping $\defmap$ that maps between this transformed space
 and our computational domain, $\domain$:
@@ -42,10 +44,6 @@ Here we have defined the Jacobian as
 and for now we assume that $\defmap^{-1}(\x_0)$ is well defined.
 For our purposes, this turns out to be the case, but this becomes clear when
 $\defjac$ is defined in \cref{ssec:scaling_laplacian}.
-%Notice that we have taken the exponent $M=1$, avoiding
-%fractional or higher order operations for simplicity.
-%All of the future formulations and experiments will make this assumption,
-%although this can be relaxed in future work.
 With the following definitions:
 \begin{linenomath*}\begin{equation}
         K(\x) \coloneqq
@@ -83,15 +81,16 @@ once again a variance-preserving normalization matrix defined by the operations
 that precede it.
 In this model,
 anisotropy and nonstationarity are controlled by
-$\defjac(\x)$, and in the following in \cref{ssec:scaling_laplacian}
+$\defjac(\x)$, and in the following sections
 we discuss how this can be assigned for
 practical applications in geophysical inverse problems.
 We note that in this discussion we loosely mix the use of
 finite dimensional matrices and infinite dimensional operators
 in order to ease the presentation, but we provide a more careful
-derivation of their discretized forms in \cref{sec:discretization_matern}.
+derivation of their discretized forms relevant to our numerical experiments in
+\cref{sec:discretization_matern}.
 
-\subsection{Scaling the Laplacian Term for Anisotropy}
+\subsection{Scaling the Laplacian term for anisotropy}
 \label{ssec:scaling_laplacian}
 
 Here we focus on parameterizing $\defjac(\x)$ in order to achieve an anisotropic
@@ -107,7 +106,7 @@ anisotropic fluctuations.
 This is a common situation in large scale geophysical fluid
 dynamics, where fields (e.g.\ temperature, velocity) exhibit length scales of
 variability that are much greater in either horizontal dimension compared to the
-vertical.
+vertical \citep[e.g.][]{vallis2006}.
 %\footnote{
 %    We make a note on the terminology used here.
 %    In oceanography, the difference in horizontal and vertical scales
@@ -129,12 +128,13 @@ the Laplacian term in $\maternop$ is unbalanced
     \label{eq:iso_lap}
 \end{equation}\end{linenomath*}
 As a result, the correlation model will
-have unrealistically large or small correlations in the horizontal or vertical.
+have unrealistically large (small) correlations in the vertical (horizontal).
 Our goal is therefore to define the elements of $K$ such that each term is of
-the same order of magnitude and
-\begin{linenomath*}\begin{equation*}
-    \nabla\cdot K\nabla \sim 3U \, .
-\end{equation*}\end{linenomath*}
+the same order of magnitude.
+%and
+%\begin{linenomath*}\begin{equation*}
+%    \nabla\cdot K\nabla \sim 3U \, .
+%\end{equation*}\end{linenomath*}
 
 To achieve this balance between Laplacian terms, we suggest a straightforward,
 perhaps obvious, specification of $\defjac$:
@@ -173,8 +173,8 @@ and allow the length scales $L_x$, $L_y$, and $L_z$ to vary in space.
 \subsection{Harnessing the grid scale for nonstationarity}
 \label{ssec:nonstationarity}
 
-At this point, we must prescribe values for $L_x(\x)$, $L_y(\x)$, and $L_z(\x)$ to fill
-$\defjac(\x)$.
+At this point, we must prescribe values for the normalizing length scales
+$L_x(\x)$, $L_y(\x)$, and $L_z(\x)$ in order to fill $\defjac(\x)$.
 Considering the scaling analysis of the Laplacian in
 \cref{ssec:scaling_laplacian}, a simple yet reliable choice for these
 is to use the underlying grid-scale of the numerical model (e.g.\ the ocean or
@@ -188,14 +188,14 @@ ocean model grids, which are designed to capture a variety of behavior in a
 computationally efficient manner \citep{griffies_fundamentals_2004}.
 Toward the surface, the ocean is tightly coupled to the atmosphere, sea ice, and
 rivers, and ocean models use a finely resolved vertical grid to capture the
-ocean component of these processes.
-Further into the interior, the ocean acts more like stacked layers, and
+ocean component of these coupled processes.
+In the interior ocean, well below the mixed layer, the ocean acts more like stacked layers, and
 variation in properties like temperature and salinity occurs over much larger
-distances than in the surface \citep{talley_descriptive_2011}.
+distances than at the surface \citep{talley_descriptive_2011}.
 Vertical grids are correspondingly much coarser.
 As a concrete example, the height-based vertical grid we use in \cref{sec:llc90}
 varies from $\sim 5-10$~m near the surface, and spacing increases to
-$\bigo(100)$~m below 1,000~m.
+$\bigo(100)$~m below 1,000~m (\cref{fig:llc90_correlation_maps}(c)).
 By using the grid elements directly, our correlation model can capture the
 nonstationarity motivated by the physical processes which influence the model
 grid's development.
@@ -204,10 +204,9 @@ Another justification for using the grid elements to specify $\defjac(\x)$ is
 that this provides a practical and intuitive nondimensionalization.
 With this definition, the correlation model exhibits isotropic and stationary
 behavior within the nondimensional space defined by the computational grid.
-As such, the idealized correlation function $\cref{eq:matern_corr_isostat}$
+As such, the idealized correlation function (\cref{eq:matern_corr_isostat})
 applies relative to the grid spacing, and one can view $\rangeh$ as an
 intuitive, nondimensional parameter controlling the
 ``number of neighboring grid cells'' at which correlation decays to 0.14.
 Our numerical experiments in \cref{sec:llc90} show that this is a good
 approximation in the case of a realistic global ocean model grid.
-

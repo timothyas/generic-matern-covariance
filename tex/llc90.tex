@@ -19,10 +19,13 @@ solver tolerance (\cref{ssec:tolerance}) and that it is relatively cheap even
 when the number of applications, $M$, is greater than one
 (\cref{ssec:iters_and_apps}).
 
-For all experiments, we compute statistical quantities from 1,000 samples using
-the block-Successive Over Relaxation (SOR) method which is described fully in
-\cref{sec:block_sor}.
-Additionally, we use
+For all experiments, we compute statistical quantities from 1,000 samples
+(see \cref{sec:discretization_matern} and specifically
+\cref{eq:corr_operator_fv,eq:sampling} for sampling details).
+We use a block-Successive Over Relaxation (SOR) method (\cref{sec:block_sor}) to find numerical
+solutions to the elliptic SPDE, using a tolerance of $10^{-3}$ for all results
+except where specified in \cref{ssec:tolerance}.
+Additionally, we use the following normalizing length scales
 $L_x(i,j) = \Delta x_g(i,j)$, $L_y(i,j) = \Delta y_g(i,j)$,
 and $L_z(k) = \Delta r_f(k)$ (\cref{fig:mitgcm_grid}) where we have switched
 from the spatial coordinate $\x\in\domain$ to the computational grid indices $i$, $j$, $k$.
@@ -33,10 +36,10 @@ state property like temperature or salinity.
 \label{ssec:llc90_correlations}
 
 We first show that the sample correlation structure computed on the LLC
-grid corresponds with the analytical expression for
-Mat\'ern-type correlations.
+grid corresponds with the analytical Mat\'ern-type correlation function
+(\cref{eq:matern_corr_isostat}).
 For this comparison we compute the correlation field in the transformed space
-$\defdomain$, where the random field can be considered isotropic and stationary.
+$\defdomain$, where it can be considered isotropic and stationary.
 Because we use the grid spacing to define this mapping, the correlation
 distances are computed simply by counting the number of neighboring grid cells in each
 direction from the point in consideration.
@@ -48,6 +51,9 @@ direction from the point in consideration.
 expected correlation structure (black) and the numerically computed sample
 correlation structure for
 $\rangeh = \{5, 10, 15, 20\}$ (color) using $M =\{1,2,4,8\}$ (panels).
+Recall that as $M$ increases, the correlation structure approaches a Gaussian
+shape, such that there is little visible difference between e.g.\ $M=4$ and
+$M=8$.
 The correlation is computed in the direction of longitude, indicated by
 $\delta i$.
 The shading indicates the spread between the first and ninth deciles of the
@@ -91,8 +97,8 @@ function.
         70$^\circ$S and 37$^\circ$N.
         Similar plots showing correlation as a function of meridional and
         vertical distance are provided in the Supplemental Material.
-        Correlation is computed from 1,000 random samples with a tolerance of
-        $10^{-3}$ (see \cref{ssec:tolerance}).
+        Recall that as $M\rightarrow\infty$, the Mat\'ern correlation function
+        approaches a Gaussian (cf. \cref{fig:correlation_comparison}).
     }
     \label{fig:llc90_correlations}
 \end{figure}
@@ -100,34 +106,36 @@ function.
 \subsection{Sample correlation maps}
 \label{ssec:llc90_correlation_maps}
 
-Maps of the sample correlation field at two locations on the LLC
-grid are shown in
-\cref{fig:llc90_correlation_maps}.
+Maps of the sample correlation field on the LLC grid are shown in
+\cref{fig:llc90_correlation_maps}, at
+(0.2$^\circ$N, 127.5$^\circ$W, 722~m depth) and
+(10.5$^\circ$N, 87.5$^\circ$W, 5~m depth) in panels (a \& d) and (b \& e), respectively.
+These two locations are chosen to highlight local anisotropy in the
+latitude-longitude plane and nonstationarity in the vertical axis.
 For these calculations we use a perhaps unrealistically large correlation length scale
 defined by $\rangeh=20$ for illustrative purposes.
-First, we compare panels (a) and (b) of \cref{fig:llc90_correlation_maps}, which
-show the sample correlation computed at
-(0.2$^\circ$N, 127.5$^\circ$W, 722~m depth) and
-(10.5$^\circ$N, 87.5$^\circ$W, 5~m depth), respectively.
-In panel (a), the correlation structure is anisotropic such that the field is
-ellipsoidal, with correlation length scales that are
-relatively longer zonally than meridionally.
-On the other hand, the correlation structure shown in panel (b) is closer to
-being isotropic, qualitatively speaking, since the field is relatively circular
-except where it intersects with the coast.
 
-In this example we obtain longer correlation length scales at the equator
-because the LLC grid is defined with smaller meridional grid spacing here in
-order to resolve tropical, zonal currents;
-see \cref{fig:llc90_correlation_maps}(c) for a comparison of $\Delta x $ and
-$\Delta y$ near the equator.
-To clarify why this corresponds to the correlation structure we obtain,
-consider the normalization of the Laplacian discussed in
-\cref{ssec:scaling_laplacian}, and the interpretation of $\rangeh$ described
-in \cref{ssec:llc90_correlations}.
-Since the meridional grid refines near the equator, the number of grid cells at
-which correlation drops to 0.14 covers a shorter distance meridionally compared
-to the zonal direction.
+Comparing panels (a) and (b) of \cref{fig:llc90_correlation_maps}, we see that
+near the equator, the correlation structure is stretched zonally, while poleward
+of $\sim 10-15^\circ$ the structure is closer to being isotropic.
+Elongated zonal correlation length scales at the equator are consistent with
+observations \citep{meyers_space_1991}, so we
+consider this anisotropic behavior to be desirable.
+In our case, we achieve this anisotropy via local refinements in the
+meridional grid scale near the equator, which are specifically designed to
+capture tropical zonal currents \citep{forgetECCOv4}.
+Specifically, \cref{fig:llc90_correlation_maps}(c) shows how the meridional grid
+spacing ($\Delta y$) refines near the equator, while the longitudinal grid
+spacing ($\Delta x$) slightly increases near the equator.
+The result of this grid refinement is that near the equator, a range of
+$\rangeh$ grid cells covers a shorter distance meridionally than it does at
+e.g.\ $20^\circ$N.
+Overall, this example highlights how details in the model grid can be harnessed
+to achieve physically relevant correlation structures.
+However, we note that if this correlation shape is desired but would not
+immediately occur due to a different model grid definition, then the normalizing length
+scales could easily be modified with a weighting function to achieve the
+desired structure.
 
 \begin{figure}
     \centering
@@ -140,22 +148,23 @@ to the zonal direction.
         (c \& d) The same sample correlation fields as above, shown in the
         depth-longitude plane.
         (e \& f) The local horizontal and vertical grid spacing, respectively.
-        The correlation fields are computed from 1,000 random samples,
-        with $\rangeh = 20$, $M=2$, and a solver tolerance of $10^{-3}$ (see
-        \cref{ssec:tolerance}).
+        The correlation fields are computed with $\rangeh = 20$ and $M=2$.
     }
     \label{fig:llc90_correlation_maps}
 \end{figure}
 
-Panels (d) and (e) of \cref{fig:llc90_correlation_maps} show the extent of the
-sample correlation fields from (a) and (b) in depth-longitude space, respectively.
-In panel (d) the correlation remains greater than 0.1 until roughly 4-km
-depth, whereas the correlation structure in panel (e) is much more confined to
-the surface.
-Once again, the difference in behavior is due to the fact that the vertical grid
-spacing is smaller toward the surface than it is below 1000~m in order to
-resolve the ocean mixed layer and surface processes, see
-\cref{fig:llc90_correlation_maps}(f).
+Panels (d) and (e) of \cref{fig:llc90_correlation_maps}
+illustrate nonstationary correlation structures obtained along the vertical axis.
+As discussed in \cref{ssec:nonstationarity}, it would be reasonable to expect
+shorter correlation lengths near the ocean surface due to localized processes
+there, and relatively longer correlation length scales in the interior
+ocean.
+This general behavior is shown in panel (e), where correlation $>0.1$ is
+confined to the upper hundred meters of the ocean, while in panel (d),
+correlation $>0.1$ spans the full depth of the ocean.
+Once again, the correlation structures shown here correspond directly to the
+vertical grid spacing, which is shown in \cref{fig:llc90_correlation_maps}(f).
+
 
 \subsection{Pointwise sample standard deviation}
 \label{ssec:llc90_boundary_effects}
@@ -166,37 +175,40 @@ it is represented as a ratio with respect to the ``expected'' value from
 \cref{eq:matern_variance} for an isotropic, stationary Mat\'ern field.
 Throughout most of the domain, the sample standard deviation is approximately
 equal to the theoretical value.
-Near continental boundaries the standard deviation is inflated, especially
+Near continental boundaries, however, the standard deviation is inflated, especially
 for large values of $\rangeh$ and in regions of tightly confined topographic
 boundaries such as in the Caribbean Sea.
 This deviation near the boundaries is expected for correlation models based on
 the solution of differential equations
 \citep[e.g.][]{weaver_correlation_2001,RSSB:RSSB777}, as a result of the zero
 flux, Neumann boundary conditions used to find the solution.
-Thus, it is necessary to estimate the sample variance to normalize the
-covariance model (i.e.\ formulate the diagonal entries of $\normalizer$,
-\cref{eq:matern_operator}), rather than use the theoretical value directly.
-Throughout this work, we have used the sample estimates shown in
-\cref{fig:std_ratio} to obtain correlation fields.
-Given the correspondence to theoretical correlation structure in
-\cref{ssec:llc90_correlations}, this appears to be reliable.
-Other methods to remove boundary effects, for instance through the
-combination of Neumann and Dirichlet boundary conditions as shown for the
-implicit diffusion approach in Section 4.2 of
-\citet{mirouze_representation_2010}, could be explored in future work.
+Thus, the theoretical value cannot be used directly and it is necessary to
+calculate or estimate the true variance of the operator in order to formulate
+the normalization matrix $\normalizer$.
+Throughout this work, we have used the estimated standard deviation shown in
+\cref{fig:std_ratio} to fill $\normalizer$, based on 1,000 random samples
+(as suggested in \citet{weaver_correlation_2001}).
+Given that the numerical computed correlation structure compares well to the
+theoretical value (\cref{ssec:llc90_correlations}), this normalization method
+appears to be reliable.
+We also note this method is convenient because it is embarrassingly parallel,
+and scales well to arbitrarily high dimensional fields.
+However, for cases when the correlation operator is to be updated repeatedly,
+e.g.\ in cycled DA, other normalization methods could be explored for use with
+this operator as in \citet{weaver_evaluation_2021}.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{../figures/std_ratio_02apps.jpg}
     \caption{The ratio of the sample standard deviation to the value computed
         from \cref{eq:matern_variance} for an isotropic, stationary Mat\'ern
-        field. Panels (a-d) show the ratio in the latitude-longitude plane at
+        field (indicated in the bottom row by $\hat{\sigma}$).
+        Panels (a-d) show the ratio in the latitude-longitude plane at
         the surface for $\rangeh=\{5,10,15,20\}$, respectively. Panels (e-h)
         show the corresponding fields in the depth-longitude plane along 10.5$^\circ$N.
         The largest deviations from the theoretical value are near the boundaries, as
         expected.
-        All fields are estimated from 1,000 random samples using $M=2$ and a
-        solver tolerance of $10^{-3}$ (see \cref{ssec:tolerance}).
+        All fields use $M=2$.
     }
     \label{fig:std_ratio}
 \end{figure}
@@ -265,8 +277,8 @@ off much more rapidly for neighboring points.
 For these cases, it may be natural to assume that using this model with $M>1$
 would be less efficient than when $M=1$ because it requires multiple
 applications of an inverse elliptic operator.
-However, here we show that this is evidently not necessarily true and it is
-actually often \textit{more} efficient to use $M>1$ than $M=1$.
+However, here we show that this is not necessarily true and it can be
+\textit{more} efficient to use $M>1$ than $M=1$.
 
 \cref{fig:iters_and_apps}(a) shows the total number of iterations required to
 find a solution to \cref{eq:matern_operator}, for a variety of combinations of
@@ -292,15 +304,27 @@ Evidence of this behavior can be seen in \cref{fig:iters_and_apps}(b), which sho
 number of iterations required for each individual application of
 $\maternop^{-1}$ to converge.
 Here we see that each application gets cheaper as $M$, and therefore $\deltah$,
-increases and the improvement per iteration is evidently enough to reduce the total
+increases.
+The improvement per iteration is evidently enough to reduce the total
 iterations, shown in panel (a).
 The exception to this behavior is when $\rangeh = 5$, where for $M\ge 4$
 the total number of iterations overtakes the case of $M=1$ due to the repeated
 solves.
 
+We note that Jacobi, Gauss-Seidel, and SOR methods are rarely used for modern
+applications.
+For example, the MITgcm
+\citep{marshall_finite-volume_1997,campin_mitgcmmitgcm_2021}
+uses a conjugate gradient method for the pressure solve at each time
+step.
+However, given the performance benefits noted here and the simplicity of
+implementing e.g.\ the SOR scheme, it could be used as an efficient
+preconditioner in the event that e.g.\ a conjugate gradient scheme becomes
+overly expensive for $M>1$.
+
 \begin{figure}
     \centering
-    \includegraphics[width=.7\textwidth]{../figures/iterations_vs_applications.pdf}
+    \includegraphics[width=.6\textwidth]{../figures/iterations_vs_applications.pdf}
     \caption{(a) Total number of iterations required to compute
         $\unis = \maternop^{-M}\mathbf{z}$, for a standard normally distributed
         vector $\mathbf{z}\in\ndspace$.
@@ -313,7 +337,6 @@ solves.
         To compute the ``average iterations per application'', we take the
         average iteration per application of $\maternop^{-M}$, and compute the sample
         average of this quantity from 1,000 random samples.
-        Solver tolerance is set to $10^{-3}$.
     }
     \label{fig:iters_and_apps}
 \end{figure}

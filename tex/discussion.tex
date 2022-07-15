@@ -1,47 +1,51 @@
 \section{Discussion}
 \label{sec:matern_discussion}
 
-In this work we have shown a general methodology for applying a Mat\'ern type
-correlation function within a domain with complex boundaries, while achieving
-nonstationary and anisotropic correlation length scales.
+In this work we have shown a general methodology which can be used to achieve
+nonstationary and anisotropic Mat\'ern type correlation structures within a
+domain with complex boundaries.
 To summarize, the general procedure is as follows.
-First, one chooses a \red{normalization length scale} for each dimension, thereby
+First, one chooses a normalization length scale for each dimension, thereby
 defining (the Jacobian of) a mapping between a space where correlation is
-isotropic and stationary, and the more complex domain with nonstationary and
-anisotropic correlation length scales.
+isotropic and stationary, and the more complex domain.
+These normalizing length scales are essential because they determine the local
+anisotropy and nonstationarity of the correlation operator.
 Next, one must choose a range parameter, determining the distance relative to
-the \red{normalizing length scales} at which correlation drops to 0.14.
+the normalizing length scales at which correlation drops to 0.14.
 Finally, one selects the shape of the correlation structure, which also sets the
 number of times the elliptic PDE must be solved.
 
 Our presentation has focused on the practical application of this
 correlation operator within an ocean general circulation model.
-As such, we set the \red{normalizing length scales} based on the local grid
+As such, we set the normalizing length scales based on the local grid
 scale.
 With this setting, the range parameter is shown to be a highly intuitive dial,
 controlling correlation length scales as a simple function of the number of
 neighboring grid cells.
 Using this definition was further shown to be beneficial at the equator, for
-example, because grid scale refinements there result in relatively
-longer zonal than meridional correlation length scales and this is \red{observed
-to be physically realistic}.
+example, because grid scale refinements there result in correlation length
+scales that are longer zonally than meridionally, coinciding with observed
+autocorrelation sturcutres
+\citep{meyers_space_1991}.
 However, we recognize that there could be features that are desirable to capture
 in a correlation model that are not represented in the definition of the
 underlying model grid.
-In this case, the \red{normalizing length scales} could be further tuned with
+In this case, the normalizing length scales could be further tuned with
 local factors or functions to achieve these desired features.
-Alternatively, the \red{length scales} could be set entirely independently of
-the grid, for instance as a function of the local Rossby radius of deformation.
+Alternatively, these length scales could be set entirely independently of
+the grid, for instance as a function of a phenomenological length scale such as
+the local Rossby radius of deformation.
 
 A key feature of the correlation model shown here is the $\rangeh$ and $M$
 control the correlation length scale and shape \textit{separately}.
 We consider this to be an attractive feature when compared to the implicit
-diffusion approach \red{albeit, without changing the order of the laplacian or
-any parameters as described in} \citet{weaver_diffusion_2013}.
-In this model, at a given ``length scale'' the distance at which correlation
-drops to a specified threshold still changes with $M$
+diffusion approach.
+Even when the ``length scale'' is fixed in the implicit diffusion model, changing $M$
+modifies the shape of the correlation function in such a way that there is no
+consistent characteristic distance, for instance at which correlation would drop below a
+threshold value
 (\cref{fig:correlation_comparison}, and also
-\citep[Figs. 1 and 2 of][]{guillet_modelling_2019}).
+\citet[Figs. 1 and 2 of][]{guillet_modelling_2019}).
 We note that in the Mat\'ern correlation model presented here that the parameter
 $\deltah$ changes with $M$ while in the implicit diffusion approach, $\deltah
 \rightarrow 1$.

@@ -4,32 +4,28 @@
 
 - geophysical inverse problems to variational data assimilation ??
 - possible abbreviations:
-    - Lindgren 2011
+    - Lindgren 2011, WC01, MW10, WM13
     - Variational DA -> VDA
     - elliptic PDE, PDE, SPDE ,... etc
 - Ide et al notation
-- consistent capitalization
-- people's names:
-    - Weaver, A Weaver, A T Weaver
-    - Griffies, S Griffies
+- normalizer ... X ... yeah maybe not ...
+- references:
+    - why TF is Purser 2003 a,b in this weird order
 
+## Figures
+- Legend to bottom panel of last fig
+- Delta X -> Delta x in maps
+- Actually make the supplemental material with dj and dk theoretical matern
+  plots
 
 ### Review
-- Statement about "matern field" is where the covariance analytical function
-  holds ... but do I actually use that term?
 
 ### Methods
-- Should discuss how we get random samples, and boundary conditions
+- Have a subsection on extensions beyond the grid scale, a paragraph note about
+  using the grid scale as a baseline, which could be extended by adding
+  functions or using a rotation matrix ...
 
 ### Results
-- Fix Fig 4.1 to have correct legend
-- figure out how to say all results are tol=1e-3
+- Could move legend of last fig into bottom panel
 
 ### Discussion
-- In conclusions, note that time could additionally be handled as a separate
-  dimension, and now "grid cells" has the interpretation of "time steps", once
-  we normalize by deltat ... there are definitely other citations to mention
-  here (some by the Lindgren et al crew)
-- half laplacian? integer M?
-- are longer correlation lengths due to zonal currents? probably ... want to
-  extend this discussion?

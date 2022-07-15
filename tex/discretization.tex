@@ -326,7 +326,10 @@ formally defined as
 \end{equation}\end{linenomath*}
 To estimate the sample standard deviation used to fill $\normalizer$, we
 draw 1,000 independent standard normal vectors $\mathbf{z}_{l} \in \uniSpace$
-$l\in \{1, 2, ..., 1000\}$,
-solve $A^{M} \unis_{l} = D_z \mathbf{z}_{l}$, and
-compute the pointwise standard deviation from $\unis_{l}$.
+$l\in \{1, 2, ..., 1000\}$, solve
+\begin{linenomath*}\begin{equation}
+    A^{M} \unis_{l} = D_z \mathbf{z}_{l} \qquad l \in \{1, 2, ..., 1000\} \, ,
+    \label{eq:sampling}
+\end{equation}\end{linenomath*}
+and compute the pointwise standard deviation from $\{\unis_{l}\}_{l=1}^{1000}$.
 

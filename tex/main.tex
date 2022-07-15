@@ -6,7 +6,7 @@
 \usepackage{soul}
 \journalname{Journal of Advances in Modeling Earth Systems (JAMES)}
 \draftfalse
-\linenumbers
+%\linenumbers
 
 % --- Custom additions
 \usepackage{amsmath, amssymb}
@@ -14,15 +14,29 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{natbib}
-\usepackage[capitalise]{cleveref}
 \usepackage{bm}
+
+% Definitions
+\usepackage{oden}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+\usepackage[capitalise]{cleveref}
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
-\usepackage{oden}
 
 % Removes redundant "appendix"
 \crefname{appendix}{}{}
+
+% Define some citation abbreviations
+\defcitealias{RSSB:RSSB777}{L11}
 
 \begin{document}
 
@@ -48,6 +62,44 @@
 \end{keypoints}
 
 \begin{abstract}
+    A key component of data assimilation methods is the specification of
+    univariate spatial correlations, which appear in the background-error
+    covariance.
+    For realistic problems in meteorology and oceanography,
+    correlation length scales are nonstationary (variable in space) and
+    anisotropic (variable in each direction).
+    Variational approaches typically use an operator to enforce correlation
+    length scales, and thus the operator must be designed to capture
+    desired levels of nonstationarity and anisotropy.
+    For systems with complex boundaries, such as the ocean, it is natural
+    to use a filtering approach based on the application of an elliptic,
+    Laplacian-like operators.
+    Here we show how an elliptic operator can be formulated to capture a general
+    Mat\'ern-type correlation structure for practical use in variational data
+    assimilation.
+    We show how nonstationarity and anisotropy can be encoded into the operator
+    via a simple change of variables based on user-defined
+    normalization length scales.
+    The change of variables defines a mapping between the computational domain
+    and a space where the isotropic and stationary Mat\'ern correlation function
+    applies.
+    In addition to the mapping, two other hyperparameters \textit{separately}
+    control the correlation length scale (i.e.\ range) and shape.
+    As a practical use-case, we apply the correlation operator to a global ocean model.
+    We show that when the normalizing length scales are chosen
+    based on the local grid scale, the range parameter has an intuitive
+    interpretation as the number of neighboring grid cells at which correlation drops to 0.14.
+    Finally, the correlation model is additionally shown to be computationally efficient
+    in two aspects.
+    First,
+    the required linear solve can be performed with a high tolerance  ($\sim$~$10^{-3}$)
+    while still achieving the correct statistics, requiring relatively few
+    iterations to converge.
+    Secondly, the shape of the correlation function is determined by the number
+    of times the operator is applied, but, owing to the generic Mat\'ern form,
+    this also improves the diagonal dominance of the matrix form.
+    Thus, it is shown that the model can actually be \textit{more} efficient with more
+    applications of the inverse elliptic operator.
 \end{abstract}
 
 \section*{Plain Language Summary}
