@@ -30,9 +30,9 @@ We consider the general problem of finding the optimal control vector,
 $\params$, which minimizes the regularized model-data misfit cost function
 \begin{linenomath*}\begin{equation*}
     \cf(\params) =
-        \dfrac{1}{2}||\pto(\params) - \data||_{\obsCovMat^{-1}}^2
+        \dfrac{1}{2}\norm{\pto(\params) - \data}_{\obsCovMat^{-1}}^2
         +
-        \dfrac{1}{2}||\params - \priorParams||_{\priorCovMat^{-1}}^2 \, .
+        \dfrac{1}{2}\norm{\params - \priorParams}_{\priorCovMat^{-1}}^2 \, .
 \end{equation*}\end{linenomath*}
 Here $\norm{\mathbf{v}}_A = \sqrt{\mathbf{v}^T A \mathbf{v}}$ is a weighted
 Euclidean norm.
@@ -385,7 +385,10 @@ shape is desired), we can expect this approximate relationship to hold.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/correlation_comparison.pdf}
+    \begin{overpic}[width=\textwidth]{../figures/correlation_comparison.pdf}
+        \put(3.5, 35){(a)}
+        \put(53, 35){(b)}
+    \end{overpic}
     \caption{(a) Correlation as a function of distance given by
         Mat\'ern (green; \cref{eq:matern_corr_isostat}),
         auto-regressive (AR; orange),

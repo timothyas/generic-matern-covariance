@@ -1,0 +1,126 @@
+
+\ProvidesPackage{oden}
+
+% --- Math operations and notation
+\newcommand{\pderiv}[3][]{% \pderiv[<order>]{<func>}{<var>}
+  \ensuremath{\frac{\partial^{#1} {#2}}{\partial {#3}^{#1}}}}
+\newcommand{\totderiv}[1]{%
+  \ensuremath{\frac{D{#1}}{Dt}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*{\argminl}{\argmin\limits} % argmin/max for
+\newcommand*{\argmaxl}{\argmax\limits} % algorithm environment
+\newcommand{\bigo}{\mathcal{O}}
+\newcommand{\degSym}{$^{\circ}$}
+\newcommand{\pe}[1]{$^{#1}$}
+\newcommand{\me}[1]{$^{-#1}$}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% --- Forward model variables
+\newcommand{\x}{\mathbf{s}}                   % Physical space coordinate
+\newcommand{\s}{\mathbf{\tau}}                   % Physical space coordinate
+\newcommand{\domain}{\ensuremath{\Omega}}             % Physical domain
+\newcommand{\bdyDomain}{\ensuremath{\partial\Omega}}             % Physical domain
+\newcommand{\solidBdy}{\ensuremath{\bdyDomain_{\text{solid}}}}
+
+% --- Discretization
+\newcommand{\vol}{\ensuremath{V}}
+\newcommand{\area}{\ensuremath{A}}
+\newcommand{\cell}{\ensuremath{E}}
+\newcommand{\cellbdy}{\ensuremath{\partial E}}
+\newcommand{\ijk}{{\ensuremath{i,j,k}}}
+\newcommand{\imjk}{{\ensuremath{i-1,j,k}}}
+\newcommand{\ipjk}{{\ensuremath{i+1,j,k}}}
+\newcommand{\ijmk}{{\ensuremath{i,j-1,k}}}
+\newcommand{\ijpk}{{\ensuremath{i,j+1,k}}}
+\newcommand{\ijkm}{{\ensuremath{i,j,k-1}}}
+\newcommand{\ijkp}{{\ensuremath{i,j,k+1}}}
+
+\newcommand{\jk}{{\ensuremath{j,k}}}
+\newcommand{\jmk}{{\ensuremath{j-1,k}}}
+\newcommand{\jpk}{{\ensuremath{j+1,k}}}
+\newcommand{\jkm}{{\ensuremath{j,k-1}}}
+\newcommand{\jkp}{{\ensuremath{j,k+1}}}
+\newcommand{\unis}{\ensuremath{\mathbf{u}}}
+\newcommand{\uni}{\ensuremath{u}}
+\newcommand{\unih}{\ensuremath{\hat{\uni}}}
+\newcommand{\nuni}{\ensuremath{N_{\uni}}}
+\newcommand{\uniSpace}{\ensuremath{\mathbb{R}^{\nuni}}}
+
+% --- UQ variables
+\newcommand{\params}{\ensuremath{\mathbf{x}}} % vector of parameters or controls
+\newcommand{\param}{\ensuremath{x}}           % single parameter
+\newcommand{\paramSpace}{\ensuremath{\mathbb{R}^{N_{\param}}}}      % parameter space
+
+\newcommand{\data}{\ensuremath{\mathbf{y}^{o}}}   % obs. data
+\newcommand{\dataSpace}{%
+    \ensuremath{\mathbb{R}^{N_{y}}}}      % data space
+
+\newcommand{\obsCovMat}{%
+    \ensuremath{\mathbf{R}}}          % obs. err covariance matrix
+
+\newcommand{\priorCovMat}{%
+    \ensuremath{\mathbf{B}}        % Prior covariance matrix
+}
+\newcommand{\balanceOperator}{%
+    \ensuremath{\mathbf{K}_{b}}
+}
+\newcommand{\unbalancedPriorCovMat}{
+    \ensuremath{\mathbf{B}_{u}}
+}
+\newcommand{\corrMat}{%
+    \ensuremath{\mathbf{C}}}
+%
+
+% MAP point etc
+\newcommand{\paramsMAP}{
+    \ensuremath{\params^{a}}
+}
+\newcommand{\priorParams}{
+    \ensuremath{\params^{b}}
+}
+
+
+% --- maps, functions
+\newcommand{\cf}{\ensuremath{\mathcal{J}}}    % cost function
+
+\newcommand{\pto}{
+    \ensuremath{H}              % nonlin parameter to observable map
+}
+\newcommand{\ptom}{
+    \ensuremath{\mathbf{H}}
+}
+
+% --- Dimensionality of parameters, data, etc...
+\newcommand{\nparams}{\ensuremath{N_{\param}}}
+\newcommand{\nobs}{\ensuremath{N_{\data}}}
+
+% --- Matern stuff
+\newcommand{\materndim}{\ensuremath{N_{d}}}
+\newcommand{\meandiff}{\ensuremath{\epsilon}}
+\newcommand{\spdesqo}{\ensuremath{\alpha}}
+\newcommand{\xh}{\ensuremath{\hat{\x}}}
+\newcommand{\ndspace}{\ensuremath{\mathbb{R}^{\materndim}}}
+\newcommand{\defdomain}{\ensuremath{\hat{\Omega}}}
+\newcommand{\deltah}{\ensuremath{\hat{\delta}}}
+\newcommand{\nablah}{\ensuremath{\hat{\nabla}}}
+\newcommand{\rhoh}{\ensuremath{\hat{\rho}}}
+\newcommand{\W}{\ensuremath{\mathcal{W}}}
+\newcommand{\Wh}{\ensuremath{\hat{\W}}}
+\newcommand{\paramh}{\ensuremath{\hat{\param}}}
+\newcommand{\defmap}{\ensuremath{\varphi}}
+\newcommand{\defjac}{\ensuremath{\Phi}}
+\newcommand{\defdet}{\ensuremath{\text{det}\left(\defjac(\x)\right)}}
+\newcommand{\defdetd}{\ensuremath{\text{det}\left(\defjac_{\ijk}\right)}}
+\newcommand{\defdetdi}{\ensuremath{\text{det}\left(\defjac_{n}\right)}}
+\newcommand{\defdetnox}{\ensuremath{\text{det}\big(\defjac\big)}}
+\newcommand{\rangeh}{\ensuremath{\hat{\rho}}}
+\newcommand{\normalizer}{\ensuremath{\mathbf{\Lambda}}}
+
+\newcommand{\maternMat}{\ensuremath{\mathbf{A}}}
+\newcommand{\maternop}{\ensuremath{\mathcal{A}}}
+\newcommand{\maternopiso}{\ensuremath{\hat{\mathcal{A}}}}
+\newcommand{\edop}{\ensuremath{\mathcal{A}_\text{ED}}}
+\newcommand{\idop}{\ensuremath{\mathcal{A}_\text{ID}}}
+
+\newcommand{\ndims}{\materndim}

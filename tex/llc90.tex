@@ -84,7 +84,12 @@ function.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/matern_llc90_correlation_theory_vs_m_ix.pdf}
+    \begin{overpic}[width=\textwidth]{../figures/matern_llc90_correlation_theory_vs_m_ix.pdf}
+        \put(6,35){(a)}
+        \put(30,35){(b)}
+        \put(53,35){(c)}
+        \put(76,35){(d)}
+    \end{overpic}
     \caption{Correlation structure computed from the theoretical Mat\'ern
         correlation function (black; \cref{eq:matern_corr_isostat}) and from
         1,000 samples using a subset of the ``Lat-Lon-Cap'' grid within the
@@ -139,7 +144,16 @@ desired structure.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/huge_correlation_map_02apps.jpg}
+    \begin{overpic}[width=\textwidth]{../figures/huge_correlation_map_02apps.jpg}
+        \put(4.25,46.5){(a)}
+        \put(37,46.5){(b)}
+        \put(72,47.25){(c)}
+        \put(4.25,26){(d)}
+        \put(37,26){(e)}
+        %\put(72,23){(f)}
+        \put(66.5,26){(f)}
+        %\put(72,28){(f)}
+    \end{overpic}
     \caption{Two sample correlation fields and a depiction of the computational
         grid.
         (a \& b) Sample correlation field in the latitude-longitude plane at
@@ -199,7 +213,16 @@ this operator as in \citet{weaver_evaluation_2021}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/std_ratio_02apps.jpg}
+    \begin{overpic}[width=\textwidth]{../figures/std_ratio_02apps.jpg}
+        \put(3.75,43.5){(a)}
+        \put(28.5,43.5){(b)}
+        \put(53.25,43.5){(c)}
+        \put(77.75,43.5){(d)}
+        \put(3.75,27){(e)}
+        \put(28.5,27){(f)}
+        \put(53.25,27){(g)}
+        \put(77.75,27){(h)}
+    \end{overpic}
     \caption{The ratio of the sample standard deviation to the value computed
         from \cref{eq:matern_variance} for an isotropic, stationary Mat\'ern
         field (indicated in the bottom row by $\hat{\sigma}$).
@@ -251,7 +274,10 @@ to highlight that an imprecise solve is both valid and advantageous.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{../figures/matern_llc90_error_and_iters_01apps.pdf}
+    \begin{overpic}[width=\textwidth]{../figures/matern_llc90_error_and_iters_01apps.pdf}
+        \put(6.5,24.5){(a)}
+        \put(46.5,24.5){(b)}
+    \end{overpic}
     \caption{(a) The relative error in the approximation that correlation equals
         0.14 when $\rangeh=\delta i$, as a function of the tolerance used
         for the iterative block-SOR method described in \cref{sec:block_sor}.
@@ -324,7 +350,10 @@ overly expensive for $M>1$.
 
 \begin{figure}
     \centering
-    \includegraphics[width=.6\textwidth]{../figures/iterations_vs_applications.pdf}
+    \begin{overpic}[width=.4\textwidth]{../figures/iterations_vs_applications.pdf}
+        \put(-6,95){(a)}
+        \put(-6,48){(b)}
+    \end{overpic}
     \caption{(a) Total number of iterations required to compute
         $\unis = \maternop^{-M}\mathbf{z}$, for a standard normally distributed
         vector $\mathbf{z}\in\ndspace$.

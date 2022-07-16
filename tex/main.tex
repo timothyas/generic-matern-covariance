@@ -15,9 +15,10 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{bm}
+\usepackage[percent]{overpic}
 
 % Definitions
-\usepackage{oden}
+\usepackage{ide}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -43,22 +44,23 @@
 % --- Header
 \title{A Practical Gaussian Covariance Formulation for Applications with
        Anisotropic and Nonstationary Fields}
-\authors{Timothy A. Smith\affil{1,2,3}, Patrick Heimbach\affil{3,4,5}}
+\authors{Timothy A. Smith\affil{1,2,3}}
 
-\affiliation{1}{CIRES}
-\affiliation{2}{PSL}
-\affiliation{3}{Oden}
-\affiliation{4}{UTIG}
-\affiliation{5}{JSG}
+\affiliation{1}{Cooperative Institute for Research in Environmental Sciences
+    (CIRES) at the University of Colorado Boulder, Boulder, CO, USA
+}
+\affiliation{2}{Physical Sciences Laboratory (PSL), National Oceanic and
+    Atmospheric Administration (NOAA), Boulder, CO, USA
+}
+\affiliation{3}{Oden Institute for Computational Engineering and Sciences,
+    The University of Texas at Austin, Austin, TX, USA
+}
 
 % --- Key points, abstract, plain language summary
 \begin{keypoints}
-    \item We derive a generic covariance model appropriate for anisotropic,
-        nonstationary fields \red{This is the title...}
-    \item The formulation presents a number of computational advantages compared
-        to previous work, such as easy application of to both the covariance or
-        precision operators (its inverse)
-    \item Numerical experiments agree well with theory... \red{more on this...}
+    \item Point 1
+    \item Point 2
+    \item Point 3
 \end{keypoints}
 
 \begin{abstract}
@@ -73,7 +75,7 @@
     desired levels of nonstationarity and anisotropy.
     For systems with complex boundaries, such as the ocean, it is natural
     to use a filtering approach based on the application of an elliptic,
-    Laplacian-like operators.
+    Laplacian-like operator.
     Here we show how an elliptic operator can be formulated to capture a general
     Mat\'ern-type correlation structure for practical use in variational data
     assimilation.
@@ -89,21 +91,14 @@
     We show that when the normalizing length scales are chosen
     based on the local grid scale, the range parameter has an intuitive
     interpretation as the number of neighboring grid cells at which correlation drops to 0.14.
-    Finally, the correlation model is additionally shown to be computationally efficient
-    in two aspects.
-    First,
-    the required linear solve can be performed with a high tolerance  ($\sim$~$10^{-3}$)
-    while still achieving the correct statistics, requiring relatively few
-    iterations to converge.
-    Secondly, the shape of the correlation function is determined by the number
-    of times the operator is applied, but, owing to the generic Mat\'ern form,
-    this also improves the diagonal dominance of the matrix form.
-    Thus, it is shown that the model can actually be \textit{more} efficient with more
-    applications of the inverse elliptic operator.
+    Finally, the correlation model is shown to be computationally efficient
+    since the necessary linear solve can be performed with a high tolerance
+    ($\sim10^{-3}$) while still achieving the correct statistics, requiring relatively
+    few iterations to converge.
 \end{abstract}
 
 \section*{Plain Language Summary}
-Mat\'ern, Weaver, and Courtier walk into a bar...
+TODO
 
 \input{intro.tex}
 
@@ -122,9 +117,25 @@ Mat\'ern, Weaver, and Courtier walk into a bar...
 
 %\input{pig.tex}
 
-
 \acknowledgments
-Thanks everyone.
+This study used the MITgcm \citep{campin_mitgcmmitgcm_2021}, with modifications
+that can be found at \url{github.com/timothyas/MITgcm}, for solving the
+presented linear system on the LLC grid.
+The grid files that make up the LLC grid can be found with the ECCOv4 data,
+which were accessed at \citep{ecco_v4r2}.
+The python packages \texttt{xmitgcm} \citep{abernathey_2021_5139886},
+\texttt{xarray} \citep{hoyer2017xarray}, \texttt{dask} \citep{dask}, and
+\texttt{zarr} \citep{alistair_miles_2020_3773450}
+were essential for postprocessing and analyzing the results.
+I am grateful to Vikram Garg early discussions on the
+work by \citet{RSSB:RSSB777}, and for comments from an Early Career Writing
+Group which improved the manuscript.
+TO BE CONTINUED.
+%, as well as Jemima Tabeart for introducing me to
+%the implicit diffusion developments by \citep{mirouze_representation_2010}
+%cited throughout the paper.
+Financial support was provided in part by NASA MAP \#80NSSC17K0558, a JPL/Caltech
+Subcontract (ECCO Consortium), and NOAA grant NA20OAR4600277.
 
 \bibliography{references}
 \end{document}
