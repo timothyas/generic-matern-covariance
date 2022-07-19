@@ -21,6 +21,7 @@ import xarray as xr
 import rosypig as rp
 from matern import MaternField
 from barotropicradiusmatern import BarotropicRadiusMaternField
+from redimatern import RediMaternField
 
 class SampleDriver:
     """Defines the driver for getting an Eigenvalue decomposition
@@ -50,13 +51,16 @@ class SampleDriver:
     NxList  = [5, 10, 15, 20, 30, 40]
     xiList  = [0.5,   1,   2]#,   5]
     isotropic = False
+    isoxy = False
     barotropic_length_scale = False
+    redi_rotation = False
+    density_path = ''
     sorDict = {0.5:1.8, 1:1.6, 2:1.3, 4:1.2, 5:1.2}
     elliptic_tol = 1.e-16
     smoothOpNb = 1
     smooth2DDims = 'yzw'
     jacobi_max_iters = 20000
-    conda_env = 'py38_tim'
+    conda_env = 'phd'
     n_applications = 1
 
     @property
@@ -229,8 +233,16 @@ class SampleDriver:
 
         ... pass to the next step
         """
-        MF = MaternField if not self.barotropic_length_scale else \
-             BarotropicRadiusMaternField
+        MF = MaternField
+        kw = {}
+        if self.redi_rotation:
+            MF = RediMaternField
+            kw['density_path'] = self.density_path
+
+        elif self.barotropic_length_scale:
+            MF = BarotropicRadiusMaternField
+
+
         jid_list = []
         for Nx in self.NxList:
             for xi in self.xiList:
@@ -246,7 +258,9 @@ class SampleDriver:
                             n_range=Nx,
                             horizontal_factor=xi,
                             isotropic=self.isotropic,
-                            n_applications=self.n_applications)
+                            isoxy=self.isoxy,
+                            n_applications=self.n_applications,
+                            **kw)
                 matern.write_binaries(write_dir=write_dir,
                                       smoothOpNb=self.smoothOpNb)
 
@@ -284,6 +298,8 @@ class SampleDriver:
         sor = f"{sor:e}".replace("e","D").replace("+","")
         TOL = f"{self.elliptic_tol:e}".replace("e","D").replace("+","")
 
+        mode = 'grid' if not self.redi_rotation else 'redi'
+
         file_contents = ' &SMOOTH_NML\n'+\
             smooth2ddims +\
             f' smoothMdsDir = "smooth-output",\n'+\
@@ -296,6 +312,7 @@ class SampleDriver:
             f' {smooth}MaskName({self.smoothOpNb}) = "{maskName}",\n'+\
             f' {smooth}EllipticTol({self.smoothOpNb}) = {TOL},\n'+\
             f' {smooth}NumApplications({self.smoothOpNb}) = {self.n_applications},\n'+\
+            f' {smooth}Mode({self.smoothOpNb}) = "{mode}",\n'+\
             ' &'
         fname = write_dir+f'/data.smooth'
         with open(fname,'w') as f:

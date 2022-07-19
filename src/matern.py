@@ -52,23 +52,13 @@ class MaternField():
         self.ideal_variance = scipy.special.gamma(self.mean_differentiability) / denom
 
         self.Lx, self.Ly = self.get_horizontal_length_scale(xdalike)
-        self.vertical_length = _vertical_length_scale(xdalike)
+        self.Lz = _vertical_length_scale(xdalike)
         self.cell_volume = self.get_cell_volume()
 
 
         self.Phi, self.detPhi = self.get_deformation_jacobian()
+        self.get_operator_elements()
 
-        # Protect against division by 0
-        detPhiInv = xr.where(self.detPhi == 0, 0., 1/self.detPhi)
-
-        self.rhs_factor = np.sqrt(detPhiInv * self.cell_volume)
-        self.delta = (self.delta_hat * detPhiInv * self.cell_volume).broadcast_like(xdalike)
-        self.delta.name = 'delta'
-
-        K = {}
-        for key, val in self.Phi.items():
-            K[key] = detPhiInv * val**2
-        self.K = K
 
 
     def get_horizontal_length_scale(self, xds):
@@ -117,7 +107,7 @@ class MaternField():
 
         ux = (self.horizontal_factor * self.Lx).broadcast_like(self.xdalike)
         vy = (self.horizontal_factor * self.Ly).broadcast_like(self.xdalike)
-        wz = self.vertical_length.copy().broadcast_like(self.xdalike)
+        wz = self.Lz.copy().broadcast_like(self.xdalike)
 
         if self.n_dims == 2:
 
@@ -154,6 +144,20 @@ class MaternField():
         return Phi, det
 
 
+    def get_operator_elements(self):
+
+        detPhiInv = xr.where(self.detPhi == 0, 0., 1/self.detPhi)
+
+        self.rhs_factor = np.sqrt(detPhiInv * self.cell_volume)
+        self.delta = (self.delta_hat * detPhiInv * self.cell_volume).broadcast_like(self.xdalike)
+        self.delta.name = 'delta'
+
+        K = {}
+        for key, val in self.Phi.items():
+            K[key] = detPhiInv * val**2
+        self.K = K
+
+
     def get_cell_volume(self):
 
         if self.n_dims == 2:
@@ -161,13 +165,13 @@ class MaternField():
                 V = self.Ly * self.Lx
 
             elif self.xyz['y'] is None:
-                V = self.vertical_length * self.Lx
+                V = self.Lz * self.Lx
 
             else:
-                V = self.vertical_length * self.Ly
+                V = self.Lz * self.Ly
 
         else:
-            V = self.vertical_length * self.Ly * self.Lx
+            V = self.Lz * self.Ly * self.Lx
 
         return V
 
