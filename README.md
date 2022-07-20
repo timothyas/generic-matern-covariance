@@ -4,7 +4,7 @@
 
 - Edits:
     - [x] Patrick's comments
-    - [ ] Abstract efficiency: mention multi apps? Say this more generally?
+    - [x] Abstract efficiency: mention multi apps? Say this more generally?
     - [ ] Add Yaremchuk correlation functions
     - [ ] Add mention about how to handle MOM vertical coordinate?
 

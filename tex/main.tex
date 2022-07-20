@@ -84,24 +84,29 @@
     to use a filtering approach based on the application of an elliptic,
     Laplacian-like operator.
     Here we show how an elliptic operator can be formulated to capture a general
-    Mat\'ern-type correlation structure for practical use in variational data
-    assimilation.
+    Mat\'ern-type correlation structure.
     We show how nonstationarity and anisotropy can be encoded into the operator
     via a simple change of variables based on user-defined
     normalization length scales.
     The change of variables defines a mapping between the computational domain
-    and a space where the isotropic and stationary Mat\'ern correlation function
+    and a space where the analytical Mat\'ern correlation function
     applies.
     In addition to the mapping, two other hyperparameters \textit{separately}
     control the correlation length scale (i.e.\ range) and shape.
-    As a practical use-case, we apply the correlation operator to a global ocean model.
-    We show that when the normalizing length scales are chosen
-    based on the local grid scale, the range parameter has an intuitive
+    As a practical use-case, we apply the operator to a global ocean model.
+    We show that when the normalizing length scales correspond to the local grid
+    scale, the range parameter has an intuitive
     interpretation as the number of neighboring grid cells at which correlation drops to 0.14.
-    Finally, the correlation model is shown to be computationally efficient
-    since the necessary linear solve can be performed with a high tolerance
-    ($\sim10^{-3}$) while still achieving the correct statistics, requiring relatively
+    Finally, the correlation model is shown to be computationally efficient in
+    two regards.
+    First, the necessary linear solve can be performed with a high tolerance
+    ($\sim10^{-3}$) while still achieving the correct statistics, requiring
     few iterations to converge.
+    Secondly, the operator's exponent, which controls the correlation shape,
+    is linearly related to the diagonal elements of its matrix representation.
+    As a result, using an exponent greater than one can improve convergence
+    properties.
+    Thus, the framework provides flexibility in controlling correlation shape.
 \end{abstract}
 
 \section*{Plain Language Summary}
