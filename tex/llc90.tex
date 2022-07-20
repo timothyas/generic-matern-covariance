@@ -4,7 +4,7 @@
 Here we show results from a numerical implementation of the correlation model
 described in \cref{sec:matern_operator}.
 For this application we use the ``Lat-Lon-Cap'' (LLC) grid used by the ECCOv4
-state estimate \cite[][see Sec. 2 for a complete description of the grid]{forgetECCOv4}.
+state estimate \citep[see their Section 2 of][for a complete description of the grid]{forgetECCOv4}.
 The overall goal with these numerical experiments is to show that even in this
 relatively complicated global grid, the
 correlation model generally follows the expected Mat\'ern correlation structure
@@ -52,7 +52,7 @@ expected correlation structure (black) and the numerically computed sample
 correlation structure for
 $\rangeh = \{5, 10, 15, 20\}$ (color) using $M =\{1,2,4,8\}$ (panels).
 Recall that as $M$ increases, the correlation structure approaches a Gaussian
-shape, such that there is little visible difference between e.g.\ $M=4$ and
+shape, such that there is little visible difference between e.g., $M=4$ and
 $M=8$.
 The correlation is computed in the direction of longitude, indicated by
 $\delta i$.
@@ -69,9 +69,9 @@ value of 0.14, where $\rangeh = \delta i$.
 We note that the largest spread in the computed correlation structure occurs
 when $M=1$, especially for larger values of $\rangeh$.
 Considering an analogy to Laplacian versus biharmonic damping in ocean models
-\citep[e.g.][]{holland_role_1978,griffies_biharmonic_2000}, we suggest that
+\citep[e.g.,][]{holland_role_1978,griffies_biharmonic_2000}, we suggest that
 there is more spread when $M=1$ because the operator $\maternop^{-1}$
-contains a only a Laplacian term.
+contains only a Laplacian term.
 Compared to the cases when $M>1$, which contain biharmonic and higher order
 Laplacian terms in $\maternop^{-M}$, the Laplacian case is less
 scale-selective.
@@ -134,7 +134,7 @@ spacing ($\Delta y$) refines near the equator, while the longitudinal grid
 spacing ($\Delta x$) slightly increases near the equator.
 The result of this grid refinement is that near the equator, a range of
 $\rangeh$ grid cells covers a shorter distance meridionally than it does at
-e.g.\ $20^\circ$N.
+e.g., $20^\circ$N.
 Overall, this example highlights how details in the model grid can be harnessed
 to achieve physically relevant correlation structures.
 However, we note that if this correlation shape is desired but would not
@@ -194,7 +194,7 @@ for large values of $\rangeh$ and in regions of tightly confined topographic
 boundaries such as in the Caribbean Sea.
 This deviation near the boundaries is expected for correlation models based on
 the solution of differential equations
-\citep[e.g.][]{weaver_correlation_2001,RSSB:RSSB777}, as a result of the zero
+\citep[e.g.,][]{weaver_correlation_2001,RSSB:RSSB777}, as a result of the zero
 flux, Neumann boundary conditions used to find the solution.
 Thus, the theoretical value cannot be used directly and it is necessary to
 calculate or estimate the true variance of the operator in order to formulate
@@ -208,7 +208,7 @@ appears to be reliable.
 We also note this method is convenient because it is embarrassingly parallel,
 and scales well to arbitrarily high dimensional fields.
 However, for cases when the correlation operator is to be updated repeatedly,
-e.g.\ in cycled DA, other normalization methods could be explored for use with
+e.g., in cycled DA, other normalization methods could be explored for use with
 this operator as in \citet{weaver_evaluation_2021}.
 
 \begin{figure}
@@ -338,14 +338,15 @@ the total number of iterations overtakes the case of $M=1$ due to the repeated
 solves.
 
 We note that Jacobi, Gauss-Seidel, and SOR methods are rarely used for modern
-applications.
+applications \citep[an exception being the line-SOR method in the sea-ice solver
+of the MITgcm][]{losch_formulation_2010}.
 For example, the MITgcm
 \citep{marshall_finite-volume_1997,campin_mitgcmmitgcm_2021}
 uses a conjugate gradient method for the pressure solve at each time
 step.
 However, given the performance benefits noted here and the simplicity of
-implementing e.g.\ the SOR scheme, it could be used as an efficient
-preconditioner in the event that e.g.\ a conjugate gradient scheme becomes
+implementing e.g., the SOR scheme, it could be used as an efficient
+preconditioner in the event that e.g., a conjugate gradient scheme becomes
 overly expensive for $M>1$.
 
 \begin{figure}

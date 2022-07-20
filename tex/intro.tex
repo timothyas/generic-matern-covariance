@@ -7,10 +7,10 @@ oceanographic state estimation, are typically ill-posed due to the
 sparsity of data relative to the size of the control vector.
 A classical method for handling this ill-posedness is to prescribe
 some type of regularization in order to ``spread'' information to the uninformed
-regions and variables in the control vector.
+regions and variables in the control vector \citep[e.g.,][]{wunsch_discrete_2006}.
 In the Bayesian interpretation of the inverse problem, this regularization
 is defined so that it represents the prior uncertainty or background-state error
-\citep[e.g.][]{bui-thanh_computational_2013}.
+\citep[e.g.,][]{bui-thanh_computational_2013}.
 Ideally, this uncertainty captures the true error in the background state, but
 for all practical applications the background error must be
 approximated.
@@ -20,11 +20,11 @@ uncertainty is fully described by a covariance matrix.
 
 For realistic data assimilation (DA) problems in meteorology and
 oceanography, a well formed background error will contain covariance relationships between
-different variables (e.g.\ between temperature and velocity components),
+different variables (e.g., between temperature and velocity components),
 it will have spatially dependent length scales of covariation
 (i.e.\ nonstationarity or inhomogeneity),
 and it will respect the system's anisotropy, such that length scales of covariance differ
-appropriately in each direction \citep[e.g.][]{bannister_review_2008-1}.
+appropriately in each direction \citep[e.g.,][]{bannister_review_2008-1}.
 Within variational DA systems, the background error covariance is
 usually represented as an operator so that it can be applied efficiently during
 an iterative optimization algorithm.
@@ -39,14 +39,14 @@ covariance information while the second captures ``unbalanced'' (i.e.\
 univariate) covariance information.
 Our focus is on the latter operator, but we note the review by
 \citet{bannister_review_2008-2} which outlines balance operators used in
-atmospheric DA, and e.g.\ \citet{weaver_multivariate_2005,moore_regional_2011-1} for oceanographic
+atmospheric DA, and e.g., \citet{weaver_multivariate_2005,moore_regional_2011-1} for oceanographic
 examples.
 
 Univariate covariance operators are further decomposed into two stages, where spatial
 correlations are specified first, and then scaled to the appropriate amplitude.
 In atmospheric DA, it is common to transform the control vector
 into a wavelet or spherical harmonic basis in order to specify the background
-error \citep[e.g.][]{bannister_review_2008-2}.
+error \citep[e.g.,][]{bannister_review_2008-2}.
 However, for systems with complex boundaries like the ocean, it is far more
 straightforward to formulate the correlation operator in terms of the original,
 physical domain.
@@ -69,12 +69,12 @@ differential equation.
 
 Correlation models that are based on the solution to differential operators have
 several advantages.
-Namely, these operators handle complex boundaries naturally and the
+Most importantly, these operators handle complex boundaries naturally and the
 infrastructure required to obtain their solution typically exist within
 the underlying numerical model.
 Within oceanographic state estimation, a widely used framework is based on the
 solution to the diffusion equation
-\citep[e.g.][]{nguyen_arctic_2021,forgetECCOv4,blockley_recent_2014,moore_regional_2011-1,daget_ensemble_2009,muccino_inverse_2008,di_lorenzo_weak_2007,weaver_three-_2003}.
+\citep[e.g.,][]{nguyen_arctic_2021,forgetECCOv4,blockley_recent_2014,moore_regional_2011-1,daget_ensemble_2009,muccino_inverse_2008,di_lorenzo_weak_2007,weaver_three-_2003}.
 The diffusion-based framework relies on either an explicit, pseudo-time stepping
 method \citep{weaver_correlation_2001} or an implicit solution
 \citep{mirouze_representation_2010,carrier_background-error_2010,weaver_diffusion_2013},

@@ -36,7 +36,8 @@ Alternatively, these length scales could be set entirely independently of
 the grid, for instance as a function of a phenomenological length scale such as
 the local Rossby radius of deformation.
 
-A key feature of the correlation model shown here is the $\rangeh$ and $M$
+A key feature of the correlation model shown here is that the range parameter,
+$\rangeh$, and the number of inverse elliptic operator applications, $M$,
 control the correlation length scale and shape \textit{separately}.
 We consider this to be an attractive feature when compared to the implicit
 diffusion approach.
@@ -44,8 +45,8 @@ Even when the ``length scale'' is fixed in the implicit diffusion model, changin
 modifies the shape of the correlation function in such a way that there is no
 consistent characteristic distance, for instance at which correlation would drop below a
 threshold value
-(\cref{fig:correlation_comparison}, and also
-\citet[Figs. 1 and 2 of][]{guillet_modelling_2019}).
+(\cref{fig:correlation_comparison}, and also Figs. 1 and 2 from
+\citet{guillet_modelling_2019}).
 We note that in the Mat\'ern correlation model presented here that the parameter
 $\deltah$ changes with $M$ while in the implicit diffusion approach, $\deltah
 \rightarrow 1$.
@@ -57,7 +58,7 @@ As noted in \citet{mirouze_representation_2010,carrier_background-error_2010}, a
 drawback to the explicit diffusion approach from
 \citet{weaver_correlation_2001} is that it requires many iterations to satisfy
 numerical stability.
-We note specifically in our experimentation with this model on the LLC grid
+In our experimentation with this model on the LLC grid
 as implemented in the MITgcm \citep{campin_mitgcmmitgcm_2021}, we have found
 the number of iterations required for numerical stability to be roughly a factor
 of three larger than the necessary (but insufficient) bound for numerical
@@ -65,12 +66,14 @@ stability.
 We therefore find approaches based on the implicit solution of a PDE to be more
 straightforward, as it is more intuitive to specify a solution tolerance
 rather than guess the number of iterations required for convergence.
-Moreover, our numerical experiments indicate that the solution can be imprecise
-(to a tolerance of $\sim10^{-3}$) and therefore highly efficient.
+Moreover, our numerical experiments indicate that
+an imprecise solution (to a tolerance of $\sim10^{-3}$)
+is sufficient for capturing the desired statistical behavior of the model,
+and therefore its implementation is highly efficient.
 Finally, because the correlation model shown here is formulated through an
 inverse elliptic operator, we have access to the inverse correlation operator,
 which could be used directly as regularization while solving an inverse problem
-\citep[e.g.][]{bui-thanh_computational_2013}, or for the specification of
+\citep[e.g.,][]{bui-thanh_computational_2013}, or for the specification of
 spatially correlated observations as in \citet{guillet_modelling_2019}.
 
 For some applications it could be desirable to specify oscillating or ``lobed''

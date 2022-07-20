@@ -13,7 +13,7 @@ scalably in high dimensional inverse problems.
 We then review correlation models that are based on the application of a
 diffusion operator \citep{weaver_correlation_2001,mirouze_representation_2010},
 which are commonly used for large scale geophysical inverse problems
-\citep[e.g.][]{forgetECCOv4,moore_regional_2011-1}.
+\citep[e.g.,][]{forgetECCOv4,moore_regional_2011-1}.
 We then discuss the developments from \citet{RSSB:RSSB777}, outlining the
 connection between the solution to a Stochastic PDE (SPDE) and a Gaussian random
 field with Mat\'ern type covariance.
@@ -99,8 +99,9 @@ diagonal matrix $\Sigma_\alpha$.
 The goal of this paper is to formulate a generic operator for $\corrMat$
 that could be
 used in a variational data assimilation system to specify
-correlations for any variable, e.g.\ $\corrMat_\alpha$, $\corrMat_\beta$, etc.
-More specifically, we specify the square root $\corrMat^{1/2}$, such that
+correlations for any variable, e.g., $\corrMat_\alpha$, $\corrMat_\beta$, etc.
+As with diffusion based correlation models, we do specify $\corrMat$ through its
+square root $\corrMat^{1/2}$, such that
 $\corrMat = \corrMat^{1/2}\corrMat^{T/2}$.
 To provide some additional context for this development,
 we first review past work that has achieved this with a generalized
@@ -324,7 +325,7 @@ Throughout this paper we use the empirical relation discussed by
 The so-called ``range parameter'', $\rangeh$, defines the distance between two
 points at which correlation drops to 0.14.
 We note that the range parameter used here is larger by a factor of 2 than what
-is sometimes used \citep[e.g.][]{rasmussen_gaussian_2006},
+is sometimes used \citep[e.g.,][]{rasmussen_gaussian_2006},
 but we prefer this definition because of its intuitive interpretation.
 With $M$ and $\rangeh$ defined, we provide an explicit form of the Mat\'ern
 correlation function which will be used throughout:
