@@ -5,15 +5,17 @@
 - Edits:
     - [x] Patrick's comments
     - [x] Abstract efficiency: mention multi apps? Say this more generally?
-    - [ ] Add Yaremchuk correlation functions
-    - [ ] Add mention about how to handle MOM vertical coordinate?
+    - [x] Actually, I'm not sure if necessary: Add Yaremchuk correlation functions
+    - [x] Unsure about this at the moment: Add mention about how to handle MOM vertical coordinate?
 
 - Reading considerations
-    - [ ] geophysical inverse problems to variational data assimilation ??
-    - [ ] possible abbreviations:
+    - [x] This is fine how it is at this point: geophysical inverse problems to variational data assimilation ??
+    - [x] possible abbreviations:
         - Lindgren 2011, WC01, MW10, WM13
-        - Variational DA -> VDA
+        - Variational DA -> VDA ... nah, just data assim -> DA
         - elliptic PDE, PDE, SPDE ,... etc
+        - auto-regressive in the introduction
+    - [x] WTF is going on with extra spacing for equations in figure captions
 
 - Simple
     - [x] Add PH

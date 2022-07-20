@@ -142,14 +142,16 @@ directional derivative at each cell face:
         \pderiv{\uni}{y}(\x_\ijk^N)
         &&\simeq \dfrac{\uni_\jpk - \uni_\ijk}{\Delta y_c^{i,j+1}}
         \\
-        \pderiv{\uni}{z}(\x_\ijk^B)
-        &\simeq \dfrac{\uni_\ijk - \uni_\ijkm}{\Delta r_c^{k}}
-        \qquad
         \pderiv{\uni}{z}(\x_\ijk^T)
-        &&\simeq \dfrac{\uni_\ijkp - \uni_\ijk}{\Delta r_c^{k+1}}
+        &\simeq \dfrac{\uni_\ijkm - \uni_\ijk}{\Delta r_c^{k}}
+        \qquad
+        \pderiv{\uni}{z}(\x_\ijk^B)
+        &&\simeq \dfrac{\uni_\ijk - \uni_\ijkp}{\Delta r_c^{k+1}}
     \end{aligned}
 \end{equation*}\end{linenomath*}
-for the west, east, south, north, bottom, and top cell faces, respectively.
+for the west, east, south, north, top, and bottom cell faces, respectively.
+Note that the vertical coordinate is somewhat ``flipped'' when compared to the
+other dimensions, where the index $k=1$ at the surface and $k=N_k$ at depth.
 Putting these definitions together,
 \begin{linenomath*}\begin{equation}
     \begin{aligned}
@@ -182,12 +184,12 @@ Putting these definitions together,
         &\left[
             \left(
                 \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
-            \right)_\ijkp \,
-            (\uni_\ijkp - \uni_\ijk) -
+            \right)_\ijk \,
+            (\uni_\ijkm - \uni_\ijk) -
             \left(
                 \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
-            \right)_\ijk \,
-            (\uni_\ijk - \uni_\ijkm)
+            \right)_\ijkp \,
+            (\uni_\ijk - \uni_\ijkp)
         \right]
         \, .
     \end{aligned}
@@ -219,11 +221,11 @@ that form the seven point numerical stencil:
         &c_\text{top}^\ijk \coloneqq
             \left(
                 \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
-            \right)_\ijkp \,
+            \right)_\ijk \,
         &&c_\text{bottom}^\ijk \coloneqq
             \left(
                 \dfrac{\kappa^{wz} \, \Delta x_g \Delta y_g}{\Delta r_c}
-            \right)_\ijk \,
+            \right)_\ijkp \,
     \end{aligned}
 \end{equation*}\end{linenomath*}
 \begin{linenomath*}\begin{equation*}
@@ -232,8 +234,8 @@ that form the seven point numerical stencil:
         - c_\text{north}^\ijk - c_\text{south}^\ijk
         - c_\text{top}^\ijk - c_\text{bottom}^\ijk \, .
 \end{equation*}\end{linenomath*}
-With these definitions we define the matrix $L$ such that
-$L \unis \simeq \int_{\domain} \nabla\cdot K(\x)\nabla \, \uni(\x)\,d\x$
+With these definitions we define the matrix $\mathbf{L}$ such that
+$\mathbf{L} \unis \simeq \int_{\domain} \nabla\cdot K(\x)\nabla \, \uni(\x)\,d\x$
 where the row corresponding to the index $\ijk$
 \begin{linenomath*}\begin{equation*}
     \left[ c_\text{top} \cdots c_\text{south} \cdots
@@ -246,37 +248,38 @@ With each term in \cref{eq:spde_integral} defined above, we have the system of
 equations in matrix form:
 \begin{linenomath*}\begin{equation}
     \begin{aligned}
-        (D_\delta - L) \unis &= D_z\mathbf{z}\\
-        A\unis &= D_z\mathbf{z}
+        (\mathbf{D}_\delta - \mathbf{L}) \unis &= \mathbf{D}_z\mathbf{z}\\
+        \mathbf{A}\unis &= \mathbf{D}_z\mathbf{z}
     \end{aligned}
     \label{eq:fv_spde}
 \end{equation}\end{linenomath*}
 where
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
-        D_\delta \coloneqq \text{diag}
+        \mathbf{D}_\delta \coloneqq \text{diag}
             \left\{
                 \deltah\dfrac{\vol_n}{\defdetdi}
             \right\}_{n=1}^{\nuni}
             \qquad
-        D_z \coloneqq \text{diag}
+        \mathbf{D}_z \coloneqq \text{diag}
             \left\{
                 \sqrt{\dfrac{\vol_n}{\defdetdi}}
             \right\}_{n=1}^{\nuni}
             \qquad
-        A \coloneqq \left(D_\delta - L\right)
+            \mathbf{A} \coloneqq \left(\mathbf{D}_\delta - \mathbf{L}\right)
     \end{aligned}
 \end{equation*}\end{linenomath*}
 where for notational simplicity we index each grid cell with $n$.
 Note that when we prescribe $\defjac$ as in \cref{sec:matern_operator},
-then $\defdetdi = \vol_n$ so that $D_\delta = \deltah I$ and $D_z = I$.
+then $\defdetdi = \vol_n$ so that $\mathbf{D}_\delta = \deltah \mathbf{I}$
+and $\mathbf{D}_z = \mathbf{I}$.
 The solution, $\unis$, is the discretized form of a Mat\'ern field with
-covariance $D_z A^{-2} D_z$.
+covariance $\mathbf{D}_z A^{-2} \mathbf{D}_z$.
 The solution for cases when $M>1$ is simply obtained through an iterative
-application of $A^{-1}$ \citep[see also Theorem 4 in Appendix C.4
+application of $\mathbf{A}^{-1}$ \citepalias[see also Theorem 4 in Appendix C.4
 of][]{RSSB:RSSB777}, i.e. for $M>1$:
 \begin{linenomath*}\begin{equation*}
-    A^{M-1} \unis_M = \unis
+    \mathbf{A}^{M-1} \unis_M = \unis
 \end{equation*}\end{linenomath*}
 
 
@@ -289,10 +292,10 @@ Throughout this work we use zero flux, Neumann boundary conditions as follows:
     K(\x)\nabla\uni(\x) \cdot \hat{\mathbf{n}} = 0 \qquad \x\in\solidBdy \, .
 \end{equation*}\end{linenomath*}
 These boundary conditions are implemented by zeroing out the flux terms in the
-definition of $L$ along the boundary.
+definition of $\mathbf{L}$ along the boundary.
 More specifically, these are defined using a ``mask'' field which has
 values of one in the ocean and 0 on land.
-The mask is used to modify the coefficients of $L$ as follows:
+The mask is used to modify the coefficients of $\mathbf{L}$ as follows:
 \begin{linenomath*}\begin{equation*}
     \begin{aligned}
         &c_\text{east}^\ijk \coloneqq c_\text{east}^\ijk
@@ -314,6 +317,7 @@ The mask is used to modify the coefficients of $L$ as follows:
             m_{\ijk} m_{\ijkm}
     \end{aligned}
 \end{equation*}\end{linenomath*}
+where $m_{\ijk}$ is used to denote the mask value at each grid cell.
 
 \subsection{Correlation operator}
 \label{ssec:correlation_fv}
@@ -321,14 +325,15 @@ The mask is used to modify the coefficients of $L$ as follows:
 The discretized form of the correlation operator used in this work is more
 formally defined as
 \begin{linenomath*}\begin{equation}
-    \corrMat \coloneqq \normalizer A^{-M} D_z \, .
+    \corrMat \coloneqq \normalizer \mathbf{A}^{-M} \mathbf{D}_z \, .
     \label{eq:corr_operator_fv}
 \end{equation}\end{linenomath*}
 To estimate the sample standard deviation used to fill $\normalizer$, we
 draw 1,000 independent standard normal vectors $\mathbf{z}_{l} \in \uniSpace$
 $l\in \{1, 2, ..., 1000\}$, solve
 \begin{linenomath*}\begin{equation}
-    A^{M} \unis_{l} = D_z \mathbf{z}_{l} \qquad l \in \{1, 2, ..., 1000\} \, ,
+    \mathbf{A}^{M} \unis_{l} = \mathbf{D}_z \mathbf{z}_{l}
+        \qquad l \in \{1, 2, ..., 1000\} \, ,
     \label{eq:sampling}
 \end{equation}\end{linenomath*}
 and compute the pointwise standard deviation from $\{\unis_{l}\}_{l=1}^{1000}$.

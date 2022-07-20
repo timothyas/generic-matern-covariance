@@ -64,10 +64,10 @@ show correlation functions based on recursive filters, and
 More recently, \citet{purser_multigrid_2022} show a ``beta
 filter'' approach which enables compact support and a highly generalizable
 correlation shape via an efficient multigrid approach.
-Alternatively, within this class of models are those based on the solution of a
+Alternatively, within this class of models are those based on the solution to a
 differential equation.
 
-Correlation models that are based on the solution to differential operators have
+Correlation models that are based on the solution to differential equations have
 several advantages.
 Most importantly, these operators handle complex boundaries naturally and the
 infrastructure required to obtain their solution typically exist within
@@ -80,29 +80,37 @@ method \citep{weaver_correlation_2001} or an implicit solution
 \citep{mirouze_representation_2010,carrier_background-error_2010,weaver_diffusion_2013},
 where the correlation structure underlying the solution corresponds to either a
 Gaussian or more general auto-regressive function, respectively.
-Alternatively, \citet{RSSB:RSSB777} show an explicit link between the numerical solution
-to a stochastic elliptic partial differential equation and a Mat\'ern-type covariance
+Alternatively, \citet{RSSB:RSSB777} (hereafter \citetalias{RSSB:RSSB777})
+show an explicit link between the numerical solution
+to a stochastic partial differential equation (SPDE) and a Mat\'ern-type covariance
 model.
 As of yet, however, it has remained unclear how this model could be used to
 specify univariate correlations with appropriate nonstationarity and anisotropy
 for an operational variational DA system.
 
-Here, we extend the work by \citet{RSSB:RSSB777}
+Here, we extend the work by \citetalias{RSSB:RSSB777}
 to show how the framework can be used within variational DA.
 Our emphasis is on oceanographic applications, although the methodology is more
 general.
-We show how the mapping method introduced by \citet{RSSB:RSSB777}
+We show how the mapping method suggested by \citetalias{RSSB:RSSB777}
 can be used to formulate a correlation operator that respects anisotropy and
 nonstationarity in a way that is relevant to many ocean general circulation
 models.
-At the core of this model there are two parameters, which \textit{separately}
-control the shape and length scale of the correlation model.
-We show that the parameter controlling the length scale can be interpreted
-intuitively as the ``number of neighboring grid cells'' at which correlation
-drops to an expected value.
-Our numerical experiments show that correlations derived from the isotropic,
-stationary Mat\'ern correlation function can be mapped to a generic ocean model
-grid in terms of this range parameter.
+In essence, the mapping method is simply a change of variables between the
+computational domain and a space
+where correlations can be described by the analytical Mat\'ern
+correlation function for isotropic and stationary fields.
+Here we make practical suggestions on how to define the mapping via normalization
+length scales.
+With these normalizing length scales are defined, we show how two
+hyperparameters \textit{separately} control the ``range'' and shape of the
+correlation model.
+As an intuitive example, when the normalizing length scales are defined relative
+to the model grid, a ``range parameter'' can be interpreted as the ``number of
+neighboring grid cells'' at which correlation drops to an expected value.
+We show that this interpretation holds no matter how many times the operator is
+applied, such that the overall shape can change while the
+correlation length scale remains fixed.
 It is therefore straightforward to use this approach to achieve desirable
 anisotropic and nonstationary statistics by simply tuning these two
 parameters.
@@ -110,9 +118,9 @@ parameters.
 % Is this really necessary?
 The paper is laid out as follows.
 In \cref{sec:review} we give some context for how univariate correlation models
-are used in variational data assimilation.
+are used in variational DA.
 We provide a review of diffusion based correlation operators, and
-then review the Mat\'ern type covariance developments in \citet{RSSB:RSSB777}
+then review the Mat\'ern type covariance developments in \citetalias{RSSB:RSSB777}
 which we build on.
 In \cref{sec:matern_operator} we show how the Mat\'ern model can be mapped from
 its isotropic, stationary form into a more complex computational domain.

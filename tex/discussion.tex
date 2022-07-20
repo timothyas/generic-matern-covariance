@@ -25,7 +25,7 @@ neighboring grid cells.
 Using this definition was further shown to be beneficial at the equator, for
 example, because grid scale refinements there result in correlation length
 scales that are longer zonally than meridionally, coinciding with observed
-autocorrelation sturcutres
+autocorrelation structures
 \citep{meyers_space_1991}.
 However, we recognize that there could be features that are desirable to capture
 in a correlation model that are not represented in the definition of the
@@ -48,10 +48,10 @@ threshold value
 (\cref{fig:correlation_comparison}, and also Figs. 1 and 2 from
 \citet{guillet_modelling_2019}).
 We note that in the Mat\'ern correlation model presented here that the parameter
-$\deltah$ changes with $M$ while in the implicit diffusion approach, $\deltah
-\rightarrow 1$.
+$\deltah$ changes with $M$ while in the implicit diffusion approach,
+$\delta(\x) \rightarrow I$.
 Apparently the simple variation in this parameter is enough to balance the
-multiple applications of $\maternop$, such that the resulting correlation
+multiple applications of $\maternop^{-1}$, such that the resulting correlation
 structure maintains a consistently identifiable length scale via $\rangeh$.
 
 As noted in \citet{mirouze_representation_2010,carrier_background-error_2010}, a
@@ -61,7 +61,7 @@ numerical stability.
 In our experimentation with this model on the LLC grid
 as implemented in the MITgcm \citep{campin_mitgcmmitgcm_2021}, we have found
 the number of iterations required for numerical stability to be roughly a factor
-of three larger than the necessary (but insufficient) bound for numerical
+of three larger than the necessary (but insufficient) lower bound for numerical
 stability.
 We therefore find approaches based on the implicit solution of a PDE to be more
 straightforward, as it is more intuitive to specify a solution tolerance
@@ -73,14 +73,15 @@ and therefore its implementation is highly efficient.
 Finally, because the correlation model shown here is formulated through an
 inverse elliptic operator, we have access to the inverse correlation operator,
 which could be used directly as regularization while solving an inverse problem
-\citep[e.g.,][]{bui-thanh_computational_2013}, or for the specification of
-spatially correlated observations as in \citet{guillet_modelling_2019}.
+\citep[e.g.,][]{bui-thanh_computational_2013},
+or for specifying spatial correlations within the inverse observation error
+covariance as in \citet{guillet_modelling_2019}.
 
 For some applications it could be desirable to specify oscillating or ``lobed''
 correlation models, which can be achieved with the explicit or implicit
 diffusion models \citep{weaver_correlation_2001,weaver_diffusion_2013}.
 We suggest that such extensions are possible for the Mat\'ern type correlation
-operator shown here, based on results shown by \citet{RSSB:RSSB777} in the
+operator shown here, based on results shown by \citetalias{RSSB:RSSB777} in the
 complex plane with a tunable oscillation parameter.
 These more general shapes could be explored in future work for the case of
 multi-dimensional fields as shown here.

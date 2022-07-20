@@ -95,8 +95,7 @@ function.
         1,000 samples using a subset of the ``Lat-Lon-Cap'' grid within the
         Pacific Ocean (shaded coloring).
         The sample correlation is computed in the zonal direction, $\delta i$,
-        indicating number of neighboring grid cells from
-        127.5$^\circ$W.
+        indicating the number of neighboring grid cells from 127.5$^\circ$W.
         The shading indicates the spread between the first and ninth deciles,
         based on sample correlations at all depth levels and latitudes from
         70$^\circ$S and 37$^\circ$N.
@@ -134,7 +133,7 @@ spacing ($\Delta y$) refines near the equator, while the longitudinal grid
 spacing ($\Delta x$) slightly increases near the equator.
 The result of this grid refinement is that near the equator, a range of
 $\rangeh$ grid cells covers a shorter distance meridionally than it does at
-e.g., $20^\circ$N.
+e.g., $15^\circ$N.
 Overall, this example highlights how details in the model grid can be harnessed
 to achieve physically relevant correlation structures.
 However, we note that if this correlation shape is desired but would not
@@ -200,9 +199,8 @@ Thus, the theoretical value cannot be used directly and it is necessary to
 calculate or estimate the true variance of the operator in order to formulate
 the normalization matrix $\normalizer$.
 Throughout this work, we have used the estimated standard deviation shown in
-\cref{fig:std_ratio} to fill $\normalizer$, based on 1,000 random samples
-(as suggested in \citet{weaver_correlation_2001}).
-Given that the numerical computed correlation structure compares well to the
+\cref{fig:std_ratio} to fill $\normalizer$, based on 1,000 random samples.
+Given that the numerically computed correlation structure compares well to the
 theoretical value (\cref{ssec:llc90_correlations}), this normalization method
 appears to be reliable.
 We also note this method is convenient because it is embarrassingly parallel,
@@ -338,15 +336,15 @@ the total number of iterations overtakes the case of $M=1$ due to the repeated
 solves.
 
 We note that Jacobi, Gauss-Seidel, and SOR methods are rarely used for modern
-applications \citep[an exception being the line-SOR method in the sea-ice solver
-of the MITgcm][]{losch_formulation_2010}.
-For example, the MITgcm
+applications (an exception being the line-SOR method in the sea-ice solver
+of the MITgcm \citep{losch_formulation_2010}).
+For example, the main source code of the MITgcm
 \citep{marshall_finite-volume_1997,campin_mitgcmmitgcm_2021}
 uses a conjugate gradient method for the pressure solve at each time
 step.
 However, given the performance benefits noted here and the simplicity of
-implementing e.g., the SOR scheme, it could be used as an efficient
-preconditioner in the event that e.g., a conjugate gradient scheme becomes
+implementing the SOR scheme, it could be used as an efficient
+preconditioner in the event that a different solution method becomes
 overly expensive for $M>1$.
 
 \begin{figure}

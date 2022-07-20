@@ -1,11 +1,11 @@
 \section{A Nonstationary and Anisotropic Mat\'ern Correlation Operator}
 \label{sec:matern_operator}
 
-Here we propose to use the SPDE operator described by \citet{RSSB:RSSB777}
+Here we propose to use the SPDE operator described by \citetalias{RSSB:RSSB777}
 as a means to describe an anisotropic, nonstationary correlation model in a
 similar manner to the diffusion-based methods described in
 \cref{ssec:wc01_review}.
-To do so, we employ the ``mapping method'' described by \citet{RSSB:RSSB777}
+To do so, we employ the ``mapping method'' described by \citetalias{RSSB:RSSB777}
 which we show for the general $M$th order SPDE in \cref{ssec:mapping_method}.
 In summary, the basic idea we present is to use the mapping method to
 nondimensionalize or re-scale the elliptic operator.
@@ -16,7 +16,7 @@ nondimensionalization based on the grid scale in \cref{ssec:nonstationarity}.
 \subsection{Mapping method or change of variables}
 \label{ssec:mapping_method}
 
-In \citet{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
+In \citetalias{RSSB:RSSB777} it is suggested that solving the SPDE in a transformed
 coordinate system allows one to readily incorporate anisotropy and
 nonstationarity into a Mat\'ern covariance model.
 In this mapping method, we consider solutions to the isotropic, stationary SPDE
@@ -62,7 +62,7 @@ the SPDE in \cref{eq:spde_iso} can be written in the computational domain's coor
 \end{equation}\end{linenomath*}
 where zero flux, Neumann boundary conditions are applied at the boundaries
 (see \cref{sec:discretization_matern} for details).
-%We note as in \citet{RSSB:RSSB777} that this reproduces the deformation method
+%We note as in \citetalias{RSSB:RSSB777} that this reproduces the deformation method
 %introduced in \citet{sampson_nonparametric_1992}.
 
 Here, we propose to use this generic form to define a square root of the
@@ -94,7 +94,7 @@ derivation of their discretized forms relevant to our numerical experiments in
 \label{ssec:scaling_laplacian}
 
 Here we focus on parameterizing $\defjac(\x)$ in order to achieve an anisotropic
-correlation model that is relevant for variational data assimilation.
+correlation model that is relevant for variational DA.
 We illustrate our choice with a scaling argument focusing on how $K(\x)$
 influences correlation length scales.
 
@@ -195,7 +195,7 @@ distances than at the surface \citep{talley_descriptive_2011}.
 Vertical grids are correspondingly much coarser at depth than near the surface.
 As a concrete example, the height-based vertical grid we use in \cref{sec:llc90}
 varies from $\sim 5-10$~m near the surface, and spacing increases to
-$\bigo(100)$~m below 1,000~m (\cref{fig:llc90_correlation_maps}(c)).
+$\bigo(100)$~m below 1,000~m (\cref{fig:llc90_correlation_maps}(f)).
 By using the grid elements directly, our correlation model can capture the
 nonstationarity motivated by the physical processes which influence the model
 grid's development.
