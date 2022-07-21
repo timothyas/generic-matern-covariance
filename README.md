@@ -1,4 +1,4 @@
-# A Practical Formulation for an Anisotropic and Nonstationary Mat&eacutern Class Correlation Operator
+# A Practical Formulation for an Anisotropic and Nonstationary Matérn Class Correlation Operator
 
 ## TODO
 
