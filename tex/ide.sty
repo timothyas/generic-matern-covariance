@@ -1,5 +1,5 @@
 
-\ProvidesPackage{oden}
+\ProvidesPackage{ide}
 
 % --- Math operations and notation
 \newcommand{\pderiv}[3][]{% \pderiv[<order>]{<func>}{<var>}
@@ -41,11 +41,12 @@
 \newcommand{\jpk}{{\ensuremath{j+1,k}}}
 \newcommand{\jkm}{{\ensuremath{j,k-1}}}
 \newcommand{\jkp}{{\ensuremath{j,k+1}}}
-\newcommand{\unis}{\ensuremath{\mathbf{u}}}
-\newcommand{\uni}{\ensuremath{u}}
+\newcommand{\unis}{\ensuremath{\mathbf{\theta}}}
+\newcommand{\uni}{\ensuremath{\theta}}
 \newcommand{\unih}{\ensuremath{\hat{\uni}}}
 \newcommand{\nuni}{\ensuremath{N_{\uni}}}
 \newcommand{\uniSpace}{\ensuremath{\mathbb{R}^{\nuni}}}
+\newcommand{\uniscaling}{\ensuremath{\Theta}}
 
 % --- UQ variables
 \newcommand{\params}{\ensuremath{\mathbf{x}}} % vector of parameters or controls
@@ -115,7 +116,7 @@
 \newcommand{\defdetdi}{\ensuremath{\text{det}\left(\defjac_{n}\right)}}
 \newcommand{\defdetnox}{\ensuremath{\text{det}\big(\defjac\big)}}
 \newcommand{\rangeh}{\ensuremath{\hat{\rho}}}
-\newcommand{\normalizer}{\ensuremath{\mathbf{\Lambda}}}
+\newcommand{\normalizer}{\ensuremath{\bm{\Lambda}}}
 
 \newcommand{\maternMat}{\ensuremath{\mathbf{A}}}
 \newcommand{\maternop}{\ensuremath{\mathcal{A}}}

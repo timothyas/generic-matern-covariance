@@ -17,25 +17,43 @@
         - auto-regressive in the introduction
     - [x] WTF is going on with extra spacing for equations in figure captions
 
+Paper final
+- [x] line numbers
+- [x] check keywords
+- [x] make MITgcm fig ...
+- [x] switch u -> theta
+- [x] supplemental material with dj dk
+- [x] Check figures, equations, etc for QJRMS
+- [ ] Figure out how to do data and availability statements, finalize
+  acknowledgements
+- [x] funding sources
+
+
+Code and data
+- [ ] MITgcm code to separate branch
+- [ ] test it ...
+- [ ] publicize this repo
+- [ ] decide what data to make public
+
+
+
 - Simple
     - [x] Add PH
-    - [ ] Confirm with PH: affiliations and funding
+    - [x] Confirm with PH: affiliations and funding
     - [ ] Actually make the supplemental material document with dj and dk theoretical matern
       plots
 
 - MITgcm stuff:
-    - How to use MITgcm figure?
-    - Make sure version is correct in citation...
-    - Move updates to separate branch, make sure it works, cite it
+    - [ ] How to use MITgcm figure?
+    - [ ] Make sure version is correct in citation...
+    - [ ] Move updates to separate branch, make sure it works, cite it
+
 - Make this repo public
     - Rename?
     - move relevant pych scripts here
     - clean up / organize
     - rosy pig ... public and rename
 - Make datasets public, cite them in document
-- QJRMS style
-    - Template
-    - Check figures, equations, etc...
 
 
 ## Extra

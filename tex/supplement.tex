@@ -1,0 +1,91 @@
+\documentclass[alpha-refs]{Wiley-LaTeX-Template/wiley-article}
+
+\papertype{Supplemental Material}
+
+% --- Journal Provided
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{soul}
+
+% --- Custom additions
+\usepackage{amsmath, amssymb}
+\usepackage{mathtools} % for \coloneqq
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{bm}
+\usepackage{adjustbox}
+\usepackage[percent]{overpic}
+
+% Definitions
+\usepackage{ide}
+
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,
+    urlcolor=black,
+    citecolor=black
+}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+% --- Header
+\title{Supplemental Material for:
+    ``A Practical Formulation for an Anisotropic and Nonstationary Mat\'ern Class
+    Correlation Operator''
+}
+\author{Timothy A. Smith}
+
+\runningauthor{Smith}
+
+\begin{document}
+
+\maketitle
+
+\newpage
+\begin{figure}
+    \centering
+    \begin{overpic}[width=\textwidth]{../figures/matern_llc90_correlation_theory_vs_m_iy.pdf}
+        \put(6,35){(a)}
+        \put(30,35){(b)}
+        \put(53,35){(c)}
+        \put(76,35){(d)}
+    \end{overpic}
+    \caption{Correlation structure computed from the theoretical Mat\'ern
+        correlation function (black) and from
+        1,000 samples using a subset of the ``Lat-Lon-Cap'' grid within the
+        Pacific Ocean (shaded coloring).
+        The sample correlation is computed in the meridional direction, $\delta j$,
+        indicating the number of neighboring grid cells from 0.2$^\circ$N.
+        The shading indicates the spread between the first and ninth deciles,
+        based on sample correlations at all depth levels and latitudes from
+        157.5$^\circ$W and 97.5$^\circ$W.
+    }
+    \label{fig:llc90_correlations_j}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \begin{overpic}[width=\textwidth]{../figures/matern_llc90_correlation_theory_vs_m_k.pdf}
+        \put(6,35){(a)}
+        \put(30,35){(b)}
+        \put(53,35){(c)}
+        \put(76,35){(d)}
+    \end{overpic}
+    \caption{Same as \cref{fig:llc90_correlations_j}, but
+        the sample correlation is computed in the vertical direction, $\delta k$,
+        indicating the number of neighboring grid cells from 722~m depth (the
+        25th vertical level).
+        The shading indicates the spread between the first and ninth deciles,
+        based on sample correlations at each grid cell from
+        157.5$^\circ$W to 97.5$^\circ$W in the zonal direction and
+        70$^\circ$S to 37$^\circ$N in the meridional direction.
+        There are 50 vertical levels on the LLC grid.
+    }
+    \label{fig:llc90_correlations_k}
+\end{figure}
+
+\end{document}

@@ -33,15 +33,18 @@ and depth, respectively.
 
 \begin{figure}
     \centering
-    \includegraphics[width=.6\textwidth]{../figures/hgrid-abcd.pdf}
-    \includegraphics[width=.2\textwidth]{../figures/vgrid-accur-center.pdf}
-    \caption{The structured finite volume grid used in the MITgcm. The
-        left two figures show the horizontal grid, viewed from above. The right
-        figure shows the vertical grid. In each figure, u, v, and w mark the
-        location where velocities exist on the grid cell interfaces. The open
-        circles denote the tracer location at the grid cell center,
-        where fields like temperature and salinity are located. Figures are from
-    \citet{campin_mitgcmmitgcm_2021}.}
+    \adjustbox{trim={{.1\width} {0} {.1\width} {.1\height}},clip}{
+        \begin{overpic}[width=.8\textwidth]{../figures/smith_fig7.pdf}
+            \put(10, 47){(a)}
+            \put(68, 47){(b)}
+        \end{overpic}
+    }
+    \caption{The structured finite volume grid used in the MITgcm.
+        (a) The horizontal (latitude-longitude) plane viewed from above.
+        (b) The vertical grid.
+        The circles denote the tracer location at the grid cell center,
+        where fields like temperature and salinity are located.
+    }
     \label{fig:mitgcm_grid}
 \end{figure}
 
@@ -124,8 +127,6 @@ determine the flux in and out of the grid cell:
 \end{equation*}\end{linenomath*}
 where $\cellbdy_{\ijk}^{W}$, $\cellbdy_{\ijk}^{S}$, and $\cellbdy_{\ijk}^{B}$ are the
 western, southern, and bottom boundaries of the grid cell.
-Given the Arakawa C convention, we consider these elements to be
-located at the $u$, $v$, and $w$ grid cell locations in \cref{fig:mitgcm_grid}.
 The discretized gradient is approximated via the finite difference
 directional derivative at each cell face:
 \begin{linenomath*}\begin{equation*}

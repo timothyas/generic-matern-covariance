@@ -98,7 +98,7 @@ correlation model that is relevant for variational DA.
 We illustrate our choice with a scaling argument focusing on how $K(\x)$
 influences correlation length scales.
 
-Consider a 3D field $\uni(\x)\sim U$ that exhibits spatial variability at the
+Consider a 3D field $\uni(\x)\sim \uniscaling$ that exhibits spatial variability at the
 length scales, $L_x$, $L_y$, and $L_z$ in the direction of longitude, latitude,
 and height, respectively,
 where $L_x$, $L_y$ $>>$ $L_z$, such that the field exhibits highly
@@ -122,8 +122,8 @@ the Laplacian term in $\maternop$ is unbalanced
 \begin{linenomath*}\begin{equation}
     \begin{aligned}
         \nabla^2 \uni(\x)
-            & \sim \dfrac{U}{L_x^2} + \dfrac{U}{L_y^2} + \dfrac{U}{L_z^2} \\
-            & \simeq \dfrac{U}{L_z^2} \, .
+            & \sim \dfrac{\uniscaling}{L_x^2} + \dfrac{\uniscaling}{L_y^2} + \dfrac{\uniscaling}{L_z^2} \\
+            & \simeq \dfrac{\uniscaling}{L_z^2} \, .
     \end{aligned}
     \label{eq:iso_lap}
 \end{equation}\end{linenomath*}
@@ -133,7 +133,7 @@ Our goal is therefore to define the elements of $K$ such that each term is of
 the same order of magnitude.
 %and
 %\begin{linenomath*}\begin{equation*}
-%    \nabla\cdot K\nabla \sim 3U \, .
+%    \nabla\cdot K\nabla \sim 3\uniscaling \, .
 %\end{equation*}\end{linenomath*}
 
 To achieve this balance between Laplacian terms, we suggest a straightforward,
@@ -159,7 +159,7 @@ according to the definitions in \cref{eq:matern_definitions}:
 \end{equation*}\end{linenomath*}
 so that
 \begin{linenomath*}\begin{equation*}
-    \nabla\cdot K\nabla\uni(\x) \sim \dfrac{3}{L_xL_yL_z}U \, .
+    \nabla\cdot K\nabla\uni(\x) \sim \dfrac{3}{L_xL_yL_z}\uniscaling \, .
 \end{equation*}\end{linenomath*}
 The key is that $K$ scales each term in the Laplacian so that they are
 approximately the same order of magnitude, and the operator is balanced in all
