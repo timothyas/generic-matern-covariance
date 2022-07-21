@@ -12,7 +12,9 @@ class RediMaternField(MaternField):
                  density_path,
                  isotropic=False,
                  isoxy=True,
-                 n_applications=1):
+                 n_applications=1,
+                 slope_max=None,
+                 griffies_skew=False):
 
         try:
             assert isoxy
@@ -24,6 +26,8 @@ class RediMaternField(MaternField):
         except:
             raise NotImplementedError("isotropic version not implemented")
 
+        self.slope_max = slope_max
+        self.griffies_skew = griffies_skew
         self.density_path = density_path
         super().__init__(xdalike=xdalike,
                          n_range=n_range,
@@ -68,9 +72,18 @@ class RediMaternField(MaternField):
         rhoy = grid.diff(ds.RHOAnoma.where(ds.maskC), 'Y', boundary='fill', fill_value=np.nan) / ds.dyC
         # need a negative due to flipped z axis with MITgcm
         rhoz = -grid.diff(ds.RHOAnoma.where(ds.maskC), 'Z', boundary='fill', fill_value=np.nan) /ds.drCl
+        rhoz = rhoz.values
 
-        Sx = xr.DataArray(-rhox.values / rhoz.values, coords=ds.maskC.coords, dims=ds.maskC.dims)
-        Sy = xr.DataArray(-rhoy.values / rhoz.values, coords=ds.maskC.coords, dims=ds.maskC.dims)
+        # Slope clipping
+        if self.slope_max is not None:
+
+            sigh = np.sqrt(rhox.values**2 + rhoy.values**2)
+            Slim = - sigh / self.slope_max
+
+            rhoz = np.where( rhoz < Slim, rhoz, Slim )
+
+        Sx = xr.DataArray(-rhox.values / rhoz, coords=ds.maskC.coords, dims=ds.maskC.dims)
+        Sy = xr.DataArray(-rhoy.values / rhoz, coords=ds.maskC.coords, dims=ds.maskC.dims)
 
         # Mask it
         Sx = Sx.where(~np.isnan(Sx), 0.)
@@ -85,7 +98,17 @@ class RediMaternField(MaternField):
         LzInv = 1/self.Lz
         LxInv = xr.where(np.isnan(self.Lx) | (self.Lx==0.), 0., 1/self.Lx)
         self.K['wz'] = LzInv * (Sx**2 + Sy**2 + (self.Lz*LxInv)**2)
-        self.K['uz'] = LzInv * Sx
-        self.K['vz'] = LzInv * Sy
-        self.K['wx'] = LzInv * Sx
-        self.K['wy'] = LzInv * Sy
+
+        if self.griffies_skew:
+
+            self.K['uz'] = xr.zeros_like(Sx)
+            self.K['vz'] = xr.zeros_like(Sy)
+            self.K['wx'] = 2 * LzInv * Sx
+            self.K['wy'] = 2 * LzInv * Sy
+
+        else:
+
+            self.K['uz'] = LzInv * Sx
+            self.K['vz'] = LzInv * Sy
+            self.K['wx'] = LzInv * Sx
+            self.K['wy'] = LzInv * Sy

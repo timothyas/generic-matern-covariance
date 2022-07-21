@@ -54,6 +54,8 @@ class SampleDriver:
     isoxy = False
     barotropic_length_scale = False
     redi_rotation = False
+    griffies_skew = False
+    slope_max = None
     density_path = ''
     sorDict = {0.5:1.8, 1:1.6, 2:1.3, 4:1.2, 5:1.2}
     elliptic_tol = 1.e-16
@@ -238,6 +240,8 @@ class SampleDriver:
         if self.redi_rotation:
             MF = RediMaternField
             kw['density_path'] = self.density_path
+            kw['griffies_skew'] = self.griffies_skew
+            kw['slope_max'] = self.slope_max
 
         elif self.barotropic_length_scale:
             MF = BarotropicRadiusMaternField
