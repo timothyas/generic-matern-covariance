@@ -339,3 +339,17 @@ $l\in \{1, 2, ..., 1000\}$, solve
 \end{equation}\end{linenomath*}
 and compute the pointwise standard deviation from $\{\unis_{l}\}_{l=1}^{1000}$.
 
+\subsection{Code availability}
+\label{ssec:the_code}
+
+This study used the MITgcm \citep{campin_mitgcmmitgcm_2021}, with modifications
+that can be found at \url{github.com/timothyas/MITgcm/tree/matern-correlation}, for solving the
+presented linear system on the LLC grid.
+The grid files that make up the LLC grid can be found with the ECCOv4 data,
+which were accessed at \citep{ecco_v4r2}.
+All code and used to generate, postprocess, and analyze the results in this paper
+can be found at REF.
+The python packages \texttt{xmitgcm} \citep{abernathey_2021_5139886},
+\texttt{xarray} \citep{hoyer2017xarray}, \texttt{dask} \citep{dask}, and
+\texttt{zarr} \citep{alistair_miles_2020_3773450}
+were essential for these tasks.

@@ -1,35 +1,60 @@
-\documentclass[alpha-refs]{Wiley-LaTeX-Template/wiley-article}
+\documentclass[alpha-refs]{qjrms/wiley-article}
 
-\papertype{Supplemental Material}
-
-% --- Journal Provided
 \usepackage{url}
 \usepackage{lineno}
 \usepackage{soul}
 
+\usepackage{graphicx}
+\usepackage[space]{grffile}
+\usepackage{latexsym}
+\usepackage{textcomp}
+\usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{booktabs,array,multirow}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{etoolbox}
+\makeatletter
+% This gives an error ...
+%\patchcmd\@combinedblfloats{\box\@outputbox}{\unvbox\@outputbox}{}{%
+%  \errmessage{\noexpand\@combinedblfloats could not be patched}%
+%}%
+\makeatother
+% You can conditionalize code for latexml or normal latex using this.
+\newif\iflatexml\latexmlfalse
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
+
+\AtBeginDocument{\DeclareGraphicsExtensions{.pdf,.PDF,.eps,.EPS,.png,.PNG,.tif,.TIF,.jpg,.JPG,.jpeg,.JPEG}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
 % --- Custom additions
-\usepackage{amsmath, amssymb}
 \usepackage{mathtools} % for \coloneqq
 \usepackage{color}
-\usepackage{graphicx}
-\usepackage{natbib}
 \usepackage{bm}
 \usepackage{adjustbox}
 \usepackage[percent]{overpic}
+
 
 % Definitions
 \usepackage{ide}
 
 \usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    filecolor=black,
-    urlcolor=black,
-    citecolor=black
-}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
 \usepackage[capitalise,noabbrev]{cleveref}
 
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+
+% Define some citation abbreviations
+\defcitealias{RSSB:RSSB777}{L11}
+
+% From qjrms
+\renewcommand{\sfdefault}{ptm}
+\renewcommand{\familydefault}{\sfdefault}
+
+\papertype{Supplemental Material}
 \renewcommand{\thefigure}{S\arabic{figure}}
 
 % --- Header

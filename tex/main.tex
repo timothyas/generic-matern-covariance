@@ -1,31 +1,49 @@
-\documentclass[alpha-refs]{Wiley-LaTeX-Template/wiley-article}
+\documentclass[alpha-refs]{qjrms/wiley-article}
 
 % --- Journal Provided
+
 \usepackage{url}
 \usepackage{lineno}
 \usepackage{soul}
 
+\usepackage{graphicx}
+\usepackage[space]{grffile}
+\usepackage{latexsym}
+\usepackage{textcomp}
+\usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{booktabs,array,multirow}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{etoolbox}
+\makeatletter
+% This gives an error ...
+%\patchcmd\@combinedblfloats{\box\@outputbox}{\unvbox\@outputbox}{}{%
+%  \errmessage{\noexpand\@combinedblfloats could not be patched}%
+%}%
+\makeatother
+% You can conditionalize code for latexml or normal latex using this.
+\newif\iflatexml\latexmlfalse
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
+
+\AtBeginDocument{\DeclareGraphicsExtensions{.pdf,.PDF,.eps,.EPS,.png,.PNG,.tif,.TIF,.jpg,.JPG,.jpeg,.JPEG}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
 % --- Custom additions
-\usepackage{amsmath, amssymb}
 \usepackage{mathtools} % for \coloneqq
 \usepackage{color}
-\usepackage{graphicx}
-\usepackage{natbib}
 \usepackage{bm}
 \usepackage{adjustbox}
 \usepackage[percent]{overpic}
+
 
 % Definitions
 \usepackage{ide}
 
 \usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    filecolor=black,
-    urlcolor=black,
-    citecolor=black
-}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
 \usepackage[capitalise,noabbrev]{cleveref}
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
@@ -33,6 +51,11 @@
 
 % Define some citation abbreviations
 \defcitealias{RSSB:RSSB777}{L11}
+
+% From qjrms
+\renewcommand{\sfdefault}{ptm}
+\renewcommand{\familydefault}{\sfdefault}
+\papertype{Original Article}
 
 % --- Header
 \title{A Practical Formulation for an Anisotropic and Nonstationary Mat\'ern Class
@@ -60,7 +83,7 @@
     and a JPL/Caltech Subcontract (ECCO Consortium)
 }
 
-\runningauthor{Smith}
+\runningauthor{Timothy A. Smith}
 
 \begin{document}
 
@@ -125,22 +148,12 @@
 \input{block_sor.tex}
 
 \section*{Acknowledgements}
-This study used the MITgcm \citep{campin_mitgcmmitgcm_2021}, with modifications
-that can be found at \url{github.com/timothyas/MITgcm/tree/matern-correlation}, for solving the
-presented linear system on the LLC grid.
-The grid files that make up the LLC grid can be found with the ECCOv4 data,
-which were accessed at \citep{ecco_v4r2}.
-The python packages \texttt{xmitgcm} \citep{abernathey_2021_5139886},
-\texttt{xarray} \citep{hoyer2017xarray}, \texttt{dask} \citep{dask}, and
-\texttt{zarr} \citep{alistair_miles_2020_3773450}
-were essential for postprocessing and analyzing the results.
+
 I am grateful to Vikram Garg early discussions on the
-work by \citet{RSSB:RSSB777}.
+work by \citet{RSSB:RSSB777}, and to Jemima Tabeart for introducing me to the
+implicit diffusion operator developments by \citet{mirouze_representation_2010}.
 I thank Patrick Heimbach, Michael Diamond, Michael MacFerrin, and Fangfang Yao
 for comments which improved the manuscript.
-%, as well as Jemima Tabeart for introducing me to
-%the implicit diffusion developments by \citep{mirouze_representation_2010}
-%cited throughout the paper.
 
 \bibliography{references}
 \end{document}
