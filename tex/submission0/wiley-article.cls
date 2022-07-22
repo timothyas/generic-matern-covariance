@@ -1,0 +1,1 @@
+../qjrms/wiley-article.cls
