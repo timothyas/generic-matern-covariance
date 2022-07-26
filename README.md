@@ -9,6 +9,8 @@
     - move relevant pych scripts here
     - clean up / organize
     - rosy pig ... public and rename
+    - finish xmitgcm PR in order to enable `smooth_store` and
+      `open_smoothdataset`
 - [ ] Document rotation case
 
 ## MITgcm TODO
