@@ -1,0 +1,218 @@
+\documentclass[alpha-refs]{qjrms/wiley-article}
+
+\usepackage{url}
+\usepackage{lineno}
+\usepackage{soul}
+
+\usepackage{graphicx}
+\usepackage[space]{grffile}
+\usepackage{latexsym}
+\usepackage{textcomp}
+\usepackage{longtable}
+\usepackage{tabulary}
+\usepackage{booktabs,array,multirow}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{natbib}
+\usepackage{etoolbox}
+\makeatletter
+% This gives an error ...
+%\patchcmd\@combinedblfloats{\box\@outputbox}{\unvbox\@outputbox}{}{%
+%  \errmessage{\noexpand\@combinedblfloats could not be patched}%
+%}%
+\makeatother
+% You can conditionalize code for latexml or normal latex using this.
+\newif\iflatexml\latexmlfalse
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}%
+
+\AtBeginDocument{\DeclareGraphicsExtensions{.pdf,.PDF,.eps,.EPS,.png,.PNG,.tif,.TIF,.jpg,.JPG,.jpeg,.JPEG}}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% --- Custom additions
+\usepackage{mathtools} % for \coloneqq
+\usepackage{color}
+\usepackage{bm}
+\usepackage{adjustbox}
+\usepackage[percent]{overpic}
+
+
+% Definitions
+\usepackage{ide}
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+
+\newcommand{\ca}{\ensuremath{\cos(\alpha)}}
+\newcommand{\cb}{\ensuremath{\cos(\beta)}}
+\newcommand{\cat}{\ensuremath{\cos^2(\alpha)}}
+\newcommand{\cbt}{\ensuremath{\cos^2(\beta)}}
+\newcommand{\sia}{\ensuremath{\sin(\alpha)}}
+\newcommand{\sib}{\ensuremath{\sin(\beta)}}
+\newcommand{\siat}{\ensuremath{\sin^2(\alpha)}}
+\newcommand{\sibt}{\ensuremath{\sin^2(\beta)}}
+\newcommand{\ta}{\ensuremath{\tan(\alpha)}}
+\newcommand{\tb}{\ensuremath{\tan(\beta)}}
+\newcommand{\tbt}{\ensuremath{\tan^2(\beta)}}
+
+
+% Define some citation abbreviations
+\defcitealias{RSSB:RSSB777}{L11}
+
+% From qjrms
+\renewcommand{\sfdefault}{ptm}
+\renewcommand{\familydefault}{\sfdefault}
+
+\papertype{Supplemental Material}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+% --- Header
+\title{A Rotated Mapping for the Mat\'ern Class Correlation Operator
+}
+\author{Timothy A. Smith}
+
+\runningauthor{Smith}
+
+\begin{document}
+
+\maketitle
+
+Here we show the derivation for a rotated tensor that could be used in a
+Mat\'ern type correlation model.
+This is motivated by the example shown in \citet{weaver_correlation_2001} for
+the explicit diffusion operator.
+However, we were unable to get this implementation to be stable and had to
+abandon the effort due to time constraints.
+
+We start by applying the rotation tensor $\mathbf{S}$ to the Jacobian $\defjac$
+\begin{linenomath*}\begin{equation*}
+    \tilde{\defjac} \coloneqq \mathbf{S} \defjac \, ,
+\end{equation*}\end{linenomath*}
+where recall that we're using simply
+\begin{linenomath*}\begin{equation*}
+    \defjac =
+        \begin{pmatrix}
+            L_x & 0 & 0 \\
+            0 & L_y & 0 \\
+            0 & 0 & L_z \\
+    \end{pmatrix} \, .
+\end{equation*}\end{linenomath*}
+We suggest to use the rotation tensor defined by \citep{redi_oceanic_1982}
+\begin{linenomath*}\begin{equation*}
+    \mathbf{S} \coloneqq
+        \begin{pmatrix}
+            \ca \cb & - \sia & - \sib\ca \\
+            \sia \cb & \ca & - \sib\sia \\
+            \sib & 0 & \cb \\
+        \end{pmatrix}
+\end{equation*}\end{linenomath*}
+where the angles $\alpha$ and $\beta$ describe rotations between the geodesic
+and isopycnal coordinate system in the $z$ and $y$ directions.
+A more useful interpretation is
+\begin{linenomath*}\begin{equation*}
+    \begin{aligned}
+        S_x &= \ca\tb = -\sigma_x / \sigma_z \\
+        S_y &= \sia\tb = -\sigma_y / \sigma_z
+    \end{aligned}
+\end{equation*}\end{linenomath*}
+where $\sigma$ is potential density and e.g.\ $\sigma_x$ is it's derivative in
+the $x$ direction.
+
+With this rotation,
+\begin{linenomath*}\begin{equation*}
+    \tilde{\defjac} =
+        \begin{pmatrix}
+            L_x \ca\cb & -L_y\sia & -L_z \sib \ca \\
+            L_x \sia\cb & L_y \ca & -L_z \sib \sia \\
+            L_x \sib & 0 & L_z \cb \\
+        \end{pmatrix}
+\end{equation*}\end{linenomath*}
+and one can confirm that $\text{det}\left(\tilde{\defjac}\right) =
+\text{det}\left(\defjac\right) = L_x L_y L_z$, as should be the case given that
+$\mathbf{S}$ is a unitary rotation.
+\begin{linenomath*}\begin{equation*}
+    \tilde{\defjac}\tilde{\defjac}^T =
+        \begin{pmatrix}
+            \kappa_{11} & \kappa_{12} & \kappa_{13} \\
+            \kappa_{21} & \kappa_{22} & \kappa_{23} \\
+            \kappa_{31} & \kappa_{32} & \kappa_{33} \\
+
+
+        \end{pmatrix}
+\end{equation*}\end{linenomath*}
+where
+\begin{linenomath*}\begin{equation*}
+    \begin{aligned}
+        \kappa_{11} &=
+            \left[L_x^2\cat\cbt + L_y^2\siat + L_z^2\cat \sibt \right] \\
+        \kappa_{12} &=
+            \left[L_x^2\ca\sia\cbt - L_y^2\ca\sia + L_z^2\ca\sia\sibt \right] \\
+        \kappa_{13} &=
+            \left[L_x^2\ca\cb\sib - L_z^2\ca\cb\sib \right] \\
+%
+        \kappa_{21} &=
+            \left[L_x^2\ca\sia\cbt - L_y^2 \ca\sia + L_z^2 \ca\sia\sibt \right] \\
+        \kappa_{22} &=
+            \left[L_x^2\siat\cbt + L_y^2\cat + L_z^2\siat \sibt\right] \\
+        \kappa_{23} &=
+            \left[L_x^2\sia\cb\sib - L_z^2\sia\cb\sib \right] \\
+%
+        \kappa_{31} &=
+            \left[L_x^2\ca\cb\sib - L_z^2\ca\cb\sib \right] \\
+        \kappa_{32} &=
+            \left[L_x^2\sia\cb\sib - L_z^2\sia\cb\sib \right] \\
+        \kappa_{33} &=
+            \left[L_x^2\sibt + L_z^2\cbt\right] \\
+    \end{aligned}
+\end{equation*}\end{linenomath*}
+To simplify the situation, take $L_x = L_y$ and note the super useful identity
+$1/\cbt = 1 + \tbt$.
+Then,
+\begin{linenomath*}\begin{equation*}
+    \begin{aligned}
+        \tilde{K}
+        &=
+        \dfrac{\tilde{\defjac}\tilde{\defjac}^T}{\text{det}\left(\tilde{\defjac}\right)}
+        \\
+        &= \dfrac{1}{L_z\left(1 + S_x^2+s_y^2\right)}
+            \begin{pmatrix}
+                1 + \gamma^2 S_x^2 + S_y^2 &
+                -S_x S_y(1-\gamma^2) &
+                S_x(1-\gamma^2) \\
+%
+                -S_xS_y(1-\gamma^2) &
+                1+S_x^2 + \gamma^2S_y^2 &
+                S_y(1-\gamma^2) \\
+%
+                S_x(1-\gamma^2) &
+                S_y(1-\gamma^2) &
+                S_x^2 + S_y^2 + \gamma^2 \\
+            \end{pmatrix}
+    \end{aligned}
+\end{equation*}\end{linenomath*}
+where $\gamma \coloneqq L_z/L_x$.
+We can then make the small angle approximation, where
+$S_x^2$, $S_y^2$, $S_xS_y << 1$, and owing to the aspect ratio, $\gamma^2<<1$.
+Then
+\begin{linenomath*}\begin{equation*}
+    \tilde{K} = \dfrac{1}{L_z}
+        \begin{pmatrix}
+            1 & 0 & S_x \\
+            0 & 1 & S_y \\
+            S_x & S_y & S_x^2+S_y^2+\gamma^2 \\
+        \end{pmatrix} \, .
+\end{equation*}\end{linenomath*}
+This is what is implemented.
+The remaining technical detail, and most probable location of the bug, is in
+the implementation of the off-diagonal Laplacian elements.
+For these to be correct, the derivatives need to be interpolated to different
+interfacial points than they are at (e.g.\ the x-derivatives need to be
+interpolated to the upper/lower z-interfacial positions).
+I derived these in a rush, and it could be redone.
+
+\bibliography{references}
+\end{document}
