@@ -4,17 +4,15 @@
 
 ## TODO
 
-- [ ] MITgcm code to separate branch
+- [ ] MITgcm code to separate branch, submit PR
 - [ ] Clean this repo
     - move relevant pych scripts here
     - clean up / organize
     - rosy pig ... public and rename
     - finish xmitgcm PR in order to enable `smooth_store` and
       `open_smoothdataset`
-- [ ] Document rotation case
 
 ## MITgcm TODO
-
 
 - [ ] First step...
     - [x] Reorganize WC01 code
