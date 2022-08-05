@@ -1,0 +1,14 @@
+ &SMOOTH_NML
+#Note: this will get overwritten by SampleDriver
+ smooth3DNbt            (1) = 100,
+ smooth3DCreateOperator (1) = .TRUE.,
+ smooth3DCalcNormFactor (1) = .TRUE.,
+ smooth3DWriteSamples   (1) = .TRUE.,
+ smooth3DConstHorizontal(1) = .FALSE.,
+ smooth3DConstVertical  (1) = .FALSE.,
+ smooth3DMaskName       (1) = 'maskC',
+ smooth3DAlgorithm      (1) = 'WC01       ',
+ smooth3DNbRand         (1) = 1000,
+ smooth3DJacobiMaxIters (1) = 1000,
+ smooth3DSOROmega       (1) = 1.D0,
+ &

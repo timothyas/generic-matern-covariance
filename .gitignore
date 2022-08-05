@@ -1,4 +1,5 @@
 *.html
+*.tar.gz
 
 # Etc
 .DS_Store
