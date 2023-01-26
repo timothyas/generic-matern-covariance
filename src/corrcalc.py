@@ -7,7 +7,7 @@ from scipy.special import gamma, kv
 
 from pych import read_jacobi_iters
 from matern import MaternField
-from new_smooth_store import open_smoothdataset
+from smooth_store import open_smoothdataset
 from llcutils import get_pacific
 from timer import Timer
 
